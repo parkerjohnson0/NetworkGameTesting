@@ -1,0 +1,20 @@
+{
+  "name": "499server",
+  "version": "1.0.0",
+  "description": "",
+  "main": "SocetkIO.js",
+  "dependencies": {
+    "express": "^4.17.2",
+    "node-static": "^0.7.11",
+    "socket.io": "^4.4.1",
+    "socket.io-client": "^4.4.1",
+    "ws": "^8.4.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "type": "module"
+}
