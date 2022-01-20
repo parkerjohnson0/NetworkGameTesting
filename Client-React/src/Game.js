@@ -12,15 +12,14 @@ class Player
 }
 export default class Game extends React.Component
 {
+    clientPlayer = new Player(Math.random() * 200 + 200, Math.random() * 400 + 100)
+    playersList = []
     constructor(props)
     {
         super(props)
-
-        let clientPlayer = new Player(Math.random() * 200 + 200, Math.random() * 400 + 100)
-        let playersList = []
         this.state = {
-            players: playersList,
-            client: clientPlayer
+            players: this.playersList,
+            client: this.clientPlayer
         }
         this.setupSocket = this.setupSocket.bind(this)
 
@@ -34,7 +33,8 @@ export default class Game extends React.Component
     draw()
     {
         this.setState({
-            players: this.playersList
+            players: this.playersList,
+            client: this.clientPlayer
         })
     }
     handleMessage(e)
@@ -66,20 +66,23 @@ export default class Game extends React.Component
     }
     setupSocket()
     {
-        //do websocket manually instead of using API?
         let socket = io("ws://64.53.36.163:60003")
-        // let socket = io('localhost:3000')
+        // let socket = io('localhost:3001')
         this.setState({
             socket: socket
         })
+        //i believe it is important to emit another event here because
+        //the listeners on the server need to be nested deeper. or else 
+        //issues of other events being called before the connection code has fully run
         socket.on("connect", () =>
         {
+
             socket.emit("clientConnection")
             this.state.client.id = socket.id
         })
+        //listen for incoming player data
         socket.on("playerData", (data) =>
         {
-            // let players = JSON.parse(data)
             this.setState({
                 players: JSON.parse(data)
             })
@@ -154,7 +157,7 @@ export default class Game extends React.Component
             player.x += progress;
         }
         this.setState({
-            clientPlayer: player
+            client: player
         })
         this.state.socket.emit("requestUpdate")
         this.handlePlayerUpdate()
