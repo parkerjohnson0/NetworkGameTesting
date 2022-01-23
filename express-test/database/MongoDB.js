@@ -17,8 +17,10 @@ class MongoDB{
     }
     InsertDocument(obj, collection){
         this.databaseDriver.collection(collection).insertOne(obj, (err,res)=>{
-            if (err) throw err;
-            console.log("inserted")
+            if (err) {
+                return false;
+            }
+            return true
         })
     }
 }
