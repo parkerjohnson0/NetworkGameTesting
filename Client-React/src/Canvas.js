@@ -17,20 +17,15 @@ const Canvas = props =>
             // ctx.arc(client.x, client.y, 10, 0, 2 * Math.PI, false)
             // ctx.fillStyle = "white"
             // ctx.fill();
-            ctx.beginPath();
-            ctx.arc(client.x, client.y, 10, 0, 2 * Math.PI, false)
-            ctx.fillStyle = "white"
-            ctx.fill();
-
             players.map(player =>
             {
                 console.log(player.x, " ", player.y)
                 ctx.beginPath();
                 ctx.arc(player.x, player.y, 10, 0, 2 * Math.PI, false)
                 ctx.fillStyle = "white"
+                ctx.fill();
 
             })
-            ctx.fill();
 
             ctx.fillText(fps, 20, 20)
         }

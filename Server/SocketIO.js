@@ -3,7 +3,7 @@ import crypto from 'crypto'
 import { io } from 'socket.io-client'
 const server = new Server(60003, {
     cors: {
-        origin: ['http://localhost:3001', 'http://game.parkerjohnson-projects.com', 'http://localhost:3000']
+        origin: ['http://localhost:3001', 'http://game.parkerjohnson-projects.com']
     }
 })
 let gameInstances = []
