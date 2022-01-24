@@ -3,7 +3,8 @@ import crypto from 'crypto'
 import { io } from 'socket.io-client'
 const server = new Server(60003, {
     cors: {
-        origin: ['http://localhost:3001', 'http://game.parkerjohnson-projects.com']
+        origin: ['http://127.0.0.1:5500','http://chat.parkerjohnson-projects.com', 'http://game.parkerjohnson-projects.com',
+        ]
     }
 })
 let gameInstances = []
@@ -17,6 +18,7 @@ server.on("connection", (conn) =>
 
     let client = conn
     client.join(JoinRoom(client))
+    //this 
     conn.on("clientConnection", () =>
     {
         // enqueue(client)
@@ -24,8 +26,18 @@ server.on("connection", (conn) =>
         // console.log("new client connected: ", client.id)
         client.on("clientData", (clientJSON) =>
         {
+
             updateClients = true
             updateClientData(JSON.parse(clientJSON))
+
+        })
+        client.on("chatMessage", (message) =>
+        {
+            let gameInstance = gameInstances.find(x => x.clients.some(y => y.socketID == conn.id))
+            gameInstance.chatMessages.push(message)
+            let room = conn.rooms
+            room = [...room][1]
+            client.to(room).emit("newChatMessage", message);
         })
         client.on("disconnect", () =>
         {
@@ -110,7 +122,7 @@ function sendToClients(conn)
     if (instance)
     {
 
-        instance.clients.forEach(client =>
+        instance.clients.filter(x => x.socketID != conn.id).forEach(client =>
         {
             clientSockets.push(sockets[sockets.findIndex(x => x.id == client.socketID)])
         });
@@ -138,16 +150,21 @@ function sendToClients(conn)
                 // if (client)
                 // {
                 let gameInstance = gameInstances.find(x => x.clients.some(y => y.socketID == socket.id))
-                let clientData = gameInstance.clients.map((client) =>
+                let clientData = gameInstance.clients.filter(x => x.socketID != socket.id).map((client) =>
                 {
                     return client.data
+
                 })
                 // console.log(clientData)
                 // socket.emit("playerData", JSON.stringify(clientData))
                 let room = conn.rooms
-                room = [...room][1]//i dont understand this. something called spread syntax?
-                conn.to(room).emit("playerData", JSON.stringify(clientData))
+                if (clientData.length > 0)
+                {
 
+                    room = [...room][1]//i dont understand this. something called spread syntax?
+                    conn.in(room).emit("playerData", JSON.stringify(clientData))
+                    console.log("SENDING: ", JSON.stringify(clientData))
+                }
                 // }
             })
         }
@@ -198,6 +215,7 @@ class GameInstance
     {
         this.clients = []
         this.uuid = crypto.randomUUID()
+        this.chatMessages = []
     }
     addClient(id)
     {
@@ -216,5 +234,6 @@ class Client
         this.gameID = gameID
         this.socketID = socketID
         this.data = {}
+
     }
 }

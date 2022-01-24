@@ -1,10 +1,14 @@
 require('dotenv').config()
+let MongoDB = require('./database/MongoDB.js')
 // let MongoDB = require('./database/MongoDB.js')
 let express = require('express')
 //how different would it be without body-parser
 let bodyParser = require('body-parser')
 let players = require('./routes/players.js')
 const app = express()
+app.db = new MongoDB(process.env.CONNECTION_STRING, process.env.DB)
+app.db.Connect();
+//MAY NEED OTHER BODYPARSER TYPES AT SOME POINT
 app.use(bodyParser.json())
 app.use('/api/Players', players)
 const port = 3000
@@ -18,6 +22,7 @@ const port = 3000
 //     let player = req.body
 //     mongo.InsertDocument(player,"Players")
 // })
-app.listen(port, ()=>{
+app.listen(port, () =>
+{
     console.log(`listening on port ${port}`)
 })

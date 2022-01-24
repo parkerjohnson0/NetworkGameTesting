@@ -1,128 +1,210 @@
-let base = null
-let enemies = []
-let grid = []
-let GRID_WIDTH = 20
-let NUM_OF_ENEMIES = 10;
 let CANVAS_WIDTH = 800;
 let CANVAS_HEIGHT = 800;
-
+// let socket = io("ws://64.53.36.163:60003")
+let socket
+let canv
+let chatInput
+let chatMessages
+let playersList = []
+let up = false, down = false, left = false, right = false
 function setup()
 {
-    createCanvas(CANVAS_WIDTH, CANVAS_HEIGHT);
-    background(50);
-    createGrid()
-    createBase(200, 200);
-    createEnemies()
-    base.show()
+    frameRate(60)
+    canv = createCanvas(CANVAS_WIDTH, CANVAS_HEIGHT);
+    chatMessages = select(".chat_messages")
+    canv.parent("game_container")
+    chatInput = select(".chat_input")
+    chatInput.elt.addEventListener("keydown", inputListener)
+    createClientPlayer()
+    setupSocket();
 
+    // testChatMessages()
+}
+// function testChatMessages()
+// {
+//     for (var i = 0; i < 5; i++)
+//     {
+//         addChatMessage("message number " + i)
+//     }
+// }
+function inputListener(e)
+{
+    switch (e.key)
+    {
+        case "Enter":
+            sendMessage()
+            break;
+        default:
+            chatInput.html(e, true)
+            break;
+    }
+}
+function sendMessage()
+{
+    let text = chatInput.elt.value;
+    chatInput.elt.value = "" //reset input 
+    let li = createElement('li', `client: ${text}`)
+    li.parent("chat_messages")
+    socket.emit("chatMessage", text)
 }
 function draw()
 {
-    for (let i = 0; i < NUM_OF_ENEMIES; i++)
+    background(30)
+    updatePlayers()
+}
+function updatePlayers()
+{
+    updateClient()
+    updateConnectedPlayers()
+    sendClientState()
+}
+function sendClientState()
+{
+
+    if (socket && socket.connected)
     {
-        enemies[i].move()
+        let client = playersList.find(x => x.id == socket.id || x.id == 0)
+        let clientJSON = JSON.stringify(client)
+        socket.emit("clientData", clientJSON)
+        console.log(clientJSON)
+
     }
 }
-function createGrid()
+function updateConnectedPlayers()
 {
-    for (let x = 0; x < CANVAS_WIDTH; x += GRID_WIDTH)
+    socket.emit("requestUpdate")
+    if (playersList.length > 1)
     {
-        for (let y = 0; y < CANVAS_HEIGHT; y += GRID_WIDTH)
+        let connectedPlayers = playersList.filter(x => x.id != socket.id)
+        for (let i = 0; i < connectedPlayers.length; i++)
         {
-            new gridSquare(x, y).draw()
+            circle(connectedPlayers[i].x, connectedPlayers[i].y, 20)
         }
-    }
-}
-function createBase(x, y)
-{
-    base = new Base(x, y);
-}
-function createEnemies()
-{
-    for (let index = 0; index < NUM_OF_ENEMIES; index++)
-    {
-        let enemy = spawnEnemy()
-        enemies.push(enemy)
-        enemies[index].show();
 
     }
 }
-function spawnEnemy()
+function updateClient()
 {
-    let randomDirection = floor(random(4))
-    let max = floor(random(0, CANVAS_HEIGHT) / 20)
-    let randomNumber = max * 20
-    if (randomDirection == 0)
+    let player = playersList.find(x => (x.id == 0 || x.id == socket.id))
+
+    if (up)
     {
-        return new Enemy(0, randomNumber)
+        player.y -= deltaTime;
     }
-    else if (randomDirection == 1)
+    if (down)
     {
-        return new Enemy(CANVAS_WIDTH, randomNumber)
+        player.y += deltaTime;
     }
-    else if (randomDirection == 2)
+    if (left)
     {
-        return new Enemy(randomNumber, 0)
+        player.x -= deltaTime;
     }
-    else if (randomDirection == 3)
+    if (right)
     {
-        return new Enemy(randomNumber, CANVAS_HEIGHT)
+        player.x += deltaTime;
     }
 
-
+    circle(player.x, player.y, 20)
 }
-class gridSquare
+function keyReleased()
+{
+    switch (key)
+    {
+        case "w":
+            up = false;
+            break;
+        case "a":
+            left = false;
+            break;
+        case "s":
+            down = false;
+            break;
+        case "d":
+            right = false;
+            break;
+    }
+}
+function keyPressed()
+{
+    switch (key)
+    {
+        case "w":
+            up = true;
+            break;
+        case "a":
+            left = true;
+            break;
+        case "s":
+            down = true;
+            break;
+        case "d":
+            right = true;
+            break;
+    }
+}
+function createClientPlayer()
+{
+    clientPlayer = new Player(Math.random() * 200 + 200, Math.random() * 400 + 100)
+    playersList.push(clientPlayer);
+}
+function setupSocket()
+{
+    // socket = io('localhost:3000')
+    socket = io("ws://64.53.36.163:60003")
+
+    socket.on("connect", () =>
+    {
+        socket.emit("clientConnection")
+        playersList.find(x => x.id == 0).id = socket.id
+    })
+    socket.on("newChatMessage", (data) =>
+    {
+        addChatMessage(data)
+    })
+    //listen for incoming player data
+    socket.on("playerData", (data) =>
+    {
+        let playerData = JSON.parse(data)
+
+        //change this or disconnecting will be a pain
+        for (let i = 0; i < playerData.length; i++)
+        {
+            let updatePlayer = playersList.find(x => x.id == playerData[i].id)
+            let index = playersList.indexOf(updatePlayer)
+            if (index > -1)
+            {
+                playersList[index] = playerData[i]
+            }
+            else
+            {
+                playersList.push(playerData[i])
+            }
+        }
+    })
+}
+
+function addChatMessage(message)
+{
+    //this is actually adding the current socket id lol.
+    // not the remote client. need to send that info with the message
+    let li = createElement('li', `remote: ${message}`)
+    li.parent("chat_messages")
+}
+class Player
 {
     constructor(x, y)
     {
-        this.x = x;
-        this.y = y;
-    }
-    draw()
-    {
-        stroke('red')
-        fill(0, 0, 0, 0)
-        square(this.x, this.y, 20);
-    }
-}
-class Enemy
-{
-    constructor(x, y)
-    {
-        this.x = x;
+        this.x = x
         this.y = y
-    }
-    getPath()
-    {
-
-    }
-    move()
-    {
-
-    }
-    show()
-    {
-        ellipseMode(CORNER)
-        stroke('transparent')
-        fill('white')
-        ellipse(this.x, this.y, 20)
+        this.id = 0
     }
 }
-class Base
+class ChatMessage
 {
-    constructor(x, y)
+    constructor(name, text)
     {
-        this.x = x;
-        this.y = y;
-
-    }
-    show()
-    {
-        let sizeX = this.x
-        let sizeY = this.y
-        rectMode(CENTER)
-        fill('white')
-        stroke('transparent')
-        rect(CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2, this.x, this.y);
+        this.name = name;
+        this.text = text;
     }
 }
+

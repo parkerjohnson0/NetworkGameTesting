@@ -4,4 +4,48 @@ html,body{
     margin:0;
 
 }
+.root{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+}
+#game_container{
+    position: relative;
+    width: 800px;
+    height: 800px;
+}
+.chat_container{
+    position: absolute;
+    top: 600px;
+}
+.chat{
 
+    position: fixed;
+    width: 300px;
+    height: 200px;
+    border: 1px solid black;
+    background: rgba(255,255,255,0.1);
+
+}
+.chat_box{
+    height: 90%;
+    overflow: hidden;
+    overflow-y: auto;
+}
+#chat_messages{
+    list-style-type: none;
+    padding-left: 0;
+    color: white;
+    font-size: 20px;
+    text-shadow:
+        0.07em 0 black,
+        0 0.07em black,
+        -0.07em 0 black,
+        0 -0.07em black;
+        
+}
+.chat_input{
+    position:absolute;
+    top:175px;
+    width: 90%;
+}
