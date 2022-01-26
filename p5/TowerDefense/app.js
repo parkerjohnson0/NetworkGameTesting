@@ -5,10 +5,13 @@ let socket
 let canv
 let chatInput
 let chatMessages
+let playerName = ""
 let playersList = []
 let up = false, down = false, left = false, right = false
 function setup()
 {
+    console.log(document.cookie)
+    checkCookieForLogin()
     frameRate(60)
     canv = createCanvas(CANVAS_WIDTH, CANVAS_HEIGHT);
     chatMessages = select(".chat_messages")
@@ -27,6 +30,90 @@ function setup()
 //         addChatMessage("message number " + i)
 //     }
 // }
+function checkCookieForLogin()
+{
+    let cookie = document.cookie;
+    let uuid = cookie.split(":")[1]
+    if (uuid)
+    {
+        getPlayerName(uuid);
+    }
+    else
+    {
+        promptForName() 
+    }
+}
+function getPlayerName(uuid)
+{
+    let url = "http://localhost:3000/api/Players?playerId=" + uuid
+    // let url = "http://chat.parkerjohnson-projects.com/api/Players?playerId=" + uuid
+
+    let player
+    httpGet(url, "json", 
+        function (response)
+        {
+            player = JSON.parse(response)
+            console.log(player)
+            playerName = player.name
+
+        }),
+        function (error)
+        {
+            console.log(error)
+            
+        }
+}
+function promptForName()
+{
+    let nameBox= select("#name_box_container")
+    nameBox.elt.style.visibility = "visible"
+    nameBox.elt.addEventListener("keydown",nameBoxListener)
+}
+function nameBoxListener(e)
+{
+    switch (e.key)
+    {
+        case "Enter":
+            let name = select("#name_text").elt.value.trim();
+            let nums = new Uint32Array(1)
+            if (name && name != "")
+            {
+                let uuid = crypto.getRandomValues(nums)[0];
+                console.log(uuid)
+                document.cookie = "uuid:" + uuid
+                SendToMongo(uuid, name)
+                playerName = name
+                this.style.visibility = "hidden"
+            }
+
+            break;
+        default:
+            break;
+    }
+}
+function SendToMongo(uuid,name)
+{
+    let url = "http://localhost:3000/api/Players"
+    // let url = "game.parkerjohnson-projects.com/api/Players"
+    let data = {userId: uuid, name: name}
+    httpPost(url, "json", data,
+        function (result)
+        {   
+            console.log(result)
+        }),
+        function (error)
+        {
+            console.log(error)
+        }
+        
+
+}
+function userExists(cookie)
+{
+    return cookie.split(":")
+        .any(x => x.startsWith("name:"))
+  
+}
 function inputListener(e)
 {
     switch (e.key)
@@ -43,7 +130,7 @@ function sendMessage()
 {
     let text = chatInput.elt.value;
     chatInput.elt.value = "" //reset input 
-    let li = createElement('li', `client: ${text}`)
+    let li = createElement('li', `${playerName}: ${text}`)
     li.parent("chat_messages")
     socket.emit("chatMessage", text)
 }
