@@ -29,7 +29,12 @@ class MongoDB
             }
         })
         return true
-
+    }
+    async FindOne(obj, collection)
+    {
+        let query = { userId: obj }
+        let response = await this.databaseDriver.collection(collection).findOne(query)
+        return response
     }
 }
 module.exports = MongoDB
