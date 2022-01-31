@@ -1,4 +1,6 @@
 require('dotenv').config()
+require('./server/SocketIO.js')
+
 let cors = require('cors')
 // let corsOptions = {
 //     origin: ['https://localhost:5500', 'http:game.parkerjohnson-projects.com'],
@@ -11,7 +13,6 @@ let express = require('express')
 let bodyParser = require('body-parser')
 let players = require('./routes/players.js')
 let home = require('./routes/home.js')
-let server = require('./server/SocketIO.js')
 const app = express()
 app.cors = cors
 app.db = new MongoDB(process.env.CONNECTION_STRING, process.env.DB)
@@ -25,7 +26,7 @@ app.use(express.static('./public'))
 app.use('/api/Players', players)
 app.use('/', home)
 
-const port = 3000
+const port = process.env.PORT || 3000
 // let connection = `mongodb+srv://parker:Hcystydm%239@cluster0.hoegu.mongodb.net/499Game?retryWrites=true&w=majority`
 // const mongo = new MongoDB(connection, "499Game")
 // mongo.Connect()
@@ -39,6 +40,4 @@ const port = 3000
 app.listen(port, () =>
 {
     console.log(`listening on port ${port}`)
-    console.log(server)
-
 })
