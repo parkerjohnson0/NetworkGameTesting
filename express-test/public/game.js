@@ -1,5 +1,5 @@
-let CANVAS_WIDTH = 800;
-let CANVAS_HEIGHT = 800;
+let CANVAS_WIDTH = 1000;
+let CANVAS_HEIGHT = 580;
 // let socket = io("ws://64.53.36.163:60003")
 let socket
 let canv
@@ -7,9 +7,11 @@ let playerName = "player"
 let playersList = []
 let chatBox
 let up = false, down = false, left = false, right = false
+let gameAreaWidth = 700
+let chatBoxWidth = 300
 function setup()
 {
-    chatBox = new ChatBox(0,600,CANVAS_WIDTH / 3,CANVAS_HEIGHT/ 4)
+    chatBox = new ChatBox(700,0,chatBoxWidth,580)
     chatBox.input.elt.addEventListener("keydown",inputListener)
     console.log(document.cookie)
     checkCookieForLogin()
