@@ -28,7 +28,7 @@ app.use(express.static('./public'))
 app.use('/api/Players', players)
 app.use('/', home)
 
-const port = 3000 || process.env.PORT
+const port = 3001 || process.env.PORT
 // let connection = `mongodb+srv://parker:Hcystydm%239@cluster0.hoegu.mongodb.net/499Game?retryWrites=true&w=majority`
 // const mongo = new MongoDB(connection, "499Game")
 // mongo.Connect()
