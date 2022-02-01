@@ -8,7 +8,7 @@ let io = require('socket.io-client')
 const server = Server(60003, {
     cors: {
         origin: ['http://127.0.0.1:5500', 'http://chat.parkerjohnson-projects.com', 'http://game.parkerjohnson-projects.com',
-            'http://localhost:3000'
+            'http://localhost:3000',"http://www.skelegame.com"
         ]
     }
 })

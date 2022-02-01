@@ -2,6 +2,7 @@ let CANVAS_WIDTH = 1000;
 let CANVAS_HEIGHT = 580;
 // let socket = io("ws://64.53.36.163:60003")
 let socket
+let socketID //save ID so that client player can be retrieved from playerslist after a disconnect. band aid for bad design decision right now
 let canv
 let playerName = "player"
 let playersList = []
@@ -12,7 +13,8 @@ let chatBoxWidth = 300
 function setup()
 {
     chatBox = new ChatBox(700,0,chatBoxWidth,580)
-    chatBox.input.elt.addEventListener("keydown",inputListener)
+    chatBox.input.elt.addEventListener("keydown", inputListener)
+    chatBox.button.elt.addEventListener("click", chatListener)
     console.log(document.cookie)
     checkCookieForLogin()
     frameRate(60)
@@ -102,6 +104,10 @@ function userExists(cookie)
         .any(x => x.startsWith("name:"))
   
 }
+function chatListener(e)
+{
+    sendMessage()
+}
 function inputListener(e)
 {
     switch (e.key)
@@ -134,7 +140,7 @@ function sendClientState()
 
     if (socket && socket.connected)
     {
-        let client = playersList.find(x => x.id == socket.id || x.id == 0)
+        let client = playersList.find(x => x.id == socketID|| x.id == 0)
         let clientJSON = JSON.stringify(client)
         socket.emit("clientData", clientJSON)
         // console.log(clientJSON)
@@ -146,7 +152,7 @@ function updateConnectedPlayers()
     socket.emit("requestUpdate")
     if (playersList.length > 1)
     {
-        let connectedPlayers = playersList.filter(x => x.id != socket.id)
+        let connectedPlayers = playersList.filter(x => x.id != socketID)
         for (let i = 0; i < connectedPlayers.length; i++)
         {
             fill(255)
@@ -157,7 +163,7 @@ function updateConnectedPlayers()
 }
 function updateClient()
 {
-    let player = playersList.find(x => (x.id == 0 || x.id == socket.id))
+    let player = playersList.find(x => (x.id == 0 || x.id == socketID))
 
     if (up)
     {
@@ -221,13 +227,15 @@ function createClientPlayer()
 }
 function setupSocket()
 {
-    // socket = io('localhost:3000')
-    socket = io("ws://64.53.36.163:60003")
+    // socket = io('localhost:60003')
+    socket = io("ws://www.skelegame.com:60003")
 
     socket.on("connect", () =>
     {
         socket.emit("clientConnection")
         playersList.find(x => x.id == 0).id = socket.id
+        socketID = socket.id
+
     })
     socket.on("newChatMessage", (data) =>
     {

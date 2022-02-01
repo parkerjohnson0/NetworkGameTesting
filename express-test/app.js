@@ -18,7 +18,9 @@ app.cors = cors
 app.db = new MongoDB(process.env.CONNECTION_STRING, process.env.DB)
 app.db.Connect();
 app.use(cors({
-    origin: ["http://127.0.0.1:5500","http://chat.parkerjohnson-projects.com"]
+    origin: ["http://127.0.0.1:5500", "http://chat.parkerjohnson-projects.com",
+        "http://www.skelegame.com"
+    ]
 }))
 //MAY NEED OTHER BODYPARSER TYPES AT SOME POINT
 app.use(bodyParser.json())
@@ -26,7 +28,7 @@ app.use(express.static('./public'))
 app.use('/api/Players', players)
 app.use('/', home)
 
-const port = 3000
+const port = 3000 || process.env.PORT
 // let connection = `mongodb+srv://parker:Hcystydm%239@cluster0.hoegu.mongodb.net/499Game?retryWrites=true&w=majority`
 // const mongo = new MongoDB(connection, "499Game")
 // mongo.Connect()
