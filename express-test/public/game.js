@@ -228,7 +228,7 @@ function createClientPlayer()
 function setupSocket()
 {
     // socket = io('localhost:60003')
-    socket = io('http://www.skelegame.com:60003')
+    socket = io('http://www.skelegame.com/socket')
 
     socket.on("connect", () =>
     {
