@@ -9,6 +9,7 @@ let cors = require('cors')
 let MongoDB = require('./database/MongoDB.js')
 // let MongoDB = require('./database/MongoDB.js')
 let express = require('express')
+let https = require('https')
 //how different would it be without body-parser
 let bodyParser = require('body-parser')
 let players = require('./routes/players.js')
@@ -19,7 +20,7 @@ app.db = new MongoDB(process.env.CONNECTION_STRING, process.env.DB)
 app.db.Connect();
 app.use(cors({
     origin: ["http://127.0.0.1:5500", "http://chat.parkerjohnson-projects.com",
-        "https://www.skelegame.com"
+        "https://www.skelegame.com", "http://www.skelegame.com"
     ]
 }))
 //MAY NEED OTHER BODYPARSER TYPES AT SOME POINT
@@ -39,7 +40,4 @@ const port = 3001 || process.env.PORT
 //     let player = req.body
 //     mongo.InsertDocument(player,"Players")
 // })
-app.listen(port, () =>
-{
-    console.log(`listening on port ${port}`)
-})
+https.createServer.app.listen(port)
