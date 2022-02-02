@@ -3,12 +3,11 @@ let Server = require('socket.io')
 // import crypto from 'crypto'
 let crypto = require('crypto')
 // import { io } from 'socket.io-client'
-let io = require('socket.io-client')
 
 const server = Server(60003, {
     cors: {
         origin: ['http://127.0.0.1:5500', 'http://chat.parkerjohnson-projects.com', 'http://game.parkerjohnson-projects.com',
-            'http://localhost:3000',"https://www.skelegame.com","http://www.skelegame.com"
+            'https://localhost:8443',"https://www.skelegame.com","http://www.skelegame.com",'http://localhost:8080'
         ]
     }
 })
@@ -250,4 +249,8 @@ class Client
     }
 }
 
-module.exports = server;
+module.exports = function (httpServer)
+{
+    server.listen(httpServer)
+}
+;
