@@ -19,7 +19,7 @@ app.db = new MongoDB(process.env.CONNECTION_STRING, process.env.DB)
 app.db.Connect();
 app.use(cors({
     origin: ["http://127.0.0.1:5500", "http://chat.parkerjohnson-projects.com",
-        "http://www.skelegame.com"
+        "http://www.skelegame.com","http://localhost:3001"
     ]
 }))
 //MAY NEED OTHER BODYPARSER TYPES AT SOME POINT
