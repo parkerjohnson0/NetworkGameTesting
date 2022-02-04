@@ -250,8 +250,8 @@ function createClientPlayer()
 }
 function setupSocket()
 {
-    socket = io('localhost:3001')
-    // socket = io()
+    // socket = io('localhost:3001')
+    socket = io()
     // socket = io('http://www.skelegame.com')
 
 
