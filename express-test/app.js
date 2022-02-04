@@ -1,7 +1,7 @@
 require('dotenv').config()
 let crypto = require('crypto')
 
-// require('./server/SocketIO.js')
+require('./server/SocketIO.js')
 
 let cors = require('cors')
 // let corsOptions = {
@@ -46,7 +46,6 @@ let server = app.listen(port, () =>
     console.log(`listening on port ${port}`)
 })
 let io = require('socket.io')(server)
-
 // // import { Server } from 'socket.io'
 // let Server = require('socket.io')
 // // import crypto from 'crypto'
@@ -62,24 +61,25 @@ let io = require('socket.io')(server)
 //     }
 // })
 let gameInstances = []
-
 let playerData = []
 let sockets = []
 let updateClients = false
 //probably need to discard buffer on reconnection. research socket.io volatile
 io.on("connection", (conn) =>
 {
-
+    //add some cache mechanism maybe? dont know if would be that useful. 
     let client = conn
-    client.join(JoinRoom(client))
+    let room = getRoom(client)
+    
+    client.join(room)
     //this 
     conn.on("clientConnection", () =>
     {
         // enqueue(client)
         // sockets.push(client)
         // console.log("new client connected: ", client.id)
-        let room = conn.rooms
-        room = [...room][1]//i dont understand this. something called spread syntax?
+        // let room = conn.rooms
+        // room = [...room][1]//i dont understand this. something called spread syntax?
 
         client.on("clientData", (clientJSON) =>
         {
@@ -112,14 +112,45 @@ io.on("connection", (conn) =>
                 updateClients = false
             }
         })
-        client.on("buildTimerStart", () =>
+        client.on("requestBuildTimerStart", () =>
+        {
+            // console.log("build timer requested by client", client.id, "in room", room) 
+            let instance = gameInstances.find(x => x.clients.find(y => y.socketID == conn.id))
+            let client = instance.clients.find(x => x.socketID == conn.id)
+            client.buildTimerRequested = true
+            if (!instance.clients.some(x => x.buildTimerRequested == false))
+            {
+                io.in(room).emit("buildTimerStart")
+                console.log("build timer start")
+            }
+        })
+        client.on("requestBuildTimerEnd", () =>
+        {
+            let instance = gameInstances.find(x => x.clients.find(y => y.socketID == conn.id))
+            let client = instance.clients.find(x => x.socketID == conn.id)
+            client.buildTimerRequested = false
+            if (!instance.clients.some(x => x.buildTimerRequested == true))
+            {
+                io.in(room).emit("buildTimerEnd")
+                console.log("build timer End")
+            }
+        })
+        client.on("clientMouseData", (message) =>
+        {
+            let instance = gameInstances.find(x => x.clients.some(y => y.socketID == conn.id))
+            let client = instance.clients.find(x => x.socketID == conn.id)
+            client.mouseData = message
+            console.log("mouse data " + JSON.stringify(message))
+            // client.to(room).emit("serverMouseData")
+        })
+        client.on("towerData", () =>
         {
             
         })
     })
 
 })
-function JoinRoom(client)
+function getRoom(client)
 {
     enqueue(client)
     sockets.push(client)
@@ -213,7 +244,12 @@ function sendToClients(conn)
                 let gameInstance = gameInstances.find(x => x.clients.some(y => y.socketID == socket.id))
                 let clientData = gameInstance.clients.filter(x => x.socketID != socket.id).map((client) =>
                 {
-                    return client.data
+                    return client.playerData
+
+                })
+                let mouseData = gameInstance.clients.filter(x => x.socketID != socket.id).map((client) =>
+                {
+                    return client.mouseData
 
                 })
                 // console.log(clientData)
@@ -224,7 +260,8 @@ function sendToClients(conn)
 
                     room = [...room][1]//i dont understand this. something called spread syntax?
                     conn.in(room).emit("playerData", JSON.stringify(clientData))
-                    console.log("SENDING: ", JSON.stringify(clientData))
+                    conn.in(room).emit("serverMouseData", JSON.stringify(mouseData))
+                    // console.log("SENDING: ", JSON.stringify(clientData))
                 }
                 // }
             })
@@ -247,7 +284,7 @@ function updateClientData(newData)
     //     }
     // });
     let updateClient = gameInstance.clients.find(x => x.socketID == newData.id)
-    updateClient.data = newData
+    updateClient.playerData = newData
     // gameInstances.forEach((element) =>
     // {
     //     if (oldData = element.clients.find(x => x.socketID === newData.id))
@@ -294,7 +331,8 @@ class Client
     {
         this.gameID = gameID
         this.socketID = socketID
-        this.data = {}
-
+        this.playerData = {},
+        this.mouseData={},
+        this.buildTimerRequested = false
     }
 }

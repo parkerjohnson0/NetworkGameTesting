@@ -6,10 +6,13 @@ let socketID //save ID so that client player can be retrieved from playerslist a
 let canv
 let playerName = "player"
 let playersList = []
+let mouseList = []
 let chatBox
 let up = false, down = false, left = false, right = false
 let gameAreaWidth = 700
 let chatBoxWidth = 300
+let buildTimerLength = 30
+let buildPhaseOn = false
 function setup()
 {
     chatBox = new ChatBox(700,0,chatBoxWidth,580)
@@ -27,10 +30,28 @@ function setup()
 function draw()
 {
     background(30)
+
+    if (buildPhaseOn)
+    {
+        
+        textSize(32)
+        text(buildTimerLength, gameAreaWidth/2, CANVAS_HEIGHT/2)
+    }
     updatePlayers()
+    drawMouse()
     chatBox.show()
 }
-
+function drawMouse()
+{
+    fill(255)
+    circle(mouseX, mouseY, 20)
+    for (let i = 0; i < mouseList.length; i++)
+    {
+        console.log(mouseList[i])
+        circle(mouseList[i].mouseX, mouseList[i].mouseY, 20)
+        
+    }
+}
 function checkCookieForLogin()
 {   
     //delete cookie for testing purposes
@@ -76,6 +97,7 @@ function nameBoxListener(e)
                 playerName = name
                 this.style.visibility = "hidden"
             }
+            socket.emit("requestBuildTimerStart")
             break;
         default:
             break;
@@ -143,6 +165,7 @@ function sendClientState()
         let client = playersList.find(x => x.id == socketID|| x.id == 0)
         let clientJSON = JSON.stringify(client)
         socket.emit("clientData", clientJSON)
+        socket.emit("clientMouseData",{"mouseX": mouseX, "mouseY": mouseY,"id":socket.id})
         // console.log(clientJSON)
 
     }
@@ -227,9 +250,9 @@ function createClientPlayer()
 }
 function setupSocket()
 {
-    // socket = io('localhost:3001')
-    socket = io()
-    // socket = io('http://www.skelegame.com/socket.io')
+    socket = io('localhost:3001')
+    // socket = io()
+    // socket = io('http://www.skelegame.com')
 
 
     socket.on("connect", () =>
@@ -271,8 +294,42 @@ function setupSocket()
         console.log("player with id :" + playerId + " has been removed.")
 
     })
-}
+    let intervalID
+    socket.on("buildTimerStart", () =>
+    {
+        buildPhaseOn = true
+        intervalID = setInterval(tickTimer, 1000)
 
+    })
+    socket.on("serverMouseData", (data) =>
+    {
+        let mouseData = JSON.parse(data)
+
+        for (let i = 0; i < mouseData.length; i++)
+        {
+            let updateMouse = mouseList.find(x => x.id == mouseData[i].id)
+            let index = mouseList.indexOf(updateMouse)
+            if (index > -1)
+            {
+                mouseList[index] = mouseData[i]
+            }
+            else
+            {
+                mouseList.push(mouseData[i])
+            }
+        }
+    })
+    function tickTimer()
+    {
+        console.log(buildTimerLength)
+        if (buildTimerLength < 0)
+        {
+            clearInterval(intervalID)
+            buildTimerLength = 30
+        }
+        buildTimerLength--
+    }
+}
 class Player
 {
     constructor(x, y)

@@ -3,15 +3,15 @@
 // // import crypto from 'crypto'
 // let crypto = require('crypto')
 // // import { io } from 'socket.io-client'
-// let io = require('socket.io-client')
 
-// const server = Server(60003, {
+// const server = Server(3001, {
 //     cors: {
 //         origin: ['http://127.0.0.1:5500', 'http://chat.parkerjohnson-projects.com', 'http://game.parkerjohnson-projects.com',
 //             'http://localhost:3001',"http://www.skelegame.com","http://www.skelegame.com/socket"
 //         ]
 //     }
 // })
+// // let server = require('../app.js')
 // let gameInstances = []
 
 // let playerData = []
