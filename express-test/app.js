@@ -140,7 +140,7 @@ io.on("connection", (conn) =>
             let instance = gameInstances.find(x => x.clients.some(y => y.socketID == conn.id))
             let client = instance.clients.find(x => x.socketID == conn.id)
             client.mouseData = message
-            console.log("mouse data " + JSON.stringify(message))
+            // console.log("mouse data " + JSON.stringify(message))
             // client.to(room).emit("serverMouseData")
         })
         client.on("towerData", () =>

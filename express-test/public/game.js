@@ -11,7 +11,7 @@ let chatBox
 let up = false, down = false, left = false, right = false
 let gameAreaWidth = 700
 let chatBoxWidth = 300
-let buildTimerLength = 30
+let buildTimerLength = 10
 let buildPhaseOn = false
 function setup()
 {
@@ -322,12 +322,13 @@ function setupSocket()
     function tickTimer()
     {
         console.log(buildTimerLength)
-        if (buildTimerLength < 0)
+        buildTimerLength--
+        if (buildTimerLength == 0)
         {
             clearInterval(intervalID)
             buildTimerLength = 30
+            buildPhaseOn = false
         }
-        buildTimerLength--
     }
 }
 class Player
