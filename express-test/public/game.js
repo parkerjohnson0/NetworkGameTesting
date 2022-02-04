@@ -13,6 +13,8 @@ let gameAreaWidth = 700
 let chatBoxWidth = 300
 let buildTimerLength = 10
 let buildPhaseOn = false
+
+let currframe = 0;
 function setup()
 {
     chatBox = new ChatBox(700,0,chatBoxWidth,580)
@@ -40,6 +42,7 @@ function draw()
     updatePlayers()
     drawMouse()
     chatBox.show()
+    currframe += 1;
 }
 function drawMouse()
 {
@@ -165,8 +168,10 @@ function sendClientState()
         let client = playersList.find(x => x.id == socketID|| x.id == 0)
         // let clientJSON = JSON.stringify(client)
         socket.emit("clientData", JSON.stringify(client))
+        if (currframe % 2 == 0){
         socket.emit("clientMouseData",{"mouseX": mouseX, "mouseY": mouseY,"id":socket.id})
         // console.log(clientJSON)
+        }
 
     }
 }
