@@ -19,7 +19,11 @@ class ChatBox
     }
     addChatMessage(message)
     {
-        this.messages.push(message)
+        this.messages.push(new Message("chat",message))
+    }
+    buildTimerEnd()
+    {
+        this.messages.push(new Message("admin","STARTING ATTACK PHASE"))
     }
     show()
     {
@@ -31,12 +35,23 @@ class ChatBox
             const element = this.messages[index];
             if (startPos - this.y  - this.padding > 0)
             {
-                fill(255)
                 //find amount of lines comment will take up. change start pos of comment to be higher on the screen 
-                let numberOfExtraLines = Math.floor(textWidth(element) / maxWidth)
+                let numberOfExtraLines = Math.floor(textWidth(element.message) / maxWidth)
                 startPos -= this.text_size * numberOfExtraLines
-                textSize(this.text_size)
-                text(element, this.x + this.padding, startPos - this.padding, maxWidth)
+                if(element.type ==="chat")
+                {
+                    textStyle(NORMAL)
+                    textSize(this.text_size)
+                    fill(255)
+                }
+                else if(element.type ==="admin")
+                {
+                    textStyle(BOLD)
+                    textSize(this.text_size)
+                    fill(255,0,0)
+                }
+
+                text(element.message, this.x + this.padding, startPos - this.padding, maxWidth)
                 startPos -= this.messageOffset
             }
             else
@@ -51,4 +66,10 @@ class ChatBox
         this.messages.splice(0,index)
     }
 
+}
+class Message{
+    constructor(type,message){
+        this.type = type
+        this.message = message
+    }
 }

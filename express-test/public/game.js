@@ -47,7 +47,7 @@ function drawMouse()
     circle(mouseX, mouseY, 20)
     for (let i = 0; i < mouseList.length; i++)
     {
-        console.log(mouseList[i])
+        // console.log(mouseList[i])
         circle(mouseList[i].mouseX, mouseList[i].mouseY, 20)
         
     }
@@ -269,7 +269,7 @@ function setupSocket()
     //listen for incoming player data
     socket.on("playerData", (data) =>
     {
-        let playerData = data
+        let playerData = JSON.parse(data)
 
         //change this or disconnecting will be a pain
         for (let i = 0; i < playerData.length; i++)
@@ -291,6 +291,9 @@ function setupSocket()
         let deletePlayer = playersList.find(x => x.id == playerId)
         let index = playersList.indexOf(deletePlayer)
         playersList.splice(index, 1)
+        let deleteMouse = mouseList.find(x => x.id == playerId)
+        index = mouseList.indexOf(deleteMouse)
+        mouseList.splice(index,1)
         console.log("player with id :" + playerId + " has been removed.")
 
     })
@@ -300,6 +303,11 @@ function setupSocket()
         buildPhaseOn = true
         intervalID = setInterval(tickTimer, 1000)
 
+    })
+    socket.on("buildTimerEnd",()=>
+    {
+        chatBox.buildTimerEnd()
+        console.log("build timer end")
     })
     socket.on("serverMouseData", (data) =>
     {
@@ -328,6 +336,7 @@ function setupSocket()
             clearInterval(intervalID)
             buildTimerLength = 30
             buildPhaseOn = false
+            socket.emit("requestBuildTimerEnd")
         }
     }
 }
