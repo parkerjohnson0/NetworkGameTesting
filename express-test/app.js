@@ -260,7 +260,7 @@ function sendToClients(conn)
 
                     room = [...room][1]//i dont understand this. something called spread syntax?
                     conn.in(room).emit("playerData", JSON.stringify(clientData))
-                    conn.in(room).emit("serverMouseData", JSON.stringify(mouseData))
+                    conn.in(room).emit("serverMouseData", mouseData)
                     // console.log("SENDING: ", JSON.stringify(clientData))
                 }
                 // }

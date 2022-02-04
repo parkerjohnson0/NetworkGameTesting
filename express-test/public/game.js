@@ -163,8 +163,8 @@ function sendClientState()
     if (socket && socket.connected)
     {
         let client = playersList.find(x => x.id == socketID|| x.id == 0)
-        let clientJSON = JSON.stringify(client)
-        socket.emit("clientData", clientJSON)
+        // let clientJSON = JSON.stringify(client)
+        socket.emit("clientData", JSON.stringify(client))
         socket.emit("clientMouseData",{"mouseX": mouseX, "mouseY": mouseY,"id":socket.id})
         // console.log(clientJSON)
 
@@ -269,7 +269,7 @@ function setupSocket()
     //listen for incoming player data
     socket.on("playerData", (data) =>
     {
-        let playerData = JSON.parse(data)
+        let playerData = data
 
         //change this or disconnecting will be a pain
         for (let i = 0; i < playerData.length; i++)
@@ -303,7 +303,7 @@ function setupSocket()
     })
     socket.on("serverMouseData", (data) =>
     {
-        let mouseData = JSON.parse(data)
+        let mouseData = data
 
         for (let i = 0; i < mouseData.length; i++)
         {
