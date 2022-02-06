@@ -98,7 +98,7 @@ io.on("connection", (conn) =>
         })
         client.on("newPlayerJoined", (name) =>
         {
-            console.log("new player joined")
+            console.log(`new player '${name}' joined`)
             io.in(room).emit("greetPlayer",name)
         })
         client.on("disconnect", () =>
