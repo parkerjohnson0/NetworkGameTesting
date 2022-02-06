@@ -36,7 +36,7 @@ function draw()
     {
         textStyle(NORMAL)
         fill(255)
-        textSize(32)
+        // textSize(32)
         text(buildTimerLength, gameAreaWidth/2, CANVAS_HEIGHT/2)
     }
     updatePlayers()

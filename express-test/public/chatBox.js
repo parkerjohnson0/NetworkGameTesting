@@ -27,7 +27,7 @@ class ChatBox
     }
     buildTimerEnd()
     {
-        this.messages.push(new Message("admin","STARTING ATTACK PHASE",18))
+        this.messages.push(new Message("admin","STARTING ATTACK PHASE",16))
     }
     show()
     {
@@ -45,24 +45,28 @@ class ChatBox
                 if(element.type ==="chat")
                 {
                     textStyle(NORMAL)
+                    textWrap(CHAR)
                     textSize(element.fontSize)
                     fill(255)
                 }
                 else if(element.type ==="admin")
                 {
                     textStyle(BOLD)
+                    textWrap(CHAR)
                     textSize(element.fontSize)
                     fill(255,0,0)
                 }
                 else if(element.type ==="info")
                 {
                     textStyle(ITALIC)
+                    textWrap(CHAR)
                     textSize(element.fontSize)
                     fill(255)
                 }
                 
-                text(element.message, this.x + this.padding, startPos - this.padding, maxWidth)
-                startPos -= (this.messageOffset + element.fontSize)
+                text(element.message, this.x + this.padding, startPos - element.fontSize, maxWidth)
+                startPos -= this.messageOffset + element.fontSize//update start position for next loop
+
             }
             else
             {
