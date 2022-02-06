@@ -2,7 +2,7 @@ let CANVAS_WIDTH = 1000;
 let CANVAS_HEIGHT = 580;
 // let socket = io("ws://64.53.36.163:60003")
 let socket
-let socketID //save ID so that client player can be retrieved from playerslist after a disconnect. band aid for bad design decision right now
+let socketID = 0 //save ID so that client player can be retrieved from playerslist after a disconnect. band aid for bad design decision right now
 let canv
 let playerName = "player"
 let playersList = []
@@ -258,14 +258,11 @@ function setupSocket()
     // socket = io('localhost:3001')
     socket = io()
     // socket = io('http://www.skelegame.com')
-
-
     socket.on("connect", () =>
     {
         socket.emit("clientConnection")
-        playersList.find(x => x.id == 0).id = socket.id
+        playersList.find(x => x.id == socketID).id = socket.id
         socketID = socket.id
-
     })
     socket.on("newChatMessage", (data) =>
     {

@@ -140,8 +140,7 @@ io.on("connection", (conn) =>
             let instance = gameInstances.find(x => x.clients.some(y => y.socketID == conn.id))
             let client = instance.clients.find(x => x.socketID == conn.id)
             client.mouseData = message
-            // console.log("mouse data " + JSON.stringify(message))
-            // client.to(room).emit("serverMouseData")
+
         })
         client.on("towerData", () =>
         {
@@ -195,11 +194,7 @@ function AddClientToGame(conn)
 // setInterval(update, 16)
 // function update()
 // {
-//     if (updateClients)
-//     {
-//         sendToClients()
-//         updateClients = false
-//     }
+
 // }
 function sendToClients(conn)
 {
@@ -218,29 +213,12 @@ function sendToClients(conn)
         {
             clientSockets.push(sockets[sockets.findIndex(x => x.id == client.socketID)])
         });
-        // gameInstances.forEach((game) =>
-        // {
-        //     let client = game.clients.find(x => x.socketID == conn.id)
-        //     if (client)
-        //     {
-        //         clientSockets.push(sockets[sockets.findIndex(x => x.id == client.socketID)])
-        //     }
-        // })
+
         if (clientSockets)
         {
             clientSockets.forEach(socket =>
             {
-                // let client
-                // gameInstances.forEach((game) =>
-                // {
-                //     client = game.clients.find(x => x.socketID == socket.id)
-                //     if (client)
-                //     {
-                //         return;
-                //     }
-                // })
-                // if (client)
-                // {
+
                 let gameInstance = gameInstances.find(x => x.clients.some(y => y.socketID == socket.id))
                 let clientData = gameInstance.clients.filter(x => x.socketID != socket.id).map((client) =>
                 {
@@ -252,8 +230,7 @@ function sendToClients(conn)
                     return client.mouseData
 
                 })
-                // console.log(clientData)
-                // socket.emit("playerData", JSON.stringify(clientData))
+
                 let room = conn.rooms
                 if (clientData.length > 0)
                 {
@@ -261,9 +238,7 @@ function sendToClients(conn)
                     room = [...room][1]//i dont understand this. something called spread syntax?
                     conn.in(room).emit("playerData", JSON.stringify(clientData))
                     conn.in(room).emit("serverMouseData", mouseData)
-                    // console.log("SENDING: ", JSON.stringify(clientData))
                 }
-                // }
             })
         }
     }
@@ -276,35 +251,10 @@ function updateClientData(newData)
     {
         return x.clients.some(y => y.socketID == newData.id)
     })
-    // gameInstances.forEach(element =>
-    // {
-    //     if (element.clients.find(x => x.socketID === newData.id))
-    //     {
 
-    //     }
-    // });
     let updateClient = gameInstance.clients.find(x => x.socketID == newData.id)
     updateClient.playerData = newData
-    // gameInstances.forEach((element) =>
-    // {
-    //     if (oldData = element.clients.find(x => x.socketID === newData.id))
-    //     {
-    //         let indexOfClient = element.clients.indexOf(oldData)
-    //         element.clients[indexOfClient].data = newData
-    //     }
-    // })
-    //try switch filter to find
-    // if (playerData.length == 0 || !playerData.filter(x => x.id == client.id)[0]) 
-    // {
-    //     playerData.push(client)
-    //     console.log(client)
-    // }
-    // else
-    // {
-    //     let prevClientData = playerData.filter(x => x.id === client.id)[0]
-    //     let indexOfClient = playerData.indexOf(prevClientData)
-    //     playerData[indexOfClient] = client
-    // }
+
 }
 
 class GameInstance
