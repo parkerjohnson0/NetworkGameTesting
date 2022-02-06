@@ -58,7 +58,7 @@ function drawMouse()
 function checkCookieForLogin()
 {   
     //delete cookie for testing purposes
-    document.cookie = document.cookie + ";expires=Thu, 01 Jan 1970 00:00:01 GMT";
+    // document.cookie = document.cookie + ";expires=Thu, 01 Jan 1970 00:00:01 GMT";
     
     let cookie = document.cookie;
     let playerName = getPlayerName(cookie)
