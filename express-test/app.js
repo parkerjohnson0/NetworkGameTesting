@@ -96,6 +96,11 @@ io.on("connection", (conn) =>
             room = [...room][1]
             client.to(room).emit("newChatMessage", message);
         })
+        client.on("newPlayerJoined", (name) =>
+        {
+            console.log("new player joined")
+            io.in(room).emit("greetPlayer",name)
+        })
         client.on("disconnect", () =>
         {
             let disconnectSock = sockets.find(x => x == client)
@@ -118,7 +123,7 @@ io.on("connection", (conn) =>
             let instance = gameInstances.find(x => x.clients.find(y => y.socketID == conn.id))
             let client = instance.clients.find(x => x.socketID == conn.id)
             client.buildTimerRequested = true
-            if (!instance.clients.some(x => x.buildTimerRequested == false))
+            if (buildTimerCanStart(instance))
             {
                 io.in(room).emit("buildTimerStart")
                 console.log("build timer start")
@@ -146,9 +151,16 @@ io.on("connection", (conn) =>
         {
             
         })
+
     })
 
 })
+function buildTimerCanStart(instance)
+{
+    let connectedClientsReady = !instance.clients.some(x => x.buildTimerRequested == false)
+    return connectedClientsReady && instance.clients.length > 1
+    
+}
 function getRoom(client)
 {
     enqueue(client)

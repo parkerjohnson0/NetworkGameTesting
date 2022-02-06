@@ -21,7 +21,6 @@ function setup()
     chatBox.input.elt.addEventListener("keydown", inputListener)
     chatBox.button.elt.addEventListener("click", chatListener)
     console.log(document.cookie)
-    checkCookieForLogin()
     frameRate(60)
     canv = createCanvas(CANVAS_WIDTH, CANVAS_HEIGHT);
     canv.parent("game_container")
@@ -35,7 +34,8 @@ function draw()
 
     if (buildPhaseOn)
     {
-        
+        textStyle(NORMAL)
+        fill(255)
         textSize(32)
         text(buildTimerLength, gameAreaWidth/2, CANVAS_HEIGHT/2)
     }
@@ -58,13 +58,19 @@ function drawMouse()
 function checkCookieForLogin()
 {   
     //delete cookie for testing purposes
-    document.cookie = document.cookie + ";expires=Thu, 01 Jan 1970 00:00:01 GMT";
+    // document.cookie = document.cookie + ";expires=Thu, 01 Jan 1970 00:00:01 GMT";
     
     let cookie = document.cookie;
-    if (!getPlayerName(cookie))
+    let playerName = getPlayerName(cookie)
+    if (!playerName)
     {
         promptForName() 
-        
+    }
+    else
+    {
+        socket.emit("newPlayerJoined", playerName)
+        socket.emit("requestBuildTimerStart")
+
     }
 }
 function getPlayerName(cookie){
@@ -75,10 +81,10 @@ function getPlayerName(cookie){
         if (nameValue[0].trim() == "name")
         {
             playerName = nameValue[1]
-            return true
+            return playerName
         }
     }
-    return false
+    return ""
 }
 
 function promptForName()
@@ -99,6 +105,7 @@ function nameBoxListener(e)
                 document.cookie = "name=" + name
                 playerName = name
                 this.style.visibility = "hidden"
+                socket.emit("playerJoined", name)
             }
             socket.emit("requestBuildTimerStart")
             break;
@@ -263,10 +270,16 @@ function setupSocket()
         socket.emit("clientConnection")
         playersList.find(x => x.id == socketID).id = socket.id
         socketID = socket.id
+        checkCookieForLogin()
+
     })
     socket.on("newChatMessage", (data) =>
     {
         chatBox.addChatMessage(data)
+    })
+    socket.on("greetPlayer", (name) =>
+    {
+        chatBox.greetPlayer(name)
     })
     //listen for incoming player data
     socket.on("playerData", (data) =>
