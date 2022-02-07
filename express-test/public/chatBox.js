@@ -1,8 +1,13 @@
 
 class ChatBox
 {
+    // messages = [new Message("chat", "test: hello this is a single line comment",14), new Message("chat","test: hello this is a 2 line comment hello this is a 2 line comment  hello this is a 2 line comment",14),
+    // new Message("chat","test: hello this is a 3 line comment hello this is a 3 line comment  hello this is a 3 line comment  hello this is a 3 line comment hello this is a 3 line comment",14),
+    //     new Message("chat", "test: hello this is a 3 line comment hello this is a 3 line comment  hello this is a 3 line comment hello this is a 3 line comment  hello this is a 3 line comment hello this is a 3 line comment  hello this is a 3 line comment hello this is a 3 line comment", 14),
+    //     new Message("chat", "test: hello this is a single line comment",14)
+    // ]
     messages = []
-    messageOffset = 10//space between messages
+    messageOffset = 5//space between messages
     padding = 15 //space between edge of box and the text
     text_size = 14 
     constructor(x,y,width,height)
@@ -35,37 +40,44 @@ class ChatBox
         rect(this.x, this.y, this.width, this.height)
         let startPos = this.y + this.height - this.padding - 30
         let maxWidth = this.width - this.padding * 2 //max width of a line is the width of the textbox times the padding from both sides
-        for (let index = this.messages.length - 1; index >= 0; index--) {
+        for (let index = this.messages.length - 1; index >= 0; index--)
+        {
+
             const element = this.messages[index];
+            let numberOfExtraLines = Math.floor(textWidth(element.message) / maxWidth)
+            startPos -= element.fontSize * numberOfExtraLines
             if (startPos - this.y  - this.padding > 0) //only show messages if it is not going to be drawn outside of the box
             {
                 //find amount of lines comment will take up. change start pos of comment to be higher on the screen 
-                let numberOfExtraLines = Math.floor(textWidth(element.message) / maxWidth)
-                startPos -= element.fontSize * numberOfExtraLines
+
+                textLeading(element.fontSize) //makes space between lines consistent for multiline comments
                 if(element.type ==="chat")
                 {
+                    textSize(element.fontSize)
+
                     textStyle(NORMAL)
                     textWrap(CHAR)
-                    textSize(element.fontSize)
                     fill(255)
                 }
                 else if(element.type ==="admin")
                 {
+                    textSize(element.fontSize)
+
                     textStyle(BOLD)
                     textWrap(CHAR)
-                    textSize(element.fontSize)
                     fill(255,0,0)
                 }
                 else if(element.type ==="info")
                 {
+                    textSize(element.fontSize)
                     textStyle(ITALIC)
                     textWrap(CHAR)
-                    textSize(element.fontSize)
                     fill(255)
                 }
                 
                 text(element.message, this.x + this.padding, startPos - element.fontSize, maxWidth)
-                startPos -= this.messageOffset + element.fontSize//update start position for next loop
+                // startPos -= this.messageOffset + element.fontSize//update start position for next loop
+                startPos -= element.fontSize + this.messageOffset
 
             }
             else

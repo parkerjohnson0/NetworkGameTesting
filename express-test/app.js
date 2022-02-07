@@ -1,6 +1,5 @@
 require('dotenv').config()
 let crypto = require('crypto')
-
 require('./server/SocketIO.js')
 
 let cors = require('cors')
@@ -14,6 +13,8 @@ let express = require('express')
 //how different would it be without body-parser
 let bodyParser = require('body-parser')
 let players = require('./routes/players.js')
+let scores = require('./routes/scores.js')
+
 let home = require('./routes/home.js')
 let app = express()
 app.cors = cors
@@ -26,9 +27,11 @@ app.use(cors({
 }))
 //MAY NEED OTHER BODYPARSER TYPES AT SOME POINT
 app.use(bodyParser.json())
-app.use(express.static('./public'))
+app.use(express.static('./public')) //this servers the homepage
 app.use('/api/Players', players)
-app.use('/', home)
+app.use('/api/Scores', scores)
+
+// app.use('/', home)
 
 const port = 3001
 // let connection = `mongodb+srv://parker:Hcystydm%239@cluster0.hoegu.mongodb.net/499Game?retryWrites=true&w=majority`
@@ -70,11 +73,13 @@ io.on("connection", (conn) =>
     //add some cache mechanism maybe? dont know if would be that useful. 
     let client = conn
     let room = getRoom(client)
-    
+    let instance = gameInstances.find(x => x.clients.some(y => y.socketID == conn.id))
+
     client.join(room)
     //this 
     conn.on("clientConnection", () =>
     {
+        client.emit("gameInstanceID",instance.uuid)
         // enqueue(client)
         // sockets.push(client)
         // console.log("new client connected: ", client.id)
@@ -90,8 +95,7 @@ io.on("connection", (conn) =>
         })
         client.on("chatMessage", (message) =>
         {
-            let gameInstance = gameInstances.find(x => x.clients.some(y => y.socketID == conn.id))
-            gameInstance.chatMessages.push(message)
+            instance.chatMessages.push(message)
             let room = conn.rooms
             room = [...room][1]
             client.to(room).emit("newChatMessage", message);
@@ -120,7 +124,6 @@ io.on("connection", (conn) =>
         client.on("requestBuildTimerStart", () =>
         {
             // console.log("build timer requested by client", client.id, "in room", room) 
-            let instance = gameInstances.find(x => x.clients.find(y => y.socketID == conn.id))
             let client = instance.clients.find(x => x.socketID == conn.id)
             client.buildTimerRequested = true
             if (buildTimerCanStart(instance))
@@ -131,7 +134,6 @@ io.on("connection", (conn) =>
         })
         client.on("requestBuildTimerEnd", () =>
         {
-            let instance = gameInstances.find(x => x.clients.find(y => y.socketID == conn.id))
             let client = instance.clients.find(x => x.socketID == conn.id)
             client.buildTimerRequested = false
             if (!instance.clients.some(x => x.buildTimerRequested == true))
@@ -142,7 +144,6 @@ io.on("connection", (conn) =>
         })
         client.on("clientMouseData", (message) =>
         {
-            let instance = gameInstances.find(x => x.clients.some(y => y.socketID == conn.id))
             let client = instance.clients.find(x => x.socketID == conn.id)
             client.mouseData = message
 
@@ -151,10 +152,34 @@ io.on("connection", (conn) =>
         {
             
         })
-
+        client.on("saveScore", (score,playerName) =>
+        {
+            sendToMongo(score,playerName, instance.uuid)
+        })
     })
 
 })
+function sendToMongo(score,name,uuid)
+{
+    // let url = "http://localhost:3000/api/Players"
+    // let url = "http://skelegame.com/api/Players"
+    // let url = "http://localhost:3001/api/Players"
+    
+    // let url = "game.parkerjohnson-projects.com/api/Players"
+    let data = { score: score, name: name,uuid}
+    console.log(app.db.InsertDocument(data, "Scores"))
+    // httpPost(url, "json", data,
+    //     function (result)
+    //     {   
+    //         console.log(result)
+    //     }),
+    //     function (error)
+    //     {
+    //         console.log(error)
+    //     }
+        
+
+}
 function buildTimerCanStart(instance)
 {
     let connectedClientsReady = !instance.clients.some(x => x.buildTimerRequested == false)
@@ -163,7 +188,8 @@ function buildTimerCanStart(instance)
 }
 function getRoom(client)
 {
-    enqueue(client)
+    enqueue(client) //place client in game instance
+    
     sockets.push(client)
     console.log("new client connected: ", client.id)
     let roomNumber = gameInstances.findIndex(x => x.clients.some(y => y.socketID == client.id))

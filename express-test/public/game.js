@@ -3,6 +3,7 @@ let CANVAS_HEIGHT = 580;
 // let socket = io("ws://64.53.36.163:60003")
 let socket
 let socketID = 0 //save ID so that client player can be retrieved from playerslist after a disconnect. band aid for bad design decision right now
+let gameInstanceID = 0
 let canv
 let playerName = "player"
 let playersList = []
@@ -13,7 +14,7 @@ let gameAreaWidth = 700
 let chatBoxWidth = 300
 let buildTimerLength = 10
 let buildPhaseOn = false
-
+let score = 0
 let currframe = 0;
 function setup()
 {
@@ -26,23 +27,23 @@ function setup()
     canv.parent("game_container")
     createClientPlayer()
     setupSocket();
-
 }
 function draw()
 {
+    score++;
     background(30)
 
-    if (buildPhaseOn)
+    if (buildPhaseOn) 
     {
         textStyle(NORMAL)
         fill(255)
-        // textSize(32)
+        // textSize(32) //for some reason this causes spacing issues in chat IDK
         text(buildTimerLength, gameAreaWidth/2, CANVAS_HEIGHT/2)
     }
     updatePlayers()
     drawMouse()
     chatBox.show()
-    currframe += 1;
+    currframe += 1 % 60;
 }
 function drawMouse()
 {
@@ -113,11 +114,12 @@ function nameBoxListener(e)
             break;
     }
 }
-function SendToMongo(uuid,name)
+function sendToMongo(score,name)
 {
-    let url = "http://localhost:3000/api/Players"
+    let url = "http://localhost:3001/api/Scores"
+    // let url = "http://skelegame.com/api/Players"
     // let url = "game.parkerjohnson-projects.com/api/Players"
-    let data = {userId: uuid, name: name}
+    let data = {score: score, name: name,gameID: gameInstanceID}
     httpPost(url, "json", data,
         function (result)
         {   
@@ -132,12 +134,13 @@ function SendToMongo(uuid,name)
 }
 function userExists(cookie)
 {
-    return cookie.split(":")
-        .any(x => x.startsWith("name:"))
+    return cookie.split(":").any(x => x.startsWith("name:"))
   
 }
 function chatListener(e)
 {
+    sendToMongo(score, playerName)
+    // socket.emit("saveScore", score, playerName)
     sendMessage()
 }
 function inputListener(e)
@@ -155,10 +158,14 @@ function inputListener(e)
 function sendMessage()
 {
     let text = chatBox.input.elt.value;
-    chatBox.input.elt.value = "" //reset input 
-    let string = `${playerName}: ${text}`
-    chatBox.addChatMessage(string)
-    socket.emit("chatMessage", string)
+    if (text)
+    {
+        chatBox.input.elt.value = "" //reset input 
+        let string = `${playerName}: ${text}`
+        chatBox.addChatMessage(string)
+        socket.emit("chatMessage", string)
+    }
+
 }
 
 function updatePlayers()
@@ -272,6 +279,10 @@ function setupSocket()
         socketID = socket.id
         checkCookieForLogin()
 
+    })
+    socket.on("gameInstanceID", (id) =>
+    {
+        gameInstanceID = id
     })
     socket.on("newChatMessage", (data) =>
     {
