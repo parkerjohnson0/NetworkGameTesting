@@ -139,8 +139,8 @@ function userExists(cookie)
 }
 function chatListener(e)
 {
-    sendToMongo(score, playerName)
-    // socket.emit("saveScore", score, playerName)
+    // sendToMongo(score, playerName)
+    socket.emit("saveScore", score, playerName)
     sendMessage()
 }
 function inputListener(e)
