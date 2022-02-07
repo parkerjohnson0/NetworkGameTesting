@@ -117,7 +117,7 @@ function nameBoxListener(e)
 function sendToMongo(score,name)
 {
     // let url = "http://localhost:3001/api/Scores"
-    let url = "http://skelegame.com/api/Players"
+    let url = "http://skelegame.com/api/Scores"
     // let url = "game.parkerjohnson-projects.com/api/Players"
     let data = {score: score, name: name,gameID: gameInstanceID}
     httpPost(url, "json", data,
