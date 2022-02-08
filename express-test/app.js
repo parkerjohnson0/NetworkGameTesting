@@ -64,7 +64,7 @@ let io = require('socket.io')(server)
 //     }
 // })
 let gameInstances = []
-let playerData = []
+let playerNames = []
 let sockets = []
 let updateClients = false
 //probably need to discard buffer on reconnection. research socket.io volatile
@@ -74,7 +74,6 @@ io.on("connection", (conn) =>
     let client = conn
     let room = getRoom(client)
     let instance = gameInstances.find(x => x.clients.some(y => y.socketID == conn.id))
-
     client.join(room)
     //this 
     conn.on("clientConnection", () =>
@@ -102,8 +101,10 @@ io.on("connection", (conn) =>
         })
         client.on("newPlayerJoined", (name) =>
         {
+            let client = instance.clients.filter(x => x.socketID == conn.id)
+            client.username = name
             console.log(`new player '${name}' joined`)
-            io.in(room).emit("greetPlayer",name)
+            io.in(room).emit("greetPlayer", name)
         })
         client.on("disconnect", () =>
         {
@@ -200,6 +201,7 @@ function RemoveClient(disconnectSock)
     gameInstances.forEach((x) =>
     {
         x.clients = x.clients.filter(x => x.socketID != disconnectSock.id)
+
     })
 }
 function enqueue(conn)
@@ -219,13 +221,15 @@ function AddClientToGame(conn)
         gameInstances.push(new GameInstance())
     }
     let clientAdded = false
-    gameInstances.forEach(element =>
+    gameInstances.every(element =>
     {
         if (element.clients.length < 2)
         {
             element.addClient(conn.id)
             clientAdded = true
+            return true
         }
+        return false
     });
     return clientAdded
 }
@@ -303,9 +307,9 @@ class GameInstance
         this.uuid = crypto.randomUUID()
         this.chatMessages = []
     }
-    addClient(id)
+    addClient(id,username)
     {
-        this.clients.push(new Client(id, this.uuid))
+        this.clients.push(new Client(id, this.uuid,username))
     }
     updateClient(client)
     {
@@ -315,12 +319,13 @@ class GameInstance
 }
 class Client
 {
-    constructor(socketID, gameID)
+    constructor(socketID, gameID,username)
     {
         this.gameID = gameID
         this.socketID = socketID
         this.playerData = {},
-        this.mouseData={},
+        this.mouseData = {},
+        this.username = username,
         this.buildTimerRequested = false
     }
 }

@@ -22,9 +22,13 @@ class ChatBox
         this.button = createButton("Chat")
         this.button.position(-200 + this.padding, 275 - this.padding, "relative")
     }
-    addChatMessage(message)
+    addLocalChatMessage(message)
     {
-        this.messages.push(new Message("chat",message,14))
+        this.messages.push(new Message("localClient",message,14))
+    }
+    addRemoteChatMessage(message)
+    {
+        this.messages.push(new Message("remoteClient",message,14))
     }
     greetPlayer(name)
     {
@@ -51,13 +55,15 @@ class ChatBox
                 //find amount of lines comment will take up. change start pos of comment to be higher on the screen 
 
                 textLeading(element.fontSize) //makes space between lines consistent for multiline comments
-                if(element.type ==="chat")
+                if(element.type ==="localClient")
                 {
-                    textSize(element.fontSize)
+                    this.formatChatMessage(element, "#FF0000","#FFFFFF",startPos,maxWidth)
 
-                    textStyle(NORMAL)
-                    textWrap(CHAR)
-                    fill(255)
+
+                }
+                else if(element.type ==="remoteClient")
+                {
+                    this.formatChatMessage(element, "#0000FF","#FFFFFF",startPos,maxWidth)
                 }
                 else if(element.type ==="admin")
                 {
@@ -65,7 +71,9 @@ class ChatBox
 
                     textStyle(BOLD)
                     textWrap(CHAR)
-                    fill(255,0,0)
+                    fill(255, 0, 0)
+                    text(element.message, this.x + this.padding, startPos - element.fontSize, maxWidth)
+                    
                 }
                 else if(element.type ==="info")
                 {
@@ -73,9 +81,10 @@ class ChatBox
                     textStyle(ITALIC)
                     textWrap(CHAR)
                     fill(255)
+                    text(element.message, this.x + this.padding, startPos - element.fontSize, maxWidth)
+
                 }
                 
-                text(element.message, this.x + this.padding, startPos - element.fontSize, maxWidth)
                 // startPos -= this.messageOffset + element.fontSize//update start position for next loop
                 startPos -= element.fontSize + this.messageOffset
 
@@ -90,6 +99,25 @@ class ChatBox
     removeChatMessages(index)
     {
         this.messages.splice(0,index)
+    }
+    formatChatMessage(element,nameColor, messageColor,startPos,maxWidth)
+    {
+        //message format "username: content"
+        let name = element.message.split(":")[0]
+        let message = ": " + element.message.split(":")[1].trim()
+        textSize(element.fontSize)
+        textStyle(BOLD)
+        textWrap(CHAR)
+        stroke(51)
+        strokeWeight(1)
+        fill(nameColor)
+        text(name, this.x + this.padding, startPos - element.fontSize, maxWidth)
+        stroke(0)
+        fill(messageColor)
+        strokeWeight(0)
+        textStyle(BOLD)
+
+        text(message, this.x + this.padding + textWidth(name), startPos - element.fontSize, maxWidth)
     }
 
 }

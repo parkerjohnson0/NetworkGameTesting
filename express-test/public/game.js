@@ -162,7 +162,7 @@ function sendMessage()
     {
         chatBox.input.elt.value = "" //reset input 
         let string = `${playerName}: ${text}`
-        chatBox.addChatMessage(string)
+        chatBox.addLocalChatMessage(string)
         socket.emit("chatMessage", string)
     }
 
@@ -286,7 +286,7 @@ function setupSocket()
     })
     socket.on("newChatMessage", (data) =>
     {
-        chatBox.addChatMessage(data)
+        chatBox.addRemoteChatMessage(data)
     })
     socket.on("greetPlayer", (name) =>
     {
@@ -373,6 +373,7 @@ class Player
         this.x = x
         this.y = y
         this.id = 0
+        this.name
     }
 }
 class ChatMessage
