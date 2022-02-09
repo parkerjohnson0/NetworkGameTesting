@@ -181,7 +181,7 @@ function sendClientState()
     {
         let client = playersList.find(x => x.id == socketID|| x.id == 0)
         // let clientJSON = JSON.stringify(client)
-        if (currframe % 1 == 0){
+        if (currframe % 2 == 0){
         socket.emit("clientData", JSON.stringify(client))
         socket.emit("clientMouseData",{"mouseX": mouseX, "mouseY": mouseY,"id":socket.id})
         // console.log(clientJSON)
