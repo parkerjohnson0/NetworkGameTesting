@@ -89,7 +89,7 @@ io.on("connection", (conn) =>
         client.on("clientData", (clientJSON) =>
         {
 
-            updateClients = true
+            // updateClients = true
             updateClientData(JSON.parse(clientJSON))
 
         })
@@ -122,11 +122,11 @@ io.on("connection", (conn) =>
             // {
             //     return x.uuid
             // }))
-            if (updateClients)
-            {
-                sendToClients(client)
-                updateClients = false
-            }
+            // if (updateClients)
+            // {
+                sendToClient(client)
+                // updateClients = false
+            // }
         })
         client.on("requestBuildTimerStart", () =>
         {
@@ -247,7 +247,7 @@ function AddClientToGame(conn)
 // {
 
 // }
-function sendToClients(conn)
+function sendToClient(conn)
 {
     //for each socket. get matching client. then get client data from
     //matching game instance
@@ -267,30 +267,31 @@ function sendToClients(conn)
 
         if (clientSockets)
         {
+            let clientData
             clientSockets.forEach(socket =>
             {
 
-                let gameInstance = gameInstances.find(x => x.clients.some(y => y.socketID == socket.id))
-                let clientData = gameInstance.clients.filter(x => x.socketID != socket.id).map((client) =>
+                clientData = instance.clients.filter(x => x.socketID != socket.id).map((client) =>
                 {
                     return client.playerData
 
                 })
-                let mouseData = gameInstance.clients.filter(x => x.socketID != socket.id).map((client) =>
+                mouseData = instance.clients.filter(x => x.socketID != socket.id).map((client) =>
                 {
                     return client.mouseData
 
                 })
 
-                let room = conn.rooms
-                if (clientData.length > 0)
-                {
 
-                    room = [...room][1]//i dont understand this. something called spread syntax?
-                    conn.in(room).emit("playerData", JSON.stringify(clientData))
-                    conn.in(room).emit("serverMouseData", mouseData)
-                }
             })
+            let room = conn.rooms
+            if (clientData && clientData.length > 0)
+            {
+
+                room = [...room][1]//i dont understand this. something called spread syntax?
+                conn.in(room).emit("playerData", JSON.stringify(clientData))
+                conn.in(room).emit("serverMouseData", mouseData)
+            }
         }
     }
 
