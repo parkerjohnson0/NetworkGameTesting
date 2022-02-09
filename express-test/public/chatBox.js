@@ -108,14 +108,11 @@ class ChatBox
         textSize(element.fontSize)
         textStyle(BOLD)
         textWrap(CHAR)
-        stroke(51)
-        strokeWeight(1)
+
         fill(nameColor)
         text(name, this.x + this.padding, startPos - element.fontSize, maxWidth)
-        stroke(0)
         fill(messageColor)
-        strokeWeight(0)
-        textStyle(BOLD)
+        textStyle(NORMAL)
         message = this.padMessage(name) + message
         text(message, this.x + this.padding, startPos - element.fontSize, maxWidth)
     }
