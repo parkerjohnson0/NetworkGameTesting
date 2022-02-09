@@ -15,7 +15,7 @@ let chatBoxWidth = 300
 let buildTimerLength = 10
 let buildPhaseOn = false
 let score = 0
-let currframe = 0;
+let currFrame = 0;
 function setup()
 {
     chatBox = new ChatBox(700,0,chatBoxWidth,580)
@@ -43,7 +43,7 @@ function draw()
     updatePlayers()
     drawMouse()
     chatBox.show()
-    currframe += 1 % 60;
+    currFrame += 1 % 60;
 }
 function drawMouse()
 {
@@ -181,7 +181,7 @@ function sendClientState()
     {
         let client = playersList.find(x => x.id == socketID|| x.id == 0)
         // let clientJSON = JSON.stringify(client)
-        if (currframe % 2 == 0){
+        if (currFrame % 2 == 0){
         socket.emit("clientData", JSON.stringify(client))
         socket.emit("clientMouseData",{"mouseX": mouseX, "mouseY": mouseY,"id":socket.id})
         // console.log(clientJSON)
@@ -191,9 +191,9 @@ function sendClientState()
 }
 function updateConnectedPlayers()
 {
-    if (socket && socket.connected && currframe % 2 == 0)
+    if (socket && socket.connected && currFrame % 2 == 0)
     {
-    socket.emit("requestUpdate")
+        socket.emit("requestUpdate")
     }
     if (playersList.length > 1)
     {

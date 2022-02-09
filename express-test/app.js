@@ -251,7 +251,7 @@ function sendToClient(conn)
 {
     //for each socket. get matching client. then get client data from
     //matching game instance
-    let clientSockets = []
+    // let clientSockets = []
     let instance = gameInstances.find(x => x.clients.some(x => x.socketID == conn.id))
     if (!instance)
     {
@@ -260,40 +260,34 @@ function sendToClient(conn)
     if (instance)
     {
 
-        instance.clients.filter(x => x.socketID != conn.id).forEach(client =>
+        // instance.clients.filter(x => x.socketID != conn.id).forEach(client =>
+        // {
+        //     clientSockets.push(sockets[sockets.findIndex(x => x.id == client.socketID)])
+        // });
+        let connectedPlayers = instance.clients.filter(x => x.socketID != conn.id)
+        if (connectedPlayers)
         {
-            clientSockets.push(sockets[sockets.findIndex(x => x.id == client.socketID)])
-        });
-
-        if (clientSockets)
-        {
-            let clientData
-            clientSockets.forEach(socket =>
+            let clientData = []
+            let mouseData = []
+            connectedPlayers.forEach(x =>
             {
-                if (socket)
-                {
+
                     
-                clientData = instance.clients.filter(x => x.socketID != socket.id).map((client) =>
-                {
-                    return client.playerData
-
-                })
-                mouseData = instance.clients.filter(x => x.socketID != socket.id).map((client) =>
-                {
-                    return client.mouseData
-
-                })
-            }
-
-
+                clientData.push(x.data)
+                mouseData.push(x.mouseData)
             })
             let room = conn.rooms
-            if (clientData && clientData.length > 0)
+            if (clientData && mouseData && clientData.length > 0 && mouseData.length > 0)
             {
 
                 room = [...room][1]//i dont understand this. something called spread syntax?
-                conn.in(room).emit("playerData", JSON.stringify(clientData))
-                conn.in(room).emit("serverMouseData", mouseData)
+                conn.emit("playerData", JSON.stringify(clientData))
+                conn.emit("serverMouseData", mouseData)
+                console.log("sending data to ", conn.id)
+            }
+            else{
+                console.log("not sending data to ", conn.id)
+
             }
         }
     }
