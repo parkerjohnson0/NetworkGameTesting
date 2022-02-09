@@ -2,45 +2,76 @@ let CANVAS_WIDTH = 1000;
 let CANVAS_HEIGHT = 580;
 // let socket = io("ws://64.53.36.163:60003")
 let socket
-let socketID //save ID so that client player can be retrieved from playerslist after a disconnect. band aid for bad design decision right now
+let socketID = 0 //save ID so that client player can be retrieved from playerslist after a disconnect. band aid for bad design decision right now
+let gameInstanceID = 0
 let canv
 let playerName = "player"
 let playersList = []
+let mouseList = []
 let chatBox
 let up = false, down = false, left = false, right = false
 let gameAreaWidth = 700
 let chatBoxWidth = 300
+let buildTimerLength = 10
+let buildPhaseOn = false
+let score = 0
+let currFrame = 0;
 function setup()
 {
     chatBox = new ChatBox(700,0,chatBoxWidth,580)
     chatBox.input.elt.addEventListener("keydown", inputListener)
     chatBox.button.elt.addEventListener("click", chatListener)
     console.log(document.cookie)
-    checkCookieForLogin()
     frameRate(60)
     canv = createCanvas(CANVAS_WIDTH, CANVAS_HEIGHT);
     canv.parent("game_container")
     createClientPlayer()
     setupSocket();
-
 }
 function draw()
 {
+    score++;
     background(30)
-    updatePlayers()
-    chatBox.show()
-}
 
+    if (buildPhaseOn) 
+    {
+        textStyle(NORMAL)
+        fill(255)
+        // textSize(32) //for some reason this causes spacing issues in chat IDK
+        text(buildTimerLength, gameAreaWidth/2, CANVAS_HEIGHT/2)
+    }
+    updatePlayers()
+    drawMouse()
+    chatBox.show()
+    currFrame += 1 % 60;
+}
+function drawMouse()
+{
+    fill(255)
+    circle(mouseX, mouseY, 20)
+    for (let i = 0; i < mouseList.length; i++)
+    {
+        // console.log(mouseList[i])
+        circle(mouseList[i].mouseX, mouseList[i].mouseY, 20)
+        
+    }
+}
 function checkCookieForLogin()
 {   
     //delete cookie for testing purposes
     document.cookie = document.cookie + ";expires=Thu, 01 Jan 1970 00:00:01 GMT";
     
     let cookie = document.cookie;
-    if (!getPlayerName(cookie))
+    let playerName = getPlayerName(cookie)
+    if (!playerName)
     {
         promptForName() 
-        
+    }
+    else
+    {
+        socket.emit("newPlayerJoined", playerName)
+        socket.emit("requestBuildTimerStart")
+
     }
 }
 function getPlayerName(cookie){
@@ -51,10 +82,10 @@ function getPlayerName(cookie){
         if (nameValue[0].trim() == "name")
         {
             playerName = nameValue[1]
-            return true
+            return playerName
         }
     }
-    return false
+    return ""
 }
 
 function promptForName()
@@ -75,17 +106,20 @@ function nameBoxListener(e)
                 document.cookie = "name=" + name
                 playerName = name
                 this.style.visibility = "hidden"
+                socket.emit("newPlayerJoined", name)
             }
+            socket.emit("requestBuildTimerStart")
             break;
         default:
             break;
     }
 }
-function SendToMongo(uuid,name)
+function sendToMongo(score,name)
 {
-    let url = "http://localhost:3000/api/Players"
+    // let url = "http://localhost:3001/api/Scores"
+    let url = "http://skelegame.com/api/Scores"
     // let url = "game.parkerjohnson-projects.com/api/Players"
-    let data = {userId: uuid, name: name}
+    let data = {score: score, name: name,gameID: gameInstanceID}
     httpPost(url, "json", data,
         function (result)
         {   
@@ -100,12 +134,13 @@ function SendToMongo(uuid,name)
 }
 function userExists(cookie)
 {
-    return cookie.split(":")
-        .any(x => x.startsWith("name:"))
+    return cookie.split(":").any(x => x.startsWith("name:"))
   
 }
 function chatListener(e)
 {
+    // sendToMongo(score, playerName)
+    socket.emit("saveScore", score, playerName)
     sendMessage()
 }
 function inputListener(e)
@@ -122,11 +157,15 @@ function inputListener(e)
 }
 function sendMessage()
 {
-    let text = chatBox.input.elt.value;
-    chatBox.input.elt.value = "" //reset input 
-    let string = `${playerName}: ${text}`
-    chatBox.addChatMessage(string)
-    socket.emit("chatMessage", string)
+    let text = chatBox.input.elt.value.trim();
+    if (text)
+    {
+        chatBox.input.elt.value = "" //reset input 
+        let string = `${playerName}: ${text}`
+        chatBox.addLocalChatMessage(string)
+        socket.emit("chatMessage", string)
+    }
+
 }
 
 function updatePlayers()
@@ -141,15 +180,21 @@ function sendClientState()
     if (socket && socket.connected)
     {
         let client = playersList.find(x => x.id == socketID|| x.id == 0)
-        let clientJSON = JSON.stringify(client)
-        socket.emit("clientData", clientJSON)
+        // let clientJSON = JSON.stringify(client)
+        if (currFrame % 2 == 0){
+        socket.emit("clientData", JSON.stringify(client))
+        socket.emit("clientMouseData",{"mouseX": mouseX, "mouseY": mouseY,"id":socket.id})
         // console.log(clientJSON)
+        }
 
     }
 }
 function updateConnectedPlayers()
 {
-    socket.emit("requestUpdate")
+    if (socket && socket.connected && currFrame % 2 == 0)
+    {
+        socket.emit("requestUpdate")
+    }
     if (playersList.length > 1)
     {
         let connectedPlayers = playersList.filter(x => x.id != socketID)
@@ -227,19 +272,28 @@ function createClientPlayer()
 }
 function setupSocket()
 {
-    // socket = io('localhost:60003')
-    socket = io("wss://www.skelegame.com:60003")
-
+    // socket = io('localhost:3001')
+    socket = io()
+    // socket = io('http://www.skelegame.com')
     socket.on("connect", () =>
     {
         socket.emit("clientConnection")
-        playersList.find(x => x.id == 0).id = socket.id
+        playersList.find(x => x.id == socketID).id = socket.id
         socketID = socket.id
+        checkCookieForLogin()
 
+    })
+    socket.on("gameInstanceID", (id) =>
+    {
+        gameInstanceID = id
     })
     socket.on("newChatMessage", (data) =>
     {
-        chatBox.addChatMessage(data)
+        chatBox.addRemoteChatMessage(data)
+    })
+    socket.on("greetPlayer", (name) =>
+    {
+        chatBox.greetPlayer(name)
     })
     //listen for incoming player data
     socket.on("playerData", (data) =>
@@ -266,11 +320,55 @@ function setupSocket()
         let deletePlayer = playersList.find(x => x.id == playerId)
         let index = playersList.indexOf(deletePlayer)
         playersList.splice(index, 1)
+        let deleteMouse = mouseList.find(x => x.id == playerId)
+        index = mouseList.indexOf(deleteMouse)
+        mouseList.splice(index,1)
         console.log("player with id :" + playerId + " has been removed.")
 
     })
-}
+    let intervalID
+    socket.on("buildTimerStart", () =>
+    {
+        buildPhaseOn = true
+        intervalID = setInterval(tickTimer, 1000)
 
+    })
+    socket.on("buildTimerEnd",()=>
+    {
+        chatBox.buildTimerEnd()
+        console.log("build timer end")
+    })
+    socket.on("serverMouseData", (data) =>
+    {
+        let mouseData = data
+
+        for (let i = 0; i < mouseData.length; i++)
+        {
+            let updateMouse = mouseList.find(x => x.id == mouseData[i].id)
+            let index = mouseList.indexOf(updateMouse)
+            if (index > -1)
+            {
+                mouseList[index] = mouseData[i]
+            }
+            else
+            {
+                mouseList.push(mouseData[i])
+            }
+        }
+    })
+    function tickTimer()
+    {
+        console.log(buildTimerLength)
+        buildTimerLength--
+        if (buildTimerLength == 0)
+        {
+            clearInterval(intervalID)
+            buildTimerLength = 30
+            buildPhaseOn = false
+            socket.emit("requestBuildTimerEnd")
+        }
+    }
+}
 class Player
 {
     constructor(x, y)
@@ -278,6 +376,7 @@ class Player
         this.x = x
         this.y = y
         this.id = 0
+        this.name
     }
 }
 class ChatMessage
