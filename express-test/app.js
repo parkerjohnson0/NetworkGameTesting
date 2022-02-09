@@ -270,7 +270,9 @@ function sendToClient(conn)
             let clientData
             clientSockets.forEach(socket =>
             {
-
+                if (socket)
+                {
+                    
                 clientData = instance.clients.filter(x => x.socketID != socket.id).map((client) =>
                 {
                     return client.playerData
@@ -281,6 +283,7 @@ function sendToClient(conn)
                     return client.mouseData
 
                 })
+            }
 
 
             })
