@@ -157,7 +157,7 @@ function inputListener(e)
 }
 function sendMessage()
 {
-    let text = chatBox.input.elt.value;
+    let text = chatBox.input.elt.value.trim();
     if (text)
     {
         chatBox.input.elt.value = "" //reset input 
