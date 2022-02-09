@@ -112,9 +112,9 @@ io.on("connection", (conn) =>
             let disconnectSock = sockets.find(x => x == client)
             sockets = sockets.filter(x => x != disconnectSock)
             removeClient(instance, disconnectSock)
+            console.log("client disconnected:", disconnectSock.id)
             removeInstanceIfEmpty(instance)
             client.to(room).emit("playerDisconnected", client.id)
-            console.log("client disconnected:", disconnectSock.id)
         })
         client.on("requestUpdate", () =>
         {
@@ -170,7 +170,7 @@ function removeInstanceIfEmpty(instance)
 {
     if (instance.clients.length == 0)
     {
-        console.log("removing instance")
+        console.log("removing instance",instance.uuid)
         gameInstances = gameInstances.filter((x) => x != instance)
     }
 }
@@ -211,7 +211,7 @@ function getRoom(client)
 }
 function removeClient(instance,disconnectSock)
 {
-    instance.clients.filter(x => x.socketID != disconnectSock.id)
+    instance.clients = instance.clients.filter(x => x.socketID != disconnectSock.id)
 }
 function enqueue(conn)
 {
