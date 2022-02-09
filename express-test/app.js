@@ -72,6 +72,7 @@ io.on("connection", (conn) =>
 {
     //add some cache mechanism maybe? dont know if would be that useful. 
     let client = conn
+    enqueue(client) //place client in game instance
     let room = getRoom(client)
     let instance = gameInstances.find(x => x.clients.some(y => y.socketID == conn.id))
     client.join(room)
@@ -110,12 +111,17 @@ io.on("connection", (conn) =>
         {
             let disconnectSock = sockets.find(x => x == client)
             sockets = sockets.filter(x => x != disconnectSock)
-            RemoveClient(disconnectSock)
+            removeClient(instance, disconnectSock)
+            removeInstanceIfEmpty(instance)
             client.to(room).emit("playerDisconnected", client.id)
             console.log("client disconnected:", disconnectSock.id)
         })
         client.on("requestUpdate", () =>
         {
+            // console.log(gameInstances.map((x) =>
+            // {
+            //     return x.uuid
+            // }))
             if (updateClients)
             {
                 sendToClients(client)
@@ -160,6 +166,14 @@ io.on("connection", (conn) =>
     })
 
 })
+function removeInstanceIfEmpty(instance)
+{
+    if (instance.clients.length == 0)
+    {
+        console.log("removing instance")
+        gameInstances = gameInstances.filter((x) => x != instance)
+    }
+}
 function sendToMongo(score,name,uuid)
 {
     // let url = "http://localhost:3000/api/Players"
@@ -189,20 +203,15 @@ function buildTimerCanStart(instance)
 }
 function getRoom(client)
 {
-    enqueue(client) //place client in game instance
     
     sockets.push(client)
     console.log("new client connected: ", client.id)
     let roomNumber = gameInstances.findIndex(x => x.clients.some(y => y.socketID == client.id))
     return "room" + roomNumber
 }
-function RemoveClient(disconnectSock)
+function removeClient(instance,disconnectSock)
 {
-    gameInstances.forEach((x) =>
-    {
-        x.clients = x.clients.filter(x => x.socketID != disconnectSock.id)
-
-    })
+    instance.clients.filter(x => x.socketID != disconnectSock.id)
 }
 function enqueue(conn)
 {
@@ -221,7 +230,7 @@ function AddClientToGame(conn)
         gameInstances.push(new GameInstance())
     }
     let clientAdded = false
-    gameInstances.every(element =>
+    gameInstances.forEach(element =>
     {
         if (element.clients.length < 2)
         {

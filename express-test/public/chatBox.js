@@ -24,15 +24,15 @@ class ChatBox
     }
     addLocalChatMessage(message)
     {
-        this.messages.push(new Message("localClient",message,14))
+        this.messages.push(new Message("localClient",message,16))
     }
     addRemoteChatMessage(message)
     {
-        this.messages.push(new Message("remoteClient",message,14))
+        this.messages.push(new Message("remoteClient",message,16))
     }
     greetPlayer(name)
     {
-        this.messages.push(new Message("info", name + " has joined the game!",16))
+        this.messages.push(new Message("info", name + " has joined the game!",18))
     }
     buildTimerEnd()
     {
@@ -57,13 +57,13 @@ class ChatBox
                 textLeading(element.fontSize) //makes space between lines consistent for multiline comments
                 if(element.type ==="localClient")
                 {
-                    this.formatChatMessage(element, "#FF0000","#FFFFFF",startPos,maxWidth)
+                    this.formatChatMessage(element, "#ff2020","#FFFFFF",startPos,maxWidth)
 
 
                 }
                 else if(element.type ==="remoteClient")
                 {
-                    this.formatChatMessage(element, "#0000FF","#FFFFFF",startPos,maxWidth)
+                    this.formatChatMessage(element, "#2020ff","#FFFFFF",startPos,maxWidth)
                 }
                 else if(element.type ==="admin")
                 {
@@ -116,8 +116,17 @@ class ChatBox
         fill(messageColor)
         strokeWeight(0)
         textStyle(BOLD)
-
-        text(message, this.x + this.padding + textWidth(name), startPos - element.fontSize, maxWidth)
+        message = this.padMessage(name) + message
+        text(message, this.x + this.padding, startPos - element.fontSize, maxWidth)
+    }
+    padMessage(name)
+    {
+        let padString = ""
+        while (textWidth(padString) < textWidth(name))
+        {
+            padString += " "
+        }
+        return padString
     }
 
 }
