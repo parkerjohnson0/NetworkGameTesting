@@ -273,7 +273,7 @@ function sendToClient(conn)
             {
 
                     
-                clientData.push(x.data)
+                clientData.push(x.playerData)
                 mouseData.push(x.mouseData)
             })
             let room = conn.rooms
@@ -283,11 +283,7 @@ function sendToClient(conn)
                 room = [...room][1]//i dont understand this. something called spread syntax?
                 conn.emit("playerData", JSON.stringify(clientData))
                 conn.emit("serverMouseData", mouseData)
-                console.log("sending data to ", conn.id)
-            }
-            else{
-                console.log("not sending data to ", conn.id)
-
+                // console.log("sending data to ", conn.id, clientData, mouseData)
             }
         }
     }
