@@ -191,7 +191,7 @@ function sendClientState()
 }
 function updateConnectedPlayers()
 {
-    if (socket && socket.connected)
+    if (socket && socket.connected && currframe % 2 == 0)
     {
     socket.emit("requestUpdate")
     }
