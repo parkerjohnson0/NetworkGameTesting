@@ -12,10 +12,8 @@ let MongoDB = require('./database/MongoDB.js')
 let express = require('express')
 //how different would it be without body-parser
 let bodyParser = require('body-parser')
-let players = require('./routes/players.js')
-let scores = require('./routes/scores.js')
+let leaderboard = require('./routes/leaderboard.js')
 
-let home = require('./routes/home.js')
 let app = express()
 app.cors = cors
 app.db = new MongoDB(process.env.CONNECTION_STRING, process.env.DB)
@@ -28,8 +26,8 @@ app.use(cors({
 //MAY NEED OTHER BODYPARSER TYPES AT SOME POINT
 app.use(bodyParser.json())
 app.use(express.static('./public')) //this servers the homepage
-app.use('/api/Players', players)
-app.use('/api/Scores', scores)
+app.use('leaderboard', leaderboard)
+
 
 // app.use('/', home)
 
@@ -48,6 +46,7 @@ let server = app.listen(port, () =>
 {
     console.log(`listening on port ${port}`)
 })
+app.get('/leaderboard',leaderboard)
 let io = require('socket.io')(server)
 // // import { Server } from 'socket.io'
 // let Server = require('socket.io')
@@ -67,7 +66,7 @@ let gameInstances = []
 let playerNames = []
 let sockets = []
 let updateClients = false
-
+const INTERVAL = 1000 / 30
 //probably need to discard buffer on reconnection. research socket.io volatile
 io.on("connection", (conn) =>
 {
@@ -78,6 +77,7 @@ io.on("connection", (conn) =>
     let instance = gameInstances.find(x => x.clients.some(y => y.socketID == conn.id))
     let client = instance.clients.find(x => x.socketID == conn.id)
     //this 
+    let updateTimer = setInterval(sendToClient,INTERVAL,conn)
     conn.on("clientConnection", () =>
     {
         conn.emit("gameInstanceID",instance.uuid)
@@ -103,30 +103,30 @@ io.on("connection", (conn) =>
         })
         conn.on("newPlayerJoined", (name) =>
         {
-            let client = instance.clients.filter(x => x.socketID == conn.id)
             client.username = name
             console.log(`new player '${name}' joined`)
             io.in(room).emit("greetPlayer", name)
         })
         conn.on("disconnect", () =>
-        {
+        {   
+            clearInterval(updateTimer)
             removeClient(instance, client)
             removeInstanceIfEmpty(instance)
             console.log("client disconnected:", client.socketID)
             conn.to(room).emit("playerDisconnected", conn.id)
         })
-        conn.on("requestUpdate", () =>
-        {
-            // console.log(gameInstances.map((x) =>
-            // {
-            //     return x.uuid
-            // }))
-            // if (updateClients)
-            // {
-                sendToClient(conn)
-                // updateClients = false
-            // }
-        })
+        // conn.on("requestUpdate", () =>
+        // {
+        //     // console.log(gameInstances.map((x) =>
+        //     // {
+        //     //     return x.uuid
+        //     // }))
+        //     // if (updateClients)
+        //     // {
+        //         sendToClient(conn)
+        //         // updateClients = false
+        //     // }
+        // })
         conn.on("requestBuildTimerStart", () =>
         {
             // console.log("build timer requested by client", client.id, "in room", room) 
@@ -154,11 +154,21 @@ io.on("connection", (conn) =>
         })
         conn.on("towerData", () =>
         {
+            if (instance.gameState !== GameStates.BuildPhase)
+            {
+                return
+            }
             
         })
-        conn.on("gameOver", (score,playerName) =>
+        conn.on("gameOver", (score) =>
         {
-            sendToMongo(score,playerName, instance.uuid)
+            if (instance.gameState.name !== GameStates.GameOver.name)
+            {
+                let names = instance.clients.map(x => { return x.username })
+                instance.gameState = GameStates.GameOver
+                sendToMongo(score,names, instance.uuid)
+                
+            }
         })
     })
 
@@ -171,15 +181,15 @@ function removeInstanceIfEmpty(instance)
         gameInstances = gameInstances.filter((x) => x != instance)
     }
 }
-function sendToMongo(score,name,uuid)
+function sendToMongo(score,names,uuid)
 {
     // let url = "http://localhost:3000/api/Players"
     // let url = "http://skelegame.com/api/Players"
     // let url = "http://localhost:3001/api/Players"
     
     // let url = "game.parkerjohnson-projects.com/api/Players"
-    let data = { score: score, name: name,uuid}
-    console.log(app.db.InsertDocument(data, "Scores"))
+    let data = {score, names,uuid}
+    console.log(app.db.InsertDocument(data, "Leaderboard"))
     // httpPost(url, "json", data,
     //     function (result)
     //     {   
@@ -249,6 +259,7 @@ function sendToClient(conn)
     //for each socket. get matching client. then get client data from
     //matching game instance
     // let clientSockets = []
+    if (!conn) return
     let instance = gameInstances.find(x => x.clients.some(x => x.socketID == conn.id))
     if (!instance)
     {

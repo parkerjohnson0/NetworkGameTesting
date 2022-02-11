@@ -8,7 +8,7 @@ let router = express.Router()
 router.get('/',  async (req, res) =>
 {
     let uuid = (req.query.uuid)
-    let success = await req.app.db.FindOne(uuid,"Scores")
+    let success = await req.app.db.FindOne(uuid,"Leaderboard")
     if (success)
     {
         res.json(JSON.stringify(success))
@@ -24,7 +24,7 @@ router.post('/', (req, res) =>
 
     let score = req.body
     console.log(score)
-    let success = req.app.db.InsertDocument(score, "Scores")
+    let success = req.app.db.InsertDocument(score, "Leaderboard")
     if (success)
     {
         res.status(200).end()

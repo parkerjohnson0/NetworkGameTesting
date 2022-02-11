@@ -32,7 +32,7 @@ class MongoDB
     }
     async FindOne(obj, collection)
     {
-        let query = { userId: obj }
+        let query = { uuid: obj }
         let response = await this.databaseDriver.collection(collection).findOne(query)
         return response
     }

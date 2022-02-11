@@ -17,6 +17,7 @@ class ChatBox
         this.width = width;
         this.height = height;
         this.input = createInput("", "text")
+        this.input.elt["maxLength"] = 70
         this.input.position(-200 + this.padding, 275 - this.padding, "relative")
         this.input.size(200, 15)
         this.button = createButton("Chat")
