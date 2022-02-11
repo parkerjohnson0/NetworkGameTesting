@@ -26,7 +26,7 @@ function setup()
     canv = createCanvas(CANVAS_WIDTH, CANVAS_HEIGHT);
     canv.parent("game_container")
     createClientPlayer()
-    setupSocket();
+    setupSocket(); //instantiate socket & register events to receive from server
 }
 function draw()
 {
@@ -48,12 +48,14 @@ function draw()
 function drawMouse()
 {
     fill(255)
-    circle(mouseX, mouseY, 20)
+    circle(mouseX, mouseY, 20) //client mouse
     for (let i = 0; i < mouseList.length; i++)
     {
-        // console.log(mouseList[i])
-        circle(mouseList[i].mouseX, mouseList[i].mouseY, 20)
-        
+        mouseList[i].currX = (mouseList[i].newX + mouseList[i].oldY) /2
+        mouseList[i].currY = (mouseList[i].newY + mouseList[i].newY) /2
+        mouseList[i].oldX = mouseList[i].newX
+        mouseList[i].oldY = mouseList[i].newY
+
     }
 }
 function checkCookieForLogin()
@@ -176,14 +178,13 @@ function updatePlayers()
 }
 function sendClientState()
 {
-
     if (socket && socket.connected)
     {
         let client = playersList.find(x => x.id == socketID|| x.id == 0)
         // let clientJSON = JSON.stringify(client)
         if (currFrame % 2 == 0)
         {
-        console.log(JSON.stringify(client))
+        // console.log(JSON.stringify(client))
         socket.emit("clientData", JSON.stringify(client))
         socket.emit("clientMouseData",{"mouseX": mouseX, "mouseY": mouseY,"id":socket.id})
         // console.log(clientJSON)
@@ -346,15 +347,20 @@ function setupSocket()
 
         for (let i = 0; i < mouseData.length; i++)
         {
-            let updateMouse = mouseList.find(x => x.id == mouseData[i].id)
+            let updateMouse = mouseList.find(x => x.socketID == mouseData[i].id)
             let index = mouseList.indexOf(updateMouse)
             if (index > -1)
             {
-                mouseList[index] = mouseData[i]
+                mouseList[index].newX = mouseData[i].mouseX
+                mouseList[index].newY = mouseData[i].mouseY
+
             }
             else
             {
-                mouseList.push(mouseData[i])
+                remoteMouse = new Mouse()
+                remoteMouse.newX = mouseData[i].mouseX
+                remoteMouse.newY = mouseData[i].mouseY
+                mouseList.push(remoteMouse)
             }
         }
     })
