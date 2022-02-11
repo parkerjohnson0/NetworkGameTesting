@@ -67,56 +67,55 @@ let gameInstances = []
 let playerNames = []
 let sockets = []
 let updateClients = false
+
 //probably need to discard buffer on reconnection. research socket.io volatile
 io.on("connection", (conn) =>
 {
     //add some cache mechanism maybe? dont know if would be that useful. 
-    let client = conn
-    enqueue(client) //place client in game instance
-    let room = getRoom(client)
+    enqueue(conn) //place client in game instance
+    let room = getRoom(conn)
+    conn.join(room)
     let instance = gameInstances.find(x => x.clients.some(y => y.socketID == conn.id))
-    client.join(room)
+    let client = instance.clients.find(x => x.socketID == conn.id)
     //this 
     conn.on("clientConnection", () =>
     {
-        client.emit("gameInstanceID",instance.uuid)
+        conn.emit("gameInstanceID",instance.uuid)
         // enqueue(client)
         // sockets.push(client)
         // console.log("new client connected: ", client.id)
         // let room = conn.rooms
         // room = [...room][1]//i dont understand this. something called spread syntax?
 
-        client.on("clientData", (clientJSON) =>
+        conn.on("clientData", (clientJSON) =>
         {
 
             // updateClients = true
             updateClientData(JSON.parse(clientJSON))
 
         })
-        client.on("chatMessage", (message) =>
+        conn.on("chatMessage", (message) =>
         {
             instance.chatMessages.push(message)
             let room = conn.rooms
             room = [...room][1]
-            client.to(room).emit("newChatMessage", message);
+            conn.to(room).emit("newChatMessage", message);
         })
-        client.on("newPlayerJoined", (name) =>
+        conn.on("newPlayerJoined", (name) =>
         {
             let client = instance.clients.filter(x => x.socketID == conn.id)
             client.username = name
             console.log(`new player '${name}' joined`)
             io.in(room).emit("greetPlayer", name)
         })
-        client.on("disconnect", () =>
+        conn.on("disconnect", () =>
         {
-            let disconnectSock = sockets.find(x => x == client)
-            sockets = sockets.filter(x => x != disconnectSock)
-            removeClient(instance, disconnectSock)
-            console.log("client disconnected:", disconnectSock.id)
+            removeClient(instance, client)
             removeInstanceIfEmpty(instance)
-            client.to(room).emit("playerDisconnected", client.id)
+            console.log("client disconnected:", client.socketID)
+            conn.to(room).emit("playerDisconnected", conn.id)
         })
-        client.on("requestUpdate", () =>
+        conn.on("requestUpdate", () =>
         {
             // console.log(gameInstances.map((x) =>
             // {
@@ -124,42 +123,40 @@ io.on("connection", (conn) =>
             // }))
             // if (updateClients)
             // {
-                sendToClient(client)
+                sendToClient(conn)
                 // updateClients = false
             // }
         })
-        client.on("requestBuildTimerStart", () =>
+        conn.on("requestBuildTimerStart", () =>
         {
             // console.log("build timer requested by client", client.id, "in room", room) 
-            let client = instance.clients.find(x => x.socketID == conn.id)
             client.buildTimerRequested = true
             if (buildTimerCanStart(instance))
             {
                 io.in(room).emit("buildTimerStart")
+                instance.gameState = GameStates.BuildPhase
                 console.log("build timer start")
             }
         })
-        client.on("requestBuildTimerEnd", () =>
+        conn.on("requestBuildTimerEnd", () =>
         {
-            let client = instance.clients.find(x => x.socketID == conn.id)
             client.buildTimerRequested = false
             if (!instance.clients.some(x => x.buildTimerRequested == true))
             {
                 io.in(room).emit("buildTimerEnd")
+                instance.gameState = GameStates.AttackPhase
                 console.log("build timer End")
             }
         })
-        client.on("clientMouseData", (message) =>
+        conn.on("clientMouseData", (message) =>
         {
-            let client = instance.clients.find(x => x.socketID == conn.id)
             client.mouseData = message
-
         })
-        client.on("towerData", () =>
+        conn.on("towerData", () =>
         {
             
         })
-        client.on("saveScore", (score,playerName) =>
+        conn.on("gameOver", (score,playerName) =>
         {
             sendToMongo(score,playerName, instance.uuid)
         })
@@ -209,9 +206,9 @@ function getRoom(client)
     let roomNumber = gameInstances.findIndex(x => x.clients.some(y => y.socketID == client.id))
     return "room" + roomNumber
 }
-function removeClient(instance,disconnectSock)
+function removeClient(instance,client)
 {
-    instance.clients = instance.clients.filter(x => x.socketID != disconnectSock.id)
+    instance.clients = instance.clients.filter(x => x.socketID != client.socketID)
 }
 function enqueue(conn)
 {
@@ -309,6 +306,8 @@ class GameInstance
         this.clients = []
         this.uuid = crypto.randomUUID()
         this.chatMessages = []
+        this.gameState = GameStates.PreGame
+
     }
     addClient(id,username)
     {
@@ -319,6 +318,18 @@ class GameInstance
         let target = this.clients.filter(x => x.id === client.id)
         target = client
     }
+}
+class GameStates
+{
+    static PreGame = new GameStates("PreGame")
+    static BuildPhase = new GameStates("BuildPhase")
+    static AttackPhase = new GameStates("AttackPhase")
+    static GameOver = new GameStates("GameOver")
+    constructor(name)
+    {
+        this.name = name
+    }   
+
 }
 class Client
 {
