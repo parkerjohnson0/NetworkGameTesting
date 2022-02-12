@@ -51,8 +51,15 @@ function drawMouse()
     circle(mouseX, mouseY, 20) //client mouse
     for (let i = 0; i < mouseList.length; i++)
     {
-        mouseList[i].currX = (mouseList[i].newX + mouseList[i].oldY) /2
-        mouseList[i].currY = (mouseList[i].newY + mouseList[i].newY) /2
+        // circle(mouseList[i].newX, mouseList[i].newY, 20) //no interpolate
+
+
+        //interpolate
+        mouseList[i].currX = (mouseList[i].newX + mouseList[i].oldX) / 2
+        mouseList[i].currY = (mouseList[i].newY + mouseList[i].oldY) / 2
+        circle(mouseList[i].currX, mouseList[i].currY, 20)
+        console.log(mouseList[i].currX, mouseList[i].currY)
+        
         mouseList[i].oldX = mouseList[i].newX
         mouseList[i].oldY = mouseList[i].newY
 
@@ -358,6 +365,7 @@ function setupSocket()
             else
             {
                 remoteMouse = new Mouse()
+                remoteMouse.socketID = mouseData[i].id
                 remoteMouse.newX = mouseData[i].mouseX
                 remoteMouse.newY = mouseData[i].mouseY
                 mouseList.push(remoteMouse)
