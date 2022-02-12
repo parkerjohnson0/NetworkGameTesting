@@ -303,6 +303,7 @@ function setupSocket()
     {
         let playerData = JSON.parse(data)
 
+        //change this or disconnecting will be a pain
         for (let i = 0; i < playerData.length; i++)
         {
             let updatePlayer = playersList.find(x => x.id == playerData[i].id)
@@ -311,7 +312,7 @@ function setupSocket()
             {
                 playersList[index] = playerData[i]
             }
-            else 
+            else
             {
                 playersList.push(playerData[i])
             }
