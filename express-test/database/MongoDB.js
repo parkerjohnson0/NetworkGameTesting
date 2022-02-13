@@ -36,5 +36,16 @@ class MongoDB
         let response = await this.databaseDriver.collection(collection).findOne(query)
         return response
     }
+    async FindAll(collection)
+    {
+        let response = []
+        let cursor = this.databaseDriver.collection(collection).find().sort({ score: -1 })
+        await cursor.forEach((x) =>
+        {
+            response.push(x)
+        })
+
+        return response
+    }
 }
 module.exports = MongoDB

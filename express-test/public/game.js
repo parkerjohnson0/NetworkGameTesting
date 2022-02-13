@@ -20,7 +20,7 @@ function setup()
 {
     chatBox = new ChatBox(700,0,chatBoxWidth,580)
     chatBox.input.elt.addEventListener("keydown", inputListener)
-    chatBox.button.elt.addEventListener("click", chatListener)
+    // chatBox.button.elt.addEventListener("click", chatListener)
     console.log(document.cookie)
     frameRate(60)
     canv = createCanvas(CANVAS_WIDTH, CANVAS_HEIGHT);
@@ -58,7 +58,7 @@ function drawMouse()
         mouseList[i].currX = (mouseList[i].newX + mouseList[i].oldX) / 2
         mouseList[i].currY = (mouseList[i].newY + mouseList[i].oldY) / 2
         circle(mouseList[i].currX, mouseList[i].currY, 20)
-        console.log(mouseList[i].currX, mouseList[i].currY)
+        // console.log(mouseList[i].currX, mouseList[i].currY)
         
         mouseList[i].oldX = mouseList[i].newX
         mouseList[i].oldY = mouseList[i].newY

@@ -6,27 +6,48 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="index.css">
     <title>Gam</title>
+    
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    
+    
     <script src="https://cdn.socket.io/4.4.1/socket.io.min.js" integrity="sha384-fKnu0iswBIqkjxrhQCTZ7qlLHOFEgNkRmK2vaO/LbTZSXdJfAu6ewRBdwHPhBo/H" crossorigin="anonymous"></script>
-
+    <script src="https://cdn.jsdelivr.net/npm/p5@1.4.0/lib/p5.js"></script>
+    <script src="game.js"></script>
+    <script src="chatBox.js"></script>
+    <script src="mouse.js"></script>
 </head>
-<body class="root">
-    <div id="game_container">
-        <div id="name_box_container">
-            <div id="name_box">
-                <div id="name_label">
-                    Enter name:
+    <body>
+        <header class="navbar navbar-expand navbar-light flex-column flex-md-row bd-navbar bg-light">
+            <div class="navbar-nav-scroll">
+                <ul class="navbar-nav bd-navbar-nav flex-row">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">Game</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="leaderboard">Leaderboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="about">About</a>
+                    </li>
+                </ul>
+            </div>
+        </header>
+        <div class="root">
+            <div id="game_container">
+                <div id="name_box_container">
+                    <div id="name_box">
+                        <div id="name_label">
+                            Enter name:
+                        </div>
+                        <div >
+                            <input id="name_text" type="text" maxlength="12"/>
+                        </div>
+                    </div>
                 </div>
-                <div >
-                    <input id="name_text" type="text" maxlength="12"/>
-                </div>
+
+
+
             </div>
         </div>
-
-        <script src="https://cdn.jsdelivr.net/npm/p5@1.4.0/lib/p5.js"></script>
-        <script src="game.js"></script>
-        <script src="chatBox.js"></script>
-        <script src="mouse.js"></script>
-
-    </div>
-</body>
+    </body>
 </html>

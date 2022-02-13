@@ -18,10 +18,11 @@ class ChatBox
         this.height = height;
         this.input = createInput("", "text")
         this.input.elt["maxLength"] = 70
-        this.input.position(-200 + this.padding, 275 - this.padding, "relative")
-        this.input.size(200, 15)
-        this.button = createButton("Chat")
-        this.button.position(-200 + this.padding, 275 - this.padding, "relative")
+        this.input.position(x + this.padding, this.height - this.padding, "relative")
+        this.input.parent("#game_container")
+        this.input.size(width - this.padding * 2, 24)
+        // this.button = createButton("Chat")
+        // this.button.position(900 + this.padding, 275 - this.padding, "relative")
     }
     addLocalChatMessage(message)
     {
@@ -33,7 +34,7 @@ class ChatBox
     }
     greetPlayer(name)
     {
-        this.messages.push(new Message("info", name + " has joined the game!",18))
+        this.messages.push(new Message("info", name + " has joined the game!",16))
     }
     buildTimerEnd()
     {
@@ -124,6 +125,7 @@ class ChatBox
         {
             padString += " "
         }
+        padString += " "
         return padString
     }
 
