@@ -12,7 +12,11 @@ let MongoDB = require('./database/MongoDB.js')
 let express = require('express')
 //how different would it be without body-parser
 let bodyParser = require('body-parser')
-let leaderboard = require('./routes/leaderboard.js')
+let leaderboardRoute = require('./routes/leaderboardRoute.js')
+let aboutRoute = require('./routes/aboutRoute.js')
+
+// let home = require('./routes/home.js')
+
 
 let app = express()
 app.cors = cors
@@ -25,9 +29,11 @@ app.use(cors({
 }))
 //MAY NEED OTHER BODYPARSER TYPES AT SOME POINT
 app.use(bodyParser.json())
-app.use(express.static('./public')) //this servers the homepage
-app.use('leaderboard', leaderboard)
 
+app.use('/leaderboard', leaderboardRoute)
+app.use('/about', aboutRoute)
+app.set('view engine', 'ejs')
+app.use(express.static('./public')) //this serves the homepage
 
 // app.use('/', home)
 
@@ -46,7 +52,11 @@ let server = app.listen(port, () =>
 {
     console.log(`listening on port ${port}`)
 })
-app.get('/leaderboard',leaderboard)
+
+app.get('/leaderboard', leaderboardRoute)
+app.get('/about', aboutRoute)
+
+
 let io = require('socket.io')(server)
 // // import { Server } from 'socket.io'
 // let Server = require('socket.io')
