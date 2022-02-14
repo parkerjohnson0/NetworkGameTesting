@@ -158,6 +158,7 @@ function inputListener(e)
     {
         case "Enter":
             sendMessage()
+            socket.emit("gameOver", score)
             break;
         default:
             chatBox.input.html(e,true)
@@ -181,7 +182,10 @@ function updatePlayers()
 {
     updateClient()
     updateConnectedPlayers()
-    sendClientState()
+    if (currFrame % 2 == 0)
+    {
+        sendClientState()
+    }
 }
 function sendClientState()
 {
@@ -189,13 +193,11 @@ function sendClientState()
     {
         let client = playersList.find(x => x.id == socketID|| x.id == 0)
         // let clientJSON = JSON.stringify(client)
-        if (currFrame % 2 == 0)
-        {
+
         // console.log(JSON.stringify(client))
         socket.emit("clientData", JSON.stringify(client))
         socket.emit("clientMouseData",{"mouseX": mouseX, "mouseY": mouseY,"id":socket.id})
         // console.log(clientJSON)
-        }
 
     }
 }
