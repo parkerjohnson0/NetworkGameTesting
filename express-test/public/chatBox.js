@@ -18,11 +18,8 @@ class ChatBox
         this.height = height;
         this.input = createInput("", "text")
         this.input.elt["maxLength"] = 70
-        this.input.position(x + this.padding, this.height - this.padding, "relative")
-        this.input.parent("#game_container")
-        this.input.size(width - this.padding * 2, 24)
-        // this.button = createButton("Chat")
-        // this.button.position(900 + this.padding, 275 - this.padding, "relative")
+        this.input.position(this.x+2.5, playHeight - 25, "absolute")
+        this.input.size(285, 15)
     }
     addLocalChatMessage(message)
     {
@@ -34,12 +31,17 @@ class ChatBox
     }
     greetPlayer(name)
     {
-        this.messages.push(new Message("info", name + " has joined the game!",16))
+        this.messages.push(new Message("info", name + " has joined the game!",18))
     }
     buildTimerEnd()
     {
         this.messages.push(new Message("admin","STARTING ATTACK PHASE",16))
     }
+
+    blockedPath(){
+        this.messages.push(new Message("admin","Can not block path to base!",16))
+    }
+
     show()
     {
         fill(140, 140, 140, 255)
@@ -69,21 +71,26 @@ class ChatBox
                 }
                 else if(element.type ==="admin")
                 {
+                    push();
                     textSize(element.fontSize)
 
                     textStyle(BOLD)
                     textWrap(CHAR)
                     fill(255, 0, 0)
                     text(element.message, this.x + this.padding, startPos - element.fontSize, maxWidth)
+                    pop();
                     
                 }
                 else if(element.type ==="info")
                 {
+                    push();
                     textSize(element.fontSize)
                     textStyle(ITALIC)
                     textWrap(CHAR)
                     fill(255)
                     text(element.message, this.x + this.padding, startPos - element.fontSize, maxWidth)
+                    pop();
+
 
                 }
                 
@@ -107,6 +114,7 @@ class ChatBox
         //message format "username: content"
         let name = element.message.split(":")[0]
         let message = ": " + element.message.split(":")[1].trim()
+        push();
         textSize(element.fontSize)
         textStyle(BOLD)
         textWrap(CHAR)
@@ -117,6 +125,7 @@ class ChatBox
         textStyle(NORMAL)
         message = this.padMessage(name) + message
         text(message, this.x + this.padding, startPos - element.fontSize, maxWidth)
+        pop();
     }
     padMessage(name)
     {

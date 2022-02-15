@@ -20,13 +20,13 @@ function setup()
 {
     chatBox = new ChatBox(700,0,chatBoxWidth,580)
     chatBox.input.elt.addEventListener("keydown", inputListener)
-    // chatBox.button.elt.addEventListener("click", chatListener)
+    chatBox.button.elt.addEventListener("click", chatListener)
     console.log(document.cookie)
     frameRate(60)
     canv = createCanvas(CANVAS_WIDTH, CANVAS_HEIGHT);
     canv.parent("game_container")
     createClientPlayer()
-    setupSocket(); //instantiate socket & register events to receive from server
+    setupSocket(); //this is the main thing you will copy from
 }
 function draw()
 {
@@ -40,29 +40,21 @@ function draw()
         // textSize(32) //for some reason this causes spacing issues in chat IDK
         text(buildTimerLength, gameAreaWidth/2, CANVAS_HEIGHT/2)
     }
-    updatePlayers()
-    drawMouse()
+    
+    updatePlayers() //this updates the client, then the connected player
+    drawMouse() //draws client mouse, then the connected player
     chatBox.show()
     currFrame += 1 % 60;
 }
 function drawMouse()
 {
     fill(255)
-    circle(mouseX, mouseY, 20) //client mouse
+    circle(mouseX, mouseY, 20)
     for (let i = 0; i < mouseList.length; i++)
     {
-        // circle(mouseList[i].newX, mouseList[i].newY, 20) //no interpolate
-
-
-        //interpolate
-        mouseList[i].currX = (mouseList[i].newX + mouseList[i].oldX) / 2
-        mouseList[i].currY = (mouseList[i].newY + mouseList[i].oldY) / 2
-        circle(mouseList[i].currX, mouseList[i].currY, 20)
-        // console.log(mouseList[i].currX, mouseList[i].currY)
+        // console.log(mouseList[i])
+        circle(mouseList[i].mouseX, mouseList[i].mouseY, 20)
         
-        mouseList[i].oldX = mouseList[i].newX
-        mouseList[i].oldY = mouseList[i].newY
-
     }
 }
 function checkCookieForLogin()
@@ -83,200 +75,8 @@ function checkCookieForLogin()
 
     }
 }
-function getPlayerName(cookie){
-    let cookies = cookie.split(";")
-    for (let i = 0; i < cookies.length; i++)
-    {
-        let nameValue = cookies[i].split("=")
-        if (nameValue[0].trim() == "name")
-        {
-            playerName = nameValue[1]
-            return playerName
-        }
-    }
-    return ""
-}
 
-function promptForName()
-{
-    let nameBox= select("#name_box_container")
-    nameBox.elt.style.visibility = "visible"
-    nameBox.elt.addEventListener("keydown",nameBoxListener)
-}
-function nameBoxListener(e)
-{
-    switch (e.key)
-    {
-        case "Enter":
-            let name = select("#name_text").elt.value.trim();
-            // let nums = new Uint32Array(1)
-            if (name && name != "")
-            {
-                document.cookie = "name=" + name
-                playerName = name
-                this.style.visibility = "hidden"
-                socket.emit("newPlayerJoined", name)
-            }
-            socket.emit("requestBuildTimerStart")
-            break;
-        default:
-            break;
-    }
-}
-function sendToMongo(score,name)
-{
-    // let url = "http://localhost:3001/api/Scores"
-    let url = "http://skelegame.com/api/Scores"
-    // let url = "game.parkerjohnson-projects.com/api/Players"
-    let data = {score: score, name: name,gameID: gameInstanceID}
-    httpPost(url, "json", data,
-        function (result)
-        {   
-            console.log(result)
-        }),
-        function (error)
-        {
-            console.log(error)
-        }
-        
 
-}
-function userExists(cookie)
-{
-    return cookie.split(":").any(x => x.startsWith("name:"))
-  
-}
-function chatListener(e)
-{
-    // sendToMongo(score, playerName)
-    socket.emit("gameOver", score)
-    sendMessage()
-}
-function inputListener(e)
-{
-    switch (e.key)
-    {
-        case "Enter":
-            sendMessage()
-            socket.emit("gameOver", score)
-            break;
-        default:
-            chatBox.input.html(e,true)
-            break;
-    }
-}
-function sendMessage()
-{
-    let text = chatBox.input.elt.value.trim();
-    if (text)
-    {
-        chatBox.input.elt.value = "" //reset input 
-        let string = `${playerName}: ${text}`
-        chatBox.addLocalChatMessage(string)
-        socket.emit("chatMessage", string)
-    }
-
-}
-
-function updatePlayers()
-{
-    updateClient()
-    updateConnectedPlayers()
-    if (currFrame % 2 == 0)
-    {
-        sendClientState()
-    }
-}
-function sendClientState()
-{
-    if (socket && socket.connected)
-    {
-        let client = playersList.find(x => x.id == socketID|| x.id == 0)
-        // let clientJSON = JSON.stringify(client)
-
-        // console.log(JSON.stringify(client))
-        socket.emit("clientData", JSON.stringify(client))
-        socket.emit("clientMouseData",{"mouseX": mouseX, "mouseY": mouseY,"id":socket.id})
-        // console.log(clientJSON)
-
-    }
-}
-function updateConnectedPlayers()
-{
-    // if (socket && socket.connected && currFrame % 2 == 0)
-    // {
-    //     socket.emit("requestUpdate")
-    // }
-    if (playersList.length > 1)
-    {
-        let connectedPlayers = playersList.filter(x => x.id != socketID)
-        for (let i = 0; i < connectedPlayers.length; i++)
-        {
-            fill(255)
-            circle(connectedPlayers[i].x, connectedPlayers[i].y, 20)
-        }
-
-    }
-}
-function updateClient()
-{
-    let player = playersList.find(x => (x.id == 0 || x.id == socketID))
-
-    if (up)
-    {
-        player.y -= deltaTime;
-    }
-    if (down)
-    {
-        player.y += deltaTime;
-    }
-    if (left)
-    {
-        player.x -= deltaTime;
-    }
-    if (right)
-    {
-        player.x += deltaTime;
-    }
-    fill(255)
-    circle(player.x, player.y, 20)
-}
-function keyReleased()
-{
-    switch (key)
-    {
-        case "w":
-            up = false;
-            break;
-        case "a":
-            left = false;
-            break;
-        case "s":
-            down = false;
-            break;
-        case "d":
-            right = false;
-            break;
-    }
-}
-function keyPressed()
-{
-    switch (key)
-    {
-        case "w":
-            up = true;
-            break;
-        case "a":
-            left = true;
-            break;
-        case "s":
-            down = true;
-            break;
-        case "d":
-            right = true;
-            break;
-    }
-}
 function createClientPlayer()
 {
     clientPlayer = new Player(Math.random() * 200 + 200, Math.random() * 400 + 100)
@@ -291,7 +91,7 @@ function setupSocket()
     {
         socket.emit("clientConnection")
         playersList.find(x => x.id == socketID).id = socket.id
-        socketID = socket.id
+        socketID = socket.id //save socketID because ID is lost if the socket disconnects. 
         checkCookieForLogin()
 
     })
@@ -307,12 +107,11 @@ function setupSocket()
     {
         chatBox.greetPlayer(name)
     })
-    //listen for incoming player data
+    //listen for incoming player data. update connected player
     socket.on("playerData", (data) =>
     {
         let playerData = JSON.parse(data)
 
-        //change this or disconnecting will be a pain
         for (let i = 0; i < playerData.length; i++)
         {
             let updatePlayer = playersList.find(x => x.id == playerData[i].id)
@@ -321,7 +120,7 @@ function setupSocket()
             {
                 playersList[index] = playerData[i]
             }
-            else
+            else 
             {
                 playersList.push(playerData[i])
             }
@@ -356,21 +155,15 @@ function setupSocket()
 
         for (let i = 0; i < mouseData.length; i++)
         {
-            let updateMouse = mouseList.find(x => x.socketID == mouseData[i].id)
+            let updateMouse = mouseList.find(x => x.id == mouseData[i].id)
             let index = mouseList.indexOf(updateMouse)
             if (index > -1)
             {
-                mouseList[index].newX = mouseData[i].mouseX
-                mouseList[index].newY = mouseData[i].mouseY
-
+                mouseList[index] = mouseData[i]
             }
             else
             {
-                remoteMouse = new Mouse()
-                remoteMouse.socketID = mouseData[i].id
-                remoteMouse.newX = mouseData[i].mouseX
-                remoteMouse.newY = mouseData[i].mouseY
-                mouseList.push(remoteMouse)
+                mouseList.push(mouseData[i])
             }
         }
     })
