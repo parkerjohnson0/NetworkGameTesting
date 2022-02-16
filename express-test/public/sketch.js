@@ -127,6 +127,7 @@ function setup()
   ui.playerControls.push(new Button(resources.destroy, 0, -2, playWidth + 1, 405));
 
   let canv = createCanvas(playWidth + 400, playHeight);
+
   background(0);
   stroke(0, 255, 0);
   noFill();
@@ -337,6 +338,7 @@ function mouseClicked()
       {
         gold -= currTower.currUpgradeCost;
         currTower.upgrade();
+        socket.emit("towerUpgrade", currTower.id);
         ui.generateFloatingText(`Rank ↑`, currTower.position, color(0, 225, 0, 255));
       }
     }

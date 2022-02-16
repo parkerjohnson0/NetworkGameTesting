@@ -1,0 +1,12 @@
+towerData - owner == p2, id, nameoftower, position, r, c
+upgrade - id, owner
+
+destroy- id, owner, if rank == -1 remove tower
+
+destroy towers
+upgrade towers
+chatbox weirdness
+right click
+player left game
+null & pooper
+sound stuff

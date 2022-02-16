@@ -176,6 +176,10 @@ io.on("connection", (conn) =>
             conn.to(room).emit("newTower", data)
             
         })
+        conn.on("towerUpgrade", (data) =>
+        {
+            conn.to(room).emit("upgradeTower", data)
+        })
         conn.on("gameOver", (score) =>
         {
             if (instance.gameState.name !== GameStates.GameOver.name)
