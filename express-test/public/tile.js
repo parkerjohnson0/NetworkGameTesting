@@ -35,7 +35,7 @@ class Tile {
         this.isPathable = pathable;
         this.outOfBounds = bounds;
 
-        this.outOfBounds ? this.image=resources.caveSprites[0] : null;
+        this.outOfBounds ? this.image=resources.caveSprites[0] : false;
     }
 
     reset(){
