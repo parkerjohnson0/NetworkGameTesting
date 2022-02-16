@@ -267,15 +267,15 @@ function mouseClicked() {
                   break;
             }
           towers.push(tower)
-          socket.emit("towerData", {
-            "id": tower.id,
-            "name" : tower.name,
-            "x": tower.position.x,
-            "y" : tower.position.y,
-            "row" : tower.row,
-            "col": tower.col,
-            "cost": ui.buttons[towerToBuild].cost
-          })
+          // socket.emit("towerData", {
+          //   "id": tower.id,
+          //   "name" : tower.name,
+          //   "x": tower.position.x,
+          //   "y" : tower.position.y,
+          //   "row" : tower.row,
+          //   "col": tower.col,
+          //   "cost": ui.buttons[towerToBuild].cost
+          // })
             gold -= ui.buttons[towerToBuild].cost;
             towerID += 1;
           }
