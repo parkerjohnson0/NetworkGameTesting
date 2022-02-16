@@ -638,7 +638,8 @@ function setupSocket()
         default:
           break;
       }
-      towers.push(tower)
+      gameMap.tileMap[tower.row][tower.col].isPathable = false;
+      towers.push(tower);
     })
     socket.on("buildTimerEnd",()=>
     {
