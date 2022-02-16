@@ -729,7 +729,7 @@ function setupSocket()
     ui.generateFloatingText(`Rank ↑`, tower.position, color(0, 225, 0, 255));
   })
   socket.on("destroyTower", (data)=>{
-    let tower = towers.find(x => x.id === data);
+    let tower = towers.find(x => x.id === data && x.owner == 'p2');
     tower.rank = -1;
     // console.log(tower)
     // ui.generateFloatingText(`+${floor(tower.totalSpent / 2)} gold`, tower.position, color(255, 255, 0, 255));
