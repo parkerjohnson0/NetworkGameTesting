@@ -4,7 +4,7 @@ class Timer {
         this.time = seconds * 60;
         this.isTicking = false;
         this.isFinished = false;
-        
+        this.timerRequested = false;
     }
 
     start(){

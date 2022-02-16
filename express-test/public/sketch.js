@@ -2,9 +2,18 @@
 
 "use strict";
 
+
+let currFrame = 0
 let gameMap;
 let towers = [];
 let canBuild = true;
+
+let gameIsOver = false;
+let enemiesCanSpawn = false;
+let IsAttackPhase = false;
+let buildTimerEndRequested = false;
+let timerCanStart
+
 let testEnemies = [];
 let enemyCount = 10;
 let enemyBonusStats = {hp:0, speed:0};
@@ -89,7 +98,7 @@ function setup() {
   ui = new UserInterface();
   ui.roundText.setText("Build Phase");
   p2mousePosition = createVector(-50,50);
-    //setupSocket();
+  setupSocket();
 
 
 //prep all assets
@@ -143,8 +152,8 @@ ui.playerControls.push(new Button(resources.destroy,0,-2,playWidth+1,405));
   //goal.outOfBounds = true;
 
 //Set Build Timer
-startBuild(); // Single Player
-  ui.roundText.start(); // Single Player
+// startBuild(); // Single Player
+//   ui.roundText.start(); // Single Player
 }
 
 function generateSprites(spritesheet, spriteWidth, spriteHeight, singleArray){
@@ -240,28 +249,39 @@ function mouseClicked() {
       }
       else{
         if (gold >= ui.buttons[towerToBuild].cost){
-        switch (towerToBuild){
-          case 0:
-            towers.push(new Tower(mouseX, mouseY, "p1", tile.r, tile.c, ui.buttons[towerToBuild].cost, towerID));
-            break;
-          case 1:
-            towers.push(new Tower2(mouseX, mouseY, "p1", tile.r, tile.c, ui.buttons[towerToBuild].cost, towerID));
-            break;
-          case 2:
-            towers.push(new Tower3(mouseX, mouseY, "p1", tile.r, tile.c, ui.buttons[towerToBuild].cost, towerID));
-            break;
-          case 3:
-            towers.push(new Tower4(mouseX, mouseY, "p1", tile.r, tile.c, ui.buttons[towerToBuild].cost, towerID));
-            break;
-          default:
-              break;
-        }
-        gold -= ui.buttons[towerToBuild].cost;
-        towerID += 1;
-      }
-      else {
-        tile.isPathable = true;
-      }
+            let tower
+            switch (towerToBuild){
+              case 0:
+                tower = new Tower(mouseX, mouseY, "p1", tile.r, tile.c, ui.buttons[towerToBuild].cost, towerID)
+                break;
+              case 1:
+                tower = new Tower2(mouseX, mouseY, "p1", tile.r, tile.c, ui.buttons[towerToBuild].cost, towerID)
+                break;
+              case 2:
+                tower = new Tower3(mouseX, mouseY, "p1", tile.r, tile.c, ui.buttons[towerToBuild].cost, towerID)
+                break;
+              case 3:
+                tower = new Tower4(mouseX, mouseY, "p1", tile.r, tile.c, ui.buttons[towerToBuild].cost, towerID)
+                break;
+              default:
+                  break;
+            }
+          towers.push(tower)
+          socket.emit("towerData", {
+            "id": tower.id,
+            "name" : tower.name,
+            "x": tower.position.x,
+            "y" : tower.position.y,
+            "row" : tower.row,
+            "col": tower.col,
+            "cost": ui.buttons[towerToBuild].cost
+          })
+            gold -= ui.buttons[towerToBuild].cost;
+            towerID += 1;
+          }
+          else {
+            tile.isPathable = true;
+          }
       }
     }
     
@@ -359,69 +379,106 @@ function startBuild(){
 }
 
 
-function draw() {
+function draw()
+{
   background(0);
   noCursor();
+  updatePlayers();
   // Tick over build clock for 1P Testing
   canBuild = false;
-  if (buildTimer.isTicking && towerToBuild >= -5){
+  if (buildTimer && buildTimer.isTicking && towerToBuild >= -5)
+  {
     buildTimer.tick();
     canBuild = true;
   }
 
   // Start next Enemy Wave
-  if (buildTimer.isFinished){
-                spawnEnemies(); // Single Player
-                buildTimer.reset(); // Single Player
-    //socket.emit("requestBuildTimerEnd");
+  if (buildTimer && buildTimer.isFinished && !buildTimerEndRequested)
+  {
+    // spawnEnemies(); // Single Player
+    // buildTimer.reset(); // Single Player
+    socket.emit("requestBuildTimerEnd");
+    buildTimerEndRequested = true;
   }
-
+  if (enemiesCanSpawn)
+  {
+    spawnEnemies();
+    IsAttackPhase = true;
+    enemiesCanSpawn = false;
+    buildTimer.timerRequested = false;
+    buildTimer.reset()
+  }
   gameMap.draw();
 
   // Collate enemies that have died and need removal
   let enemiesToRemove = [];
-for (let enemy of testEnemies){
-  enemy.draw();
-  if (enemy.currentTile == enemy.goal){
-    enemiesToRemove.push(enemy);
-    lives -= 1;
+  for (let enemy of testEnemies)
+  {
+    enemy.draw();
+    if (enemy.currentTile == enemy.goal)
+    {
+      enemiesToRemove.push(enemy);
+      lives -= 1;
+    }
+    if (enemy.hp <= 0)
+    {
+      enemiesToRemove.push(enemy);
+      gold += 10;
+    }
   }
-  if (enemy.hp <= 0){
-    enemiesToRemove.push(enemy);
-    gold += 10;
+  // Hacky Bullshit
+  image(resources.caveSprites[1], gameMap.tileMap[11][0].position.x, gameMap.tileMap[11][0].position.y);
+  push();
+  imageMode(CENTER);
+  translate(gameMap.tileMap[11][gameMap.cols - 1].position.x + 10, gameMap.tileMap[11][gameMap.cols - 1].position.y + 10);
+  rotate(radians(180));
+  image(resources.caveSprites[1], 0, 0);
+  pop();
+
+  if (lives <= 0 && !gameIsOver)
+  {
+    //end Game stuff
+    socket.emit("gameOver", currRound);
+    gameIsOver = true;
   }
-}
-// Hacky Bullshit
-image(resources.caveSprites[1],gameMap.tileMap[11][0].position.x,gameMap.tileMap[11][0].position.y);
-push();
-imageMode(CENTER);
-translate(gameMap.tileMap[11][gameMap.cols-1].position.x+10,gameMap.tileMap[11][gameMap.cols-1].position.y+10);
-rotate(radians(180));
-image(resources.caveSprites[1],0,0);
-pop();
 
-if (lives <=0){
-  //end Game stuff
-}
-
-// Check mouse v tower for buildability
-  for (let tower of towers){
-    if (buildTimer.isTicking){
-    tower.checkMouse();
+  // Check mouse v tower for buildability
+  for (let tower of towers)
+  {
+    if (buildTimer && buildTimer.isTicking)
+    {
+      tower.checkMouse();
     }
     tower.draw();
   }
 
-// Stop tracking and remove dead enemies
-testEnemies = testEnemies.filter(item => !enemiesToRemove.includes(item));
-enemiesToRemove = [];
+  // Stop tracking and remove dead enemies
+  testEnemies = testEnemies.filter(item => !enemiesToRemove.includes(item));
+  enemiesToRemove = [];
+    if (testEnemies.length == 0 && buildTimer && !buildTimer.isTicking && IsAttackPhase)
+    {
+      console.log("Requesting build timer start")
+      gold += 50 * (floor(currRound/10)+1);
+      currRound += 1;
+      // startBuild();
+      socket.emit("requestBuildTimerStart");
+      buildTimer.timerRequested = true;
+      buildTimer.reset()
+      // console.log("fuck everything")
+      IsAttackPhase = false;
+      buildTimerEndRequested = false;
 
-if (testEnemies.length == 0 && !buildTimer.isTicking){
-  gold += 50 * (floor(currRound/10)+1);
-  currRound += 1;
-  startBuild();
-  //socket.emit("requestBuildTimerStart");
-}
+    }
+//   if (testEnemies.length == 0 && buildTimer && !buildTimer.isTicking && !buildTimer.timerRequested)
+//   {
+//   console.log("Requesting build timer start")
+//   gold += 50 * (floor(currRound/10)+1);
+//   currRound += 1;
+//   // startBuild();
+//   socket.emit("requestBuildTimerStart");
+//     buildTimer.timerRequested = true;
+//     buildTimer.reset()
+// }
 
 // Remove Destroyed Towers
 towers = towers.filter(tower => tower.rank >=0);
@@ -440,12 +497,7 @@ if (selectedTower){
   noStroke();
   text(frameRate(), 10, 10);
 
-  // Draw player 2 Mouse
-  push();
-  tint(0,0,68,128);
-  image(resources.cursor, p2mousePosition.x, p2mousePosition.y);
-  noTint();
-  pop();
+
 
   push();
   translate(goal.position.x-20, goal.position.y-20);
@@ -488,114 +540,147 @@ if (selectedTower){
   // Display Upgrade or Destroy
   towerToBuild == -1 ? image(resources.hammer, mouseX+resources.hammer.width/4, mouseY-resources.hammer.height/2) : null;
   towerToBuild == -2 ? image(resources.cross, mouseX+resources.cross.width/4, mouseY-resources.cross.height/2) : null;
+  // Draw player 2 Mouse
+  push();
+  tint(0,0,68,128);
+  image(resources.cursor, p2mousePosition.x, p2mousePosition.y);
+  noTint();
+  pop();
   image(resources.cursor, mouseX, mouseY);
+
   onMouseHover();
   
 }
 
 
-// function setupSocket()
-// {
-//     socket = io('localhost:5500')
-//     //socket = io()
-//     // socket = io('http://www.skelegame.com')
-//     socket.on("connect", () =>
-//     {
-//         socket.emit("clientConnection")
-//         playersList.find(x => x.id == socketID).id = socket.id
-//         socketID = socket.id //save socketID because ID is lost if the socket disconnects. 
-//         checkCookieForLogin()
+function setupSocket()
+{
+    socket = io('localhost:3001')
+    //socket = io()
+    // socket = io('http://www.skelegame.com')
+    socket.on("connect", () =>
+    {
+        socket.emit("clientConnection")
+        // playersList.find(x => x.id == socketID).id = socket.id
+        socketID = socket.id //save socketID because ID is lost if the socket disconnects. 
+        checkCookieForLogin()
 
-//     })
-//     socket.on("gameInstanceID", (id) =>
-//     {
-          //  randSeed = id;
-          // randomSeed(randSeed);
-          // gameMap.generate();
+    })
+    socket.on("gameInstanceID", (id) =>
+    {
+           randSeed = id;
+          randomSeed(randSeed);
+          gameMap.generate();
   
-//     })
-//     socket.on("newChatMessage", (data) =>
-//     {
-//         ui.chatBox.addRemoteChatMessage(data)
-//     })
-//     socket.on("greetPlayer", (name) =>
-//     {
-//         ui.chatBox.greetPlayer(name)
-//     })
-//     //listen for incoming player data. update connected player
-//     socket.on("playerData", (data) =>
-//     {
-//         let playerData = JSON.parse(data)
+    })
+    socket.on("newChatMessage", (data) =>
+    {
+        ui.chatBox.addRemoteChatMessage(data)
+    })
+    socket.on("greetPlayer", (name) =>
+    {
+        ui.chatBox.greetPlayer(name)
+    })
+    // //listen for incoming player data. update connected player
+    // socket.on("playerData", (data) =>
+    // {
+    //     let playerData = JSON.parse(data)
 
-//         for (let i = 0; i < playerData.length; i++)
-//         {
-//             let updatePlayer = playersList.find(x => x.id == playerData[i].id)
-//             let index = playersList.indexOf(updatePlayer)
-//             if (index > -1)
-//             {
-//                 playersList[index] = playerData[i]
-//             }
-//             else 
-//             {
-//                 playersList.push(playerData[i])
-//             }
-//         }
-//     })
-//     socket.on("playerDisconnected", (playerId) =>
-//     {
-//         let deletePlayer = playersList.find(x => x.id == playerId)
-//         let index = playersList.indexOf(deletePlayer)
-//         playersList.splice(index, 1)
-//         let deleteMouse = mouseList.find(x => x.id == playerId)
-//         index = mouseList.indexOf(deleteMouse)
-//         mouseList.splice(index,1)
-//         console.log("player with id :" + playerId + " has been removed.")
+    //     for (let i = 0; i < playerData.length; i++)
+    //     {
+    //         let updatePlayer = playersList.find(x => x.id == playerData[i].id)
+    //         let index = playersList.indexOf(updatePlayer)
+    //         if (index > -1)
+    //         {
+    //             playersList[index] = playerData[i]
+    //         }
+    //         else 
+    //         {
+    //             playersList.push(playerData[i])
+    //         }
+    //     }
+    // })
+    // socket.on("playerDisconnected", (playerId) =>
+    // {
+    //     let deletePlayer = playersList.find(x => x.id == playerId)
+    //     let index = playersList.indexOf(deletePlayer)
+    //     playersList.splice(index, 1)
+    //     let deleteMouse = mouseList.find(x => x.id == playerId)
+    //     index = mouseList.indexOf(deleteMouse)
+    //     mouseList.splice(index,1)
+    //     console.log("player with id :" + playerId + " has been removed.")
 
-//     })
-//     let intervalID
-//     socket.on("buildTimerStart", () =>
-//     {
-//         startBuild();
+    // })
+    // let intervalID
+    socket.on("buildTimerStart", () =>
+    {
+      
+      startBuild();
 
-//     })
-//     socket.on("buildTimerEnd",()=>
-//     {
-//             spawnEnemies();
+    })
+    socket.on("newTower",(data)=>{
+      let tower
+      console.log(data)
+      switch (data.name)
+      {
+        case 'Magic Tower':
+          tower = new Tower(data.x, data.y, 'p2', data.row, data.col, data.cost, data.id)
+          break;
+        case 'Poison Tower':
+          tower = new Tower2(data.x, data.y, 'p2', data.row, data.col, data.cost, data.id)
+          break;
+        case 'Frost Tower':
+          tower = new Tower3(data.x, data.y, 'p2', data.row, data.col, data.cost, data.id)
+          break;
+        case 'Flame Tower':
+          tower = new Tower4(data.x, data.y, 'p2', data.row, data.col, data.cost, data.id)
+          break;
+        default:
+          break;
+      }
+      towers.push(tower)
+    })
+    socket.on("buildTimerEnd",()=>
+    {
+      enemiesCanSpawn = true;
+      // buildTimerEndRequested = false;
+            // spawnEnemies();
                 // currRound += 1;
-                // buildTimer.reset();
-//      
-//     })
-//     socket.on("serverMouseData", (data) =>
-//     {
-//         let mouseData = data
-
-//         for (let i = 0; i < mouseData.length; i++)
-//         {
-//             let updateMouse = mouseList.find(x => x.id == mouseData[i].id)
-//             let index = mouseList.indexOf(updateMouse)
-//             if (index > -1)
-//             {
-//                 mouseList[index] = mouseData[i]
-//             }
-//             else
-//             {
-//                 mouseList.push(mouseData[i])
-//             }
-//         }
-//     })
-//     function tickTimer()
-//     {
-//         console.log(buildTimerLength)
-//         buildTimerLength--
-//         if (buildTimerLength == 0)
-//         {
-//             clearInterval(intervalID)
-//             buildTimerLength = 30
-//             buildPhaseOn = false
-//             socket.emit("requestBuildTimerEnd")
-//         }
-//     }
-// }
+          // buildTimer.reset();
+      
+     
+    })
+    socket.on("serverMouseData", (data) =>
+    {
+        p2mousePosition.x = data[0].mouseX
+        p2mousePosition.y = data[0].mouseY
+        // for (let i = 0; i < mouseData.length; i++)
+        // {
+        //     let updateMouse = mouseList.find(x => x.id == mouseData[i].id)
+        //     let index = mouseList.indexOf(updateMouse)
+        //     if (index > -1)
+        //     {
+        //         mouseList[index] = mouseData[i]
+        //     }
+        //     else
+        //     {
+        //         mouseList.push(mouseData[i])
+        //     }
+        // }
+    })
+    // function tickTimer()
+    // {
+    //     console.log(buildTimerLength)
+    //     buildTimerLength--
+    //     if (buildTimerLength == 0)
+    //     {
+    //         clearInterval(intervalID)
+    //         buildTimerLength = 30
+    //         buildPhaseOn = false
+    //         socket.emit("requestBuildTimerEnd")
+    //     }
+    // }
+}
 
 function userExists(cookie)
 {
@@ -605,23 +690,32 @@ function userExists(cookie)
 
 function updatePlayers()
 {
+  if (currFrame++ % 2 == 0)
+  {
     updateConnectedPlayers()
     sendClientState()
+  }
 }
 function sendClientState()
 {
 
     if (socket && socket.connected)
     {
-        let client = playersList.find(x => x.id == socketID|| x.id == 0)
+        // let client = playersList.find(x => x.id == socketID|| x.id == 0)
         // let clientJSON = JSON.stringify(client)
-        if (currFrame % 2 == 0)
-        {
-        console.log(JSON.stringify(client))
-        socket.emit("clientData", JSON.stringify(client))
-        socket.emit("clientMouseData",{"mouseX": mouseX, "mouseY": mouseY,"id":socket.id})
+        // console.log(JSON.stringify(client))
+        // socket.emit("clientData", JSON.stringify(client))
+      socket.emit("clientMouseData",{"mouseX": mouseX, "mouseY": mouseY,"id":socket.id})
+      // let p1Towers = towers.filter(x => x.owner == 'p1');
+      // if (p1Towers.length > 0)
+      // {
+      //   for (tower in p1Towers)
+      //   {
+      //     socket.
+      //   }
+      // }
+        
         // console.log(clientJSON)
-        }
 
     }
 }
@@ -631,16 +725,16 @@ function updateConnectedPlayers()
     // {
     //     socket.emit("requestUpdate")
     // }
-    if (playersList.length > 1)
-    {
-        let connectedPlayers = playersList.filter(x => x.id != socketID)
-        for (let i = 0; i < connectedPlayers.length; i++)
-        {
-            fill(255)
-            circle(connectedPlayers[i].x, connectedPlayers[i].y, 20)
-        }
+    // if (playersList.length > 1)
+    // {
+    //     let connectedPlayers = playersList.filter(x => x.id != socketID)
+    //     for (let i = 0; i < connectedPlayers.length; i++)
+    //     {
+    //         fill(255)
+    //         circle(connectedPlayers[i].x, connectedPlayers[i].y, 20)
+    //     }
 
-    }
+    // }
 }
 
 
@@ -659,11 +753,50 @@ function checkCookieForLogin()
     {
         socket.emit("newPlayerJoined", playerName)
         socket.emit("requestBuildTimerStart")
+        // buildTimer.timerRequested = true;
 
     }
 }
-
-
+function getPlayerName(cookie){
+  let cookies = cookie.split(";")
+  for (let i = 0; i < cookies.length; i++)
+  {
+      let nameValue = cookies[i].split("=")
+      if (nameValue[0].trim() == "name")
+      {
+          playerName = nameValue[1]
+          return playerName
+      }
+  }
+  return ""
+}
+function promptForName()
+{
+    let nameBox= select("#name_box_container")
+    nameBox.elt.style.visibility = "visible"
+    nameBox.elt.addEventListener("keydown",nameBoxListener)
+}
+function nameBoxListener(e)
+{
+    switch (e.key)
+    {
+        case "Enter":
+            let name = select("#name_text").elt.value.trim();
+            if (name && name != "")
+            {
+                document.cookie = "name=" + name
+                playerName = name
+                this.style.visibility = "hidden"
+                socket.emit("newPlayerJoined", name)
+            }
+        socket.emit("requestBuildTimerStart")
+        // buildTimer.timerRequested = true;
+        
+            break;
+        default:
+            break;
+    }
+}
 class Player
 {
     constructor(x, y)

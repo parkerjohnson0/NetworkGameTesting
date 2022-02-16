@@ -18,8 +18,9 @@ class ChatBox
         this.height = height;
         this.input = createInput("", "text")
         this.input.elt["maxLength"] = 70
-        this.input.position(this.x+2.5, playHeight - 25, "absolute")
-        this.input.size(285, 15)
+        this.input.position(this.x + this.padding, -40, "relative")
+        this.input.parent("#game_container")
+        this.input.size(270, 25)
     }
     addLocalChatMessage(message)
     {

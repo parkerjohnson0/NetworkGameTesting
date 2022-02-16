@@ -75,6 +75,19 @@ function checkCookieForLogin()
 
     }
 }
+function getPlayerName(cookie){
+    let cookies = cookie.split(";")
+    for (let i = 0; i < cookies.length; i++)
+    {
+        let nameValue = cookies[i].split("=")
+        if (nameValue[0].trim() == "name")
+        {
+            playerName = nameValue[1]
+            return playerName
+        }
+    }
+    return ""
+}
 
 
 function createClientPlayer()

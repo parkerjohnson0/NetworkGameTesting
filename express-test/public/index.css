@@ -18,20 +18,20 @@ html,body{
     height: 580px;
 }
 #name_box_container{
-    display:flex;
-    align-items:center;
+    display: flex;
+    align-items: center;
     position: absolute;
-    top: 25px;
-    left: 130px;
+    top: 250px;
+    left: 100px;
     width: 40%;
-    height: 100%;
+    height: 10%;
     visibility: hidden;
 }
 #name_box{
     background: rgba(140, 140, 140, 0.432);
     text-align: left;
     width: 100%;
-    height: 10%;
+    height: 100%;
     position: relative;
     display: flex;
     justify-content:center;

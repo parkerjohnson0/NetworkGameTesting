@@ -140,6 +140,8 @@ io.on("connection", (conn) =>
         conn.on("requestBuildTimerStart", () =>
         {
             // console.log("build timer requested by client", client.id, "in room", room) 
+            console.log("REQUEST TO START")
+
             client.buildTimerRequested = true
             if (buildTimerCanStart(instance))
             {
@@ -150,6 +152,7 @@ io.on("connection", (conn) =>
         })
         conn.on("requestBuildTimerEnd", () =>
         {
+            console.log("REQUEST TO END")
             client.buildTimerRequested = false
             if (!instance.clients.some(x => x.buildTimerRequested == true))
             {
@@ -162,12 +165,15 @@ io.on("connection", (conn) =>
         {
             client.mouseData = message
         })
-        conn.on("towerData", () =>
+        conn.on("towerData", (data) =>
         {
+            // console.log(data)
+
             if (instance.gameState !== GameStates.BuildPhase)
             {
                 return
             }
+            conn.to(room).emit("newTower", data)
             
         })
         conn.on("gameOver", (score) =>
@@ -299,7 +305,7 @@ function sendToClient(conn)
             {
 
                 room = [...room][1]//i dont understand this. something called spread syntax?
-                conn.emit("playerData", JSON.stringify(clientData))
+                // conn.emit("playerData", JSON.stringify(clientData))
                 conn.emit("serverMouseData", mouseData)
                 // console.log("sending data to ", conn.id, clientData, mouseData)
             }

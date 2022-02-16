@@ -89,7 +89,7 @@ sendMessage()
 
         //Build Timer
         let sprite;
-        if (buildTimer.time >=0) {
+        if (buildTimer && buildTimer.time >=0) {
         sprite = ceil((buildTimer.time /180));
         sprite > 0 ? sprite -= 1 : null;
         }
