@@ -245,6 +245,7 @@ function mouseClicked() {
       tile.isPathable = false;
       // Build makes goal unpathable
       if (gameMap.navChecker.findPath(startL,goal).length < 1 || gameMap.navChecker.findPath(startR,goal).length < 1 ){
+        console.log("POOPER")
         tile.isPathable = true;
         ui.chatBox.blockedPath();
       }
