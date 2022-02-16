@@ -240,6 +240,7 @@ function mouseClicked() {
     ui.towerPopup.hide();
     // Check if building in this location would block enemies from pathing to goal
     let tile = gameMap.getTile();
+    console.log(tile)
     if (tile && tile.outOfBounds == false){
       tile.isPathable = false;
       // Build makes goal unpathable
@@ -267,15 +268,15 @@ function mouseClicked() {
                   break;
             }
           towers.push(tower)
-          // socket.emit("towerData", {
-          //   "id": tower.id,
-          //   "name" : tower.name,
-          //   "x": tower.position.x,
-          //   "y" : tower.position.y,
-          //   "row" : tower.row,
-          //   "col": tower.col,
-          //   "cost": ui.buttons[towerToBuild].cost
-          // })
+          socket.emit("towerData", {
+            "id": tower.id,
+            "name" : tower.name,
+            "x": tower.position.x,
+            "y" : tower.position.y,
+            "row" : tower.row,
+            "col": tower.col,
+            "cost": ui.buttons[towerToBuild].cost
+          })
             gold -= ui.buttons[towerToBuild].cost;
             towerID += 1;
           }
