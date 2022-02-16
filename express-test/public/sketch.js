@@ -261,7 +261,7 @@ function mouseClicked()
     ui.towerPopup.hide();
     // Check if building in this location would block enemies from pathing to goal
     let tile = gameMap.getTile();
-    console.log(tile)
+    // console.log(tile)
     if (tile && tile.outOfBounds == false)
     {
       tile.isPathable = false;
@@ -360,6 +360,7 @@ function mouseClicked()
           ui.generateFloatingText(`+${floor(currTower.totalSpent / 2)} gold`, currTower.position, color(255, 255, 0, 255));
           gold += floor(currTower.totalSpent / 2);
           currTower.rank = -1;
+          socket.emit("towerDestroy", currTower.id)
         }
       }
     }
@@ -699,7 +700,7 @@ function setupSocket()
   socket.on("newTower", (data) =>
   {
     let tower
-    console.log(data)
+    // console.log(data)
     switch (data.name)
     {
       case 'Magic Tower':
@@ -719,6 +720,19 @@ function setupSocket()
     }
     gameMap.tileMap[tower.row][tower.col].isPathable = false;
     towers.push(tower);
+  })
+  socket.on("upgradeTower", (data)=>{
+    // console.log(data)
+    let tower = towers.find(x => x.id === data);
+    tower.rank++;
+    // console.log(tower)
+    ui.generateFloatingText(`Rank ↑`, tower.position, color(0, 225, 0, 255));
+  })
+  socket.on("destroyTower", (data)=>{
+    let tower = towers.find(x => x.id === data);
+    tower.rank = -1;
+    // console.log(tower)
+    // ui.generateFloatingText(`+${floor(tower.totalSpent / 2)} gold`, tower.position, color(255, 255, 0, 255));
   })
   socket.on("buildTimerEnd", () =>
   {
