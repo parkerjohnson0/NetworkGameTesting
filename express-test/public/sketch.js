@@ -133,22 +133,22 @@ ui.playerControls.push(new Button(resources.destroy,0,-2,playWidth+1,405));
   let rows = 30;
   let cols = 30;
   gameMap = new Map(rows, cols);
-  gameMap.generate(); // Single Player
+  // gameMap.generate(); // Single Player
 
   //Mark Enemy Spawn and Enemy Goal locations as unbuildable
   startL = gameMap.tileMap[11][0];
   startR = gameMap.tileMap[11][cols-1];
   goal = gameMap.tileMap[16][16];
 
-  for (let space of gameMap.tileMap){
-    for (let tile of space){
-    if (tile.r >= 15 && tile.r <= 17){
-      if (tile.c >= 15 && tile.c <= 17){
-        tile.outOfBounds = true;
-      }
-    }
-    }
-  }
+  // for (let space of gameMap.tileMap){
+  //   for (let tile of space){
+  //   if (tile.r >= 15 && tile.r <= 17){
+  //     if (tile.c >= 15 && tile.c <= 17){
+  //       tile.outOfBounds = true;
+  //     }
+  //   }
+  //   }
+  // }
   //goal.outOfBounds = true;
 
 //Set Build Timer
@@ -570,9 +570,22 @@ function setupSocket()
     })
     socket.on("gameInstanceID", (id) =>
     {
-           randSeed = id;
-          randomSeed(randSeed);
-          gameMap.generate();
+          randSeed = id;
+        randomSeed(randSeed);
+      gameMap.generate();
+      for (let space of gameMap.tileMap)
+      {
+        for (let tile of space)
+        {
+          if (tile.r >= 15 && tile.r <= 17)
+          {
+            if (tile.c >= 15 && tile.c <= 17)
+            {
+              tile.outOfBounds = true;
+            }
+          }
+        }
+      }
   
     })
     socket.on("newChatMessage", (data) =>
