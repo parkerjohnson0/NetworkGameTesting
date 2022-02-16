@@ -629,10 +629,10 @@ function setupSocket()
   {
     randSeed = id;
     randomSeed(randSeed);
+    gameMap.generate();
     startL = gameMap.tileMap[11][0];
     startR = gameMap.tileMap[11][cols - 1];
     goal = gameMap.tileMap[16][16];
-    gameMap.generate();
     for (let space of gameMap.tileMap)
     {
       for (let tile of space)
