@@ -57,7 +57,7 @@ class Map {
             for (let col =0; col<cols; col++){
                 let xPos = col * this.tileWidth;
                 let yPos = row * this.tileHeight;
-                let bounds;
+                let bounds = false;
                 let pathable=true;
                 if (col == 0 || col==cols-1){
                     bounds = true;
