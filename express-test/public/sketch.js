@@ -101,7 +101,6 @@ function setup()
   ui = new UserInterface();
   ui.roundText.setText("Build Phase");
   p2mousePosition = createVector(-50, 50);
-  setupSocket();
 
 
   //prep all assets
@@ -137,6 +136,8 @@ function setup()
   let rows = 30;
   let cols = 30;
   gameMap = new Map(rows, cols);
+  setupSocket();
+
   // gameMap.generate(); // Single Player
 
   //Mark Enemy Spawn and Enemy Goal locations as unbuildable
