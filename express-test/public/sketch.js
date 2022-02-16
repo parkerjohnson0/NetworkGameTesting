@@ -136,9 +136,9 @@ ui.playerControls.push(new Button(resources.destroy,0,-2,playWidth+1,405));
   // gameMap.generate(); // Single Player
 
   //Mark Enemy Spawn and Enemy Goal locations as unbuildable
-  startL = gameMap.tileMap[11][0];
-  startR = gameMap.tileMap[11][cols-1];
-  goal = gameMap.tileMap[16][16];
+  // startL = gameMap.tileMap[11][0];
+  // startR = gameMap.tileMap[11][cols-1];
+  // goal = gameMap.tileMap[16][16];
 
   // for (let space of gameMap.tileMap){
   //   for (let tile of space){
@@ -571,7 +571,10 @@ function setupSocket()
     socket.on("gameInstanceID", (id) =>
     {
           randSeed = id;
-        randomSeed(randSeed);
+      randomSeed(randSeed);
+      startL = gameMap.tileMap[11][0];
+      startR = gameMap.tileMap[11][cols-1];
+      goal = gameMap.tileMap[16][16];
       gameMap.generate();
       for (let space of gameMap.tileMap)
       {
