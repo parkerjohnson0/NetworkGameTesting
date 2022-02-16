@@ -126,7 +126,7 @@ function setup()
   ui.playerControls.push(new Button(resources.upgrade, 0, -1, playWidth + 50, 405));
   ui.playerControls.push(new Button(resources.destroy, 0, -2, playWidth + 1, 405));
 
-  createCanvas(playWidth + 400, playHeight);
+  let canv = createCanvas(playWidth + 400, playHeight);
   background(0);
   stroke(0, 255, 0);
   noFill();
