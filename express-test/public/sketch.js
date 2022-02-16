@@ -240,13 +240,12 @@ function mouseClicked() {
     ui.towerPopup.hide();
     // Check if building in this location would block enemies from pathing to goal
     let tile = gameMap.getTile();
-    if (tile && !tile.outOfBounds){
+    if (tile && tile.outOfBounds == false){
       tile.isPathable = false;
       // Build makes goal unpathable
       if (gameMap.navChecker.findPath(startL,goal).length < 1 || gameMap.navChecker.findPath(startR,goal).length < 1 ){
         tile.isPathable = true;
         ui.chatBox.blockedPath();
-        console.log(tile)
       }
       else{
         if (gold >= ui.buttons[towerToBuild].cost){
