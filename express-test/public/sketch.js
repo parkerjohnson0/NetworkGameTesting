@@ -99,6 +99,7 @@ function preload()
 
 function setup()
 {
+  frameRate(60)
   gfx = createGraphics(playWidth, playHeight);
   gfx.background(0,0,0)
   ui = new UserInterface();
