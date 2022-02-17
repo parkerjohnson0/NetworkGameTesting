@@ -20,8 +20,6 @@ class Tile {
             this.image = random(resources.tiles.slice(2,resources.tiles.length));
         }
 
-        gfx.image(this.image, this.position.x, this.position.y);
-
 
 
         //debug
@@ -38,30 +36,6 @@ class Tile {
         this.outOfBounds = bounds;
 
         this.outOfBounds ? this.image=resources.caveSprites[0] : null;
-
-        if (this.r == 11 && this.c == 0 || this.r == 11 && this.c == gameMap.cols-1){
-            this.image=resources.tiles[1];
-         }
- 
-         if (this.c == gameMap.cols-1){
-             gfx.push();
-             gfx.imageMode(CENTER);
-            gfx.translate(this.position.x+gameMap.tileWidth/2, this.position.y+gameMap.tileHeight/2);
-            gfx.rotate(radians(180));
-             gfx.image(this.image,0,0);
-             gfx.pop();
-         }
-         else{
-             gfx.image(this.image,this.position.x, this.position.y);
-         }
-
-        //gfx.image(this.image, this.position.x, this.position.y);
-        push();
-        gfx.stroke(78,78,78,62);
-        gfx.noFill();
-        gfx.rectMode(CORNER);
-        gfx.square(this.position.x, this.position.y, this.w);
-        pop();
     }
 
     reset(){

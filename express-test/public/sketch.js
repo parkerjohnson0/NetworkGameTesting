@@ -65,6 +65,7 @@ let playerName = "player";
 let chatBox;
 let randSeed;
 
+let gfx;
 
 
 
@@ -98,6 +99,8 @@ function preload()
 
 function setup()
 {
+  gfx = createGraphics(playWidth, playHeight);
+  gfx.background(0,0,0)
   ui = new UserInterface();
   ui.roundText.setText("Build Phase");
   p2mousePosition = createVector(-50, 50);
@@ -435,6 +438,7 @@ function startBuild()
 function draw()
 {
   background(0);
+  image(gfx, 0, 0);
   noCursor();
   updatePlayers();
   // Tick over build clock for 1P Testing
@@ -464,7 +468,7 @@ function draw()
       buildTimer.timerRequested = false;
       buildTimer.reset()
     }
-    gameMap.draw();
+    // gameMap.draw();
 
     // Collate enemies that have died and need removal
     let enemiesToRemove = [];
