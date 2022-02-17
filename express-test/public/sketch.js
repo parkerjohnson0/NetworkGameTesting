@@ -59,7 +59,7 @@ let selectedTower;
 let socket
 let socketID = 0 //save ID so that client player can be retrieved from playerslist after a disconnect. band aid for bad design decision right now
 let gameInstanceID = 0
-let canv
+// let canv
 let playerName = "player";
 
 let chatBox;
@@ -131,7 +131,7 @@ function setup()
   ui.playerControls.push(new Button(resources.destroy, 0, -2, playWidth + 1, 405));
 
   let canv = createCanvas(playWidth + 400, playHeight);
-
+  canv.elt.addEventListener("contextmenu", (e)=> e.preventDefault());
   background(0);
   stroke(0, 255, 0);
   noFill();
@@ -224,7 +224,14 @@ function keyPressed()
       break;
   }
 }
-
+function mouseReleased()
+{
+  if (mouseButton == RIGHT)
+  {
+    towerToBuild = -5;
+    return;
+  }
+}
 function mouseClicked()
 {
   selectedTower = null;
