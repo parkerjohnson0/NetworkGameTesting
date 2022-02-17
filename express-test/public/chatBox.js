@@ -32,7 +32,7 @@ class ChatBox
     }
     greetPlayer(name)
     {
-        this.messages.push(new Message("info", name + " has joined the game!",18))
+        this.messages.push(new Message("info", name + " has joined the game!",16))
     }
     buildTimerEnd()
     {
@@ -55,6 +55,7 @@ class ChatBox
             const element = this.messages[index];
             let numberOfExtraLines = Math.floor(textWidth(element.message) / maxWidth)
             startPos -= element.fontSize * numberOfExtraLines
+            pop();
             if (startPos - this.y  - this.padding > 0) //only show messages if it is not going to be drawn outside of the box
             {
                 //find amount of lines comment will take up. change start pos of comment to be higher on the screen 
@@ -76,10 +77,10 @@ class ChatBox
                     textSize(element.fontSize)
 
                     textStyle(BOLD)
-                    textWrap(CHAR)
+                    textWrap(WORD)
                     fill(255, 0, 0)
                     text(element.message, this.x + this.padding, startPos - element.fontSize, maxWidth)
-                    pop();
+                    // pop();
                     
                 }
                 else if(element.type ==="info")
@@ -87,10 +88,10 @@ class ChatBox
                     push();
                     textSize(element.fontSize)
                     textStyle(ITALIC)
-                    textWrap(CHAR)
+                    textWrap(WORD)
                     fill(255)
                     text(element.message, this.x + this.padding, startPos - element.fontSize, maxWidth)
-                    pop();
+                    // pop();
 
 
                 }
@@ -105,6 +106,8 @@ class ChatBox
                 this.removeChatMessages(index)
             }
         }
+        pop();
+
     }
     removeChatMessages(index)
     {
@@ -118,7 +121,7 @@ class ChatBox
         push();
         textSize(element.fontSize)
         textStyle(BOLD)
-        textWrap(CHAR)
+        textWrap(WORD)
 
         fill(nameColor)
         text(name, this.x + this.padding, startPos - element.fontSize, maxWidth)
@@ -126,16 +129,19 @@ class ChatBox
         textStyle(NORMAL)
         message = this.padMessage(name) + message
         text(message, this.x + this.padding, startPos - element.fontSize, maxWidth)
-        pop();
+        // pop();
     }
     padMessage(name)
     {
         let padString = ""
-        while (textWidth(padString) < textWidth(name))
+        if (textWidth(padString) < textWidth(name)) 
         {
+            while (textWidth(padString) < textWidth(name))
+            {
+                padString += " "
+            }
             padString += " "
         }
-        padString += " "
         return padString
     }
 
