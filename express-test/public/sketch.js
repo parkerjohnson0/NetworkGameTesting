@@ -190,6 +190,9 @@ function generateSprites(spritesheet, spriteWidth, spriteHeight, singleArray)
 function keyPressed()
 {
   selectedTower = null;
+  if (mouseX < playWidth + 100 && mouseY < playHeight)
+  {
+    
   switch (keyCode)
   {
     // 1 key
@@ -222,6 +225,7 @@ function keyPressed()
       break;
     default:
       break;
+    }
   }
 }
 function mouseReleased()
