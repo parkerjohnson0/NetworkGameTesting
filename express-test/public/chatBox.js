@@ -170,7 +170,7 @@ class ChatBox
             {
                 padString += " "
             }
-            // padString += " "
+            padString += " "
         }
         return padString
     }
