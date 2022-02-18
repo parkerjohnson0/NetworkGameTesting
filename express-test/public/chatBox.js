@@ -53,9 +53,36 @@ class ChatBox
         {
 
             const element = this.messages[index];
-            let numberOfExtraLines = Math.floor(textWidth(element.message) / maxWidth)
+            let message
+            let name
+            if (element.type === "localClient" )
+            {
+                push();
+                name = element.message.split(":")[0]
+                message = ": " + element.message.split(":")[1].trim()
+                // this.formatChatMessage(message, "#ff2020","#FFFFFF",startPos,maxWidth)
+                textSize(element.fontSize)
+                message = this.padMessage(name) + message
+
+                
+            }
+            else if (element.type === "remoteClient")
+            {
+                push();
+
+                name = element.message.split(":")[0]
+                 message = ": " + element.message.split(":")[1].trim()
+                // this.formatChatMessage(message, "#2020ff","#FFFFFF",startPos,maxWidth)
+                textSize(element.fontSize)
+                message = this.padMessage(name) + message
+                
+
+            }
+            let numberOfExtraLines = Math.floor(textWidth(message) / maxWidth)
+
+            console.log(numberOfExtraLines)
             startPos -= element.fontSize * numberOfExtraLines
-            pop();
+            // pop();
             if (startPos - this.y  - this.padding > 0) //only show messages if it is not going to be drawn outside of the box
             {
                 //find amount of lines comment will take up. change start pos of comment to be higher on the screen 
@@ -63,13 +90,13 @@ class ChatBox
                 textLeading(element.fontSize) //makes space between lines consistent for multiline comments
                 if(element.type ==="localClient")
                 {
-                    this.formatChatMessage(element, "#ff2020","#FFFFFF",startPos,maxWidth)
-
-
+                     this.formatChatMessage(message, name,"#ff2020","#FFFFFF",startPos,maxWidth)
+                     pop();
                 }
                 else if(element.type ==="remoteClient")
                 {
-                    this.formatChatMessage(element, "#2020ff","#FFFFFF",startPos,maxWidth)
+                    this.formatChatMessage(message, name, "#2020ff", "#FFFFFF", startPos, maxWidth)
+                    pop();
                 }
                 else if(element.type ==="admin")
                 {
@@ -80,7 +107,8 @@ class ChatBox
                     textWrap(WORD)
                     fill(255, 0, 0)
                     text(element.message, this.x + this.padding, startPos - element.fontSize, maxWidth)
-                    // pop();
+                    pop();
+
                     
                 }
                 else if(element.type ==="info")
@@ -91,7 +119,7 @@ class ChatBox
                     textWrap(WORD)
                     fill(255)
                     text(element.message, this.x + this.padding, startPos - element.fontSize, maxWidth)
-                    // pop();
+                    pop();
 
 
                 }
@@ -106,29 +134,31 @@ class ChatBox
                 this.removeChatMessages(index)
             }
         }
-        pop();
+        // pop();
+        // push();
+
 
     }
     removeChatMessages(index)
     {
         this.messages.splice(0,index)
     }
-    formatChatMessage(element,nameColor, messageColor,startPos,maxWidth)
+    formatChatMessage(content,name,nameColor, contentColor,startPos,maxWidth)
     {
         //message format "username: content"
-        let name = element.message.split(":")[0]
-        let message = ": " + element.message.split(":")[1].trim()
-        push();
-        textSize(element.fontSize)
+        // let name = message.split(":")[0]
+        // let content = ": " + message.split(":")[1]
+        // push();
+        // textSize(element.fontSize)
         textStyle(BOLD)
         textWrap(WORD)
 
         fill(nameColor)
-        text(name, this.x + this.padding, startPos - element.fontSize, maxWidth)
-        fill(messageColor)
+        text(name, this.x + this.padding, startPos - textSize(), maxWidth)
+        fill(contentColor)
         textStyle(NORMAL)
-        message = this.padMessage(name) + message
-        text(message, this.x + this.padding, startPos - element.fontSize, maxWidth)
+        // message = this.padMessage(name) + message
+        text(content, this.x + this.padding, startPos - textSize(), maxWidth)
         // pop();
     }
     padMessage(name)
@@ -140,7 +170,7 @@ class ChatBox
             {
                 padString += " "
             }
-            padString += " "
+            // padString += " "
         }
         return padString
     }

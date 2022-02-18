@@ -40,8 +40,8 @@ sendMessage()
 {
     let text = this.chatBox.input.elt.value.trim();
     if (text)
-    console.log(text);
     {
+        console.log(text);
         this.chatBox.input.elt.value = "" //reset input 
         let string = `${playerName}: ${text}`
         this.chatBox.addLocalChatMessage(string)
