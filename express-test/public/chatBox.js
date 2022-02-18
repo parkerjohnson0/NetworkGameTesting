@@ -151,7 +151,7 @@ class ChatBox
         // push();
         // textSize(element.fontSize)
         textStyle(BOLD)
-        textWrap(WORD)
+        textWrap(CHAR)
 
         fill(nameColor)
         text(name, this.x + this.padding, startPos - textSize(), maxWidth)
