@@ -14,7 +14,7 @@ class Tower {
         this.bullets = [];
         this.bulletsToRemove = [];
         this.damage = 10;
-        this.refire = 1;
+        this.refire = 1.5;
         this.speed = 10;
         this.fireTimer = new Timer(this.refire);
         this.currUpgradeCost = 10;
@@ -34,9 +34,9 @@ class Tower {
 
     upgrade(){
         if (this.rank < this.maxRank){
-        this.damage+=5;
-        this.refire *= 0.9;
-        this.range += 4;
+        this.damage+=3;
+        this.refire *= 0.93;
+        this.range += 3;
         this.fireTimer.seconds = this.refire;
         this.totalSpent+=this.currUpgradeCost;
         this.currUpgradeCost = floor(this.currUpgradeCost*this.upgradeMultiplier);
@@ -56,7 +56,9 @@ class Tower {
             let distance = dist(this.position.x, this.position.y, enemy.position.x, enemy.position.y);
           if  ((distance < closest) && distance < this.range){
               closest = distance;
+              if (enemy.isTargetable){
               target = enemy;
+              }
           }
         }
         let aimVector = createVector(0,0);
@@ -70,7 +72,11 @@ class Tower {
         imageMode(CENTER);
         translate(this.position.x, this.position.y);
         target == null ? rotate(0) : rotate(this.angle+radians(270));
+        // if (this.owner == 'p2'){
+        //     tint(0, 0, 255, 255);
+        //   }
         image(this.sprite, 0, 0);
+
         //rect(0,0,20,5);
         pop();
 

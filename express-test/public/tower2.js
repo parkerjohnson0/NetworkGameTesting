@@ -40,7 +40,7 @@ class Tower2 {
         this.damage+=5;
         this.refire *= 0.95;
         this.range += 2;
-        this.type.range += 1;
+        this.type.range += 2;
         this.fireTimer.seconds = this.refire;
         this.totalSpent+=this.currUpgradeCost;
         this.currUpgradeCost = floor(this.currUpgradeCost*this.upgradeMultiplier);
@@ -60,7 +60,9 @@ class Tower2 {
             let distance = dist(this.position.x, this.position.y, enemy.position.x, enemy.position.y);
           if  ((distance < closest) && distance < this.range){
               closest = distance;
-              target = enemy;
+              if (enemy.isTargetable){
+                target = enemy;
+                }
           }
         }
         let aimVector = createVector(0,0);
@@ -74,6 +76,9 @@ class Tower2 {
         imageMode(CENTER);
         translate(this.position.x, this.position.y);
         target == null ? rotate(0) : rotate(this.angle+radians(270));
+        // if (this.owner == 'p2'){
+        //     tint(0, 0, 68, 128);
+        //   }
         image(this.sprite, 0, 0);
         
         pop();

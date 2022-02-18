@@ -10,7 +10,9 @@ class Enemy{
         this.path = this.navAgent.findPath(this.currentTile, this.goal);
         this.target = this.path[0];
         this.tileOffset = this.currentTile.w/2;
-        this.hp = 10 + 10 * currRound;
+        this.hp = 20 + 15 * currRound;
+        this.isTargetable = false;
+        this.canBeHitTile = this.path[0];
 
         this.sprite;
         this.animation = new spriteAnimation(6);
@@ -20,6 +22,13 @@ class Enemy{
     }
 
     move(){
+        // targettable at the start
+        if (this.isTargetable == false){
+        let targetablePosition = createVector((this.canBeHitTile.position.x+this.tileOffset),(this.canBeHitTile.position.y+this.tileOffset));
+        if (this.position.equals(targetablePosition)){
+            this.isTargetable = true;
+        }
+        }
         let tilePosition = createVector((this.target.position.x+this.tileOffset),(this.target.position.y+this.tileOffset));
         if (this.position.equals(tilePosition)){
             this.currentTile = this.target;
@@ -58,10 +67,12 @@ class Enemy{
             }
         }
         if (damageType.type=="slow"){
-            this.speed = 0;;
+            this.speed = 0;
             let allies = testEnemies.filter(enemy => dist(this.position.x,this.position.y,enemy.position.x, enemy.position.y) < damageType.range && enemy != this)
             for (let ally of allies){
-                ally.speed <= 0 ? 0 : ally.speed -= damageType.slowAmount;
+                if (ally.speed > .5){
+                ally.speed -= damageType.slowAmount;
+                }
                 ally.onHit(type.damage);
             }
         }

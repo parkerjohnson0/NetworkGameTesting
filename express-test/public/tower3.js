@@ -62,7 +62,9 @@ class Tower3 {
             let distance = dist(this.position.x, this.position.y, enemy.position.x, enemy.position.y);
           if  ((distance < closest) && distance < this.range){
               closest = distance;
-              target = enemy;
+              if (enemy.isTargetable){
+                target = enemy;
+                }
           }
         }
         let aimVector = createVector(0,0);
@@ -77,6 +79,9 @@ class Tower3 {
         translate(this.position.x, this.position.y);
         rotate(0);
         //target == null ? rotate(0) : rotate(this.angle+radians(270));
+        // if (this.owner == 'p2'){
+        //     tint(0, 0, 255, 255);
+        //   }
         image(this.sprite, 0, 0);
         
         pop();

@@ -521,6 +521,7 @@ function draw()
       {
         tower.checkMouse();
       }
+
       tower.draw();
     }
 
