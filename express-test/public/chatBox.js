@@ -80,7 +80,7 @@ class ChatBox
             }
             let numberOfExtraLines = Math.floor(textWidth(message) / maxWidth)
 
-            console.log(numberOfExtraLines)
+            // console.log(numberOfExtraLines)
             startPos -= element.fontSize * numberOfExtraLines
             // pop();
             if (startPos - this.y  - this.padding > 0) //only show messages if it is not going to be drawn outside of the box
