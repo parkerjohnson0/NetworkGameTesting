@@ -373,6 +373,7 @@ function mouseClicked()
         {
           ui.generateFloatingText(`+${floor(currTower.totalSpent / 2)} gold`, currTower.position, color(255, 255, 0, 255));
           gold += floor(currTower.totalSpent / 2);
+          gameMap.tileMap[tower.row][tower.col].isPathable = true;
           currTower.rank = -1;
           socket.emit("towerDestroy", currTower.id)
         }
@@ -751,6 +752,7 @@ function setupSocket()
   socket.on("destroyTower", (data)=>{
     let tower = towers.find(x => x.id === data && x.owner == 'p2');
     tower.rank = -1;
+    gameMap.tileMap[tower.row][tower.col].isPathable = true;
     // console.log(tower)
     // ui.generateFloatingText(`+${floor(tower.totalSpent / 2)} gold`, tower.position, color(255, 255, 0, 255));
   })
