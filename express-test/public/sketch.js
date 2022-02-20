@@ -655,14 +655,14 @@ function setupSocket()
     gameMap.generate();
     startL = gameMap.tileMap[11][0];
     startR = gameMap.tileMap[11][gameMap.cols - 1];
-    goal = gameMap.tileMap[16][16];
+    goal = gameMap.tileMap[15][15];
     for (let space of gameMap.tileMap)
     {
       for (let tile of space)
       {
-        if (tile.r >= 15 && tile.r <= 17)
+        if (tile.r >= 14 && tile.r <= 16)
         {
-          if (tile.c >= 15 && tile.c <= 17)
+          if (tile.c >= 14 && tile.c <= 16)
           {
             tile.outOfBounds = true;
           }
