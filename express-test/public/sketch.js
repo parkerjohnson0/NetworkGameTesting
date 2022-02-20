@@ -609,8 +609,9 @@ function draw()
         noFill();
         stroke(0, 255, 0, 128);
         circle(currTile.position.x + gameMap.tileWidth / 2, currTile.position.y + gameMap.tileWidth / 2, tower.range * 2);
+        imageMode(CENTER);
+        image(tower.sprite, currTile.position.x + (tower.sprite.width / 4), currTile.position.y + (tower.sprite.height / 4));
         pop();
-        image(tower.sprite, currTile.position.x - (tower.sprite.width / 4), currTile.position.y - (tower.sprite.height / 4));
       }
 
     }
