@@ -294,7 +294,7 @@ function mouseClicked()
           switch (towerToBuild)
           {
             case 0:
-              tower = new Tower(tile.position.x, tile.position.y, "p1", tile.r, tile.c, ui.buttons[towerToBuild].cost, towerID)
+              tower = new Tower(tile.position.x + gameMap.tileWidth / 2, tile.position.y + gameMap.tileWidth / 2, "p1", tile.r, tile.c, ui.buttons[towerToBuild].cost, towerID)
               break;
             case 1:
               tower = new Tower2(mouseX, mouseY, "p1", tile.r, tile.c, ui.buttons[towerToBuild].cost, towerID)
@@ -601,13 +601,18 @@ function draw()
       }
 
       // Tower visuals -- Can be built or not
-      push();
-      ellipseMode(CENTER);
-      noFill();
-      stroke(0, 255, 0, 128);
-      circle(mouseX, mouseY, tower.range * 2);
-      pop();
-      image(tower.sprite, mouseX - tower.sprite.width / 2, mouseY - tower.sprite.height / 2)
+      if ((mouseX > 0 && mouseX < playWidth && mouseY > 0 && mouseY < playHeight) && (canBuild) && towerToBuild >= 0)
+      {
+        let currTile = gameMap.getTile(mouseX, mouseY)
+        push();
+        ellipseMode(CENTER);
+        noFill();
+        stroke(0, 255, 0, 128);
+        circle(currTile.position.x - gameMap.tileWidth / 2, currTile.position.y - gameMap.tileWidth / 2, tower.range * 2);
+        pop();
+        image(tower.sprite, currTile.position.x - gameMap.tileWidth / 2, currTile.position.y - gameMap.tileWidth / 2)
+      }
+
     }
     noTint();
     // Display Upgrade or Destroy
