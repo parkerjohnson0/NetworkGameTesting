@@ -297,13 +297,13 @@ function mouseClicked()
               tower = new Tower(tile.position.x + gameMap.tileWidth / 2, tile.position.y + gameMap.tileWidth / 2, "p1", tile.r, tile.c, ui.buttons[towerToBuild].cost, towerID)
               break;
             case 1:
-              tower = new Tower2(mouseX, mouseY, "p1", tile.r, tile.c, ui.buttons[towerToBuild].cost, towerID)
+              tower = new Tower2(tile.position.x + gameMap.tileWidth / 2, tile.position.y + gameMap.tileWidth / 2, "p1", tile.r, tile.c, ui.buttons[towerToBuild].cost, towerID)
               break;
             case 2:
-              tower = new Tower3(mouseX, mouseY, "p1", tile.r, tile.c, ui.buttons[towerToBuild].cost, towerID)
+              tower = new Tower3(tile.position.x + gameMap.tileWidth / 2, tile.position.y + gameMap.tileWidth / 2, "p1", tile.r, tile.c, ui.buttons[towerToBuild].cost, towerID)
               break;
             case 3:
-              tower = new Tower4(mouseX, mouseY, "p1", tile.r, tile.c, ui.buttons[towerToBuild].cost, towerID)
+              tower = new Tower4(tile.position.x + gameMap.tileWidth / 2, tile.position.y + gameMap.tileWidth / 2, "p1", tile.r, tile.c, ui.buttons[towerToBuild].cost, towerID)
               break;
             default:
               break;
