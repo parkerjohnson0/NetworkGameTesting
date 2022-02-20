@@ -96,7 +96,7 @@ findPath(start, end) {
     }
     attempts+=1;
     // Uh oh, no solution
-    if (attempts > 50) {
+    if (attempts > 1000) {
       return [];
     }
   }

@@ -1,4 +1,3 @@
-
 class ChatBox
 {
     // messages = [new Message("chat", "test: hello this is a single line comment",14), new Message("chat","test: hello this is a 2 line comment hello this is a 2 line comment  hello this is a 2 line comment",14),
@@ -9,8 +8,8 @@ class ChatBox
     messages = []
     messageOffset = 5//space between messages
     padding = 15 //space between edge of box and the text
-    text_size = 14 
-    constructor(x,y,width,height)
+    // text_size = 14 
+    constructor(x, y, width, height)
     {
         this.x = x;
         this.y = y;
@@ -21,26 +20,32 @@ class ChatBox
         this.input.position(this.x + this.padding, -40, "relative")
         this.input.parent("#game_container")
         this.input.size(270, 25)
+        this.emotes = 
+            { goldPooper: loadImage(`emotes/goldPooper16.png`) , 
+             RIP: loadImage(`emotes/skull16.png`) }
+        
+        
     }
     addLocalChatMessage(message)
     {
-        this.messages.push(new Message("localClient",message,16))
+        this.messages.push(new Message("localClient", message, 16))
     }
     addRemoteChatMessage(message)
     {
-        this.messages.push(new Message("remoteClient",message,16))
+        this.messages.push(new Message("remoteClient", message, 16))
     }
     greetPlayer(name)
     {
-        this.messages.push(new Message("info", name + " has joined the game!",16))
+        this.messages.push(new Message("info", name + " has joined the game!", 16))
     }
     buildTimerEnd()
     {
-        this.messages.push(new Message("admin","STARTING ATTACK PHASE",16))
+        this.messages.push(new Message("admin", "STARTING ATTACK PHASE", 16))
     }
 
-    blockedPath(){
-        this.messages.push(new Message("admin","Can not block path to base!",16))
+    blockedPath()
+    {
+        this.messages.push(new Message("admin", "Can not block path to base!", 16))
     }
 
     show()
@@ -55,52 +60,83 @@ class ChatBox
             const element = this.messages[index];
             let message
             let name
-            if (element.type === "localClient" )
+            if (element.type === "localClient")
             {
-                push();
+                // push();
                 name = element.message.split(":")[0]
-                message = ": " + element.message.split(":")[1].trim()
+                message = element.message.split(":")[1].trim()
                 // this.formatChatMessage(message, "#ff2020","#FFFFFF",startPos,maxWidth)
-                textSize(element.fontSize)
-                message = this.padMessage(name) + message
+                // textSize(element.fontSize)
+                message = this.padMessage(name, element.fontSize) + message
 
-                
+
             }
             else if (element.type === "remoteClient")
             {
-                push();
+                // push();
 
                 name = element.message.split(":")[0]
-                 message = ": " + element.message.split(":")[1].trim()
+                message = ": " + element.message.split(":")[1].trim()
                 // this.formatChatMessage(message, "#2020ff","#FFFFFF",startPos,maxWidth)
-                textSize(element.fontSize)
-                message = this.padMessage(name) + message
-                
+                // textSize(element.fontSize)
+                message = this.padMessage(name, element.fontSize) + message
+
 
             }
-            let numberOfExtraLines = Math.floor(textWidth(message) / maxWidth)
+            else if (element.type === "admin")
+            {
+                message = element.message
+            }
+            else if (element.type === "info")
+            {
+                message = element.message
+            }
 
+            push(); // text size affects textWidth so do that first
+            textSize(element.fontSize)
+            let numberOfExtraLines
+            let numOfEmotes
+            if (numOfEmotes = this.numberOfEmotes(message))
+            {
+                let remove = this.removeEmotesFromMessage(message)
+                let messageWidth = textWidth(remove) + 16 * numOfEmotes
+                numberOfExtraLines = Math.floor(messageWidth / maxWidth)
+            }
+            else
+            {
+                numberOfExtraLines = Math.floor(textWidth(message) / maxWidth)
+            }
+            pop();
             // console.log(numberOfExtraLines)
+            let test = textWidth("    ")
             startPos -= element.fontSize * numberOfExtraLines
             // pop();
-            if (startPos - this.y  - this.padding > 0) //only show messages if it is not going to be drawn outside of the box
+            if (startPos - this.y - this.padding > 0) //only show messages if it is not going to be drawn outside of the box
             {
                 //find amount of lines comment will take up. change start pos of comment to be higher on the screen 
 
-                textLeading(element.fontSize) //makes space between lines consistent for multiline comments
-                if(element.type ==="localClient")
-                {
-                     this.formatChatMessage(message, name,"#ff2020","#FFFFFF",startPos,maxWidth)
-                     pop();
-                }
-                else if(element.type ==="remoteClient")
-                {
-                    this.formatChatMessage(message, name, "#2020ff", "#FFFFFF", startPos, maxWidth)
-                    pop();
-                }
-                else if(element.type ==="admin")
+                // textLeading(element.fontSize) //makes space between lines consistent for multiline comments
+                if (element.type === "localClient")
                 {
                     push();
+                    textLeading(element.fontSize) //makes space between lines consistent for multiline comments
+
+                    this.formatChatMessage(message, name, "#ff2020", "#FFFFFF", startPos, maxWidth, element.fontSize)
+                    pop();
+                }
+                else if (element.type === "remoteClient")
+                {
+                    push();
+                    textLeading(element.fontSize) //makes space between lines consistent for multiline comments
+
+                    this.formatChatMessage(message, name, "#2020ff", "#FFFFFF", startPos, maxWidth, element.fontSize)
+                    pop();
+                }
+                else if (element.type === "admin")
+                {
+                    push();
+                    textLeading(element.fontSize) //makes space between lines consistent for multiline comments
+
                     textSize(element.fontSize)
 
                     textStyle(BOLD)
@@ -109,11 +145,12 @@ class ChatBox
                     text(element.message, this.x + this.padding, startPos - element.fontSize, maxWidth)
                     pop();
 
-                    
+
                 }
-                else if(element.type ==="info")
+                else if (element.type === "info")
                 {
                     push();
+                    textLeading(element.fontSize) //makes space between lines consistent for multiline comments
                     textSize(element.fontSize)
                     textStyle(ITALIC)
                     textWrap(WORD)
@@ -123,7 +160,7 @@ class ChatBox
 
 
                 }
-                
+
                 // startPos -= this.messageOffset + element.fontSize//update start position for next loop
                 startPos -= element.fontSize + this.messageOffset
 
@@ -141,43 +178,168 @@ class ChatBox
     }
     removeChatMessages(index)
     {
-        this.messages.splice(0,index)
+        this.messages.splice(0, index)
     }
-    formatChatMessage(content,name,nameColor, contentColor,startPos,maxWidth)
+    formatChatMessage(content, name, nameColor, contentColor, startPos, maxWidth, fontSize)
     {
         //message format "username: content"
         // let name = message.split(":")[0]
         // let content = ": " + message.split(":")[1]
         // push();
-        // textSize(element.fontSize)
+        textSize(fontSize)
         textStyle(BOLD)
         textWrap(CHAR)
 
         fill(nameColor)
-        text(name, this.x + this.padding, startPos - textSize(), maxWidth)
+        text(name, this.x + this.padding, startPos - fontSize, maxWidth)
+        // let currWidth = textWidth(name)
+        let colonString = ": "
         fill(contentColor)
+        text(colonString, this.x + this.padding + textWidth(name), startPos - fontSize, maxWidth)
+        // currWidth += textWidth(colonString)
         textStyle(NORMAL)
         // message = this.padMessage(name) + message
-        text(content, this.x + this.padding, startPos - textSize(), maxWidth)
+        if (this.containsEmote(content)) //replace with containsEmote call
+        {
+            let emoteTest = this.emoteReplace(content);
+            // let stringOffset = 16; //emote size
+            let leadingWhiteSpace = emoteTest.substrings.filter(x => x == "").join(" ") + " "
+            // // emoteTest.substrings = emoteTest.substrings.filter(x => x != "") //filter out leading whitespace for name and colon
+            // text(leadingWhiteSpace, this.x + this.padding + textWidth(colonString), startPos - fontSize, maxWidth)
+            // let currWidth = textWidth(leadingWhiteSpace) + textWidth(colonString)
+            // let stringOffset = textWidth(leadingWhiteSpace) + textWidth(colonString + " ")
+            let emoteLessMessage = emoteTest.substrings.filter(x => x != "").join(" ")
+            let commaSeparated = emoteTest.substrings.filter(x => x != "").join(",") //used to build the emote mask
+
+            text(leadingWhiteSpace + emoteLessMessage, this.x + this.padding, startPos - fontSize, maxWidth)
+            let message = emoteLessMessage;
+            let wordArray = commaSeparated.split(",")
+
+            let xOffset = textWidth(leadingWhiteSpace) % maxWidth 
+            let messageLength = textWidth(leadingWhiteSpace)
+            let emoteIndex = 0
+            for (let i = 0; i < wordArray.length; i++)
+            {
+
+
+                // let messageLength = textWidth(message)
+                let yOffset = 0
+                // let xOffset = (messageLength + textWidth(leadingWhiteSpace)) % maxWidth 
+                let lines
+
+                if ((lines = Math.floor(messageLength/ maxWidth)) > 0)
+                {
+                    yOffset = lines * fontSize
+                }
+                if (wordArray[i] == "   ")
+                {
+                    let emoteKey = emoteTest.emotes[emoteIndex++]
+
+                    image(this.emotes[emoteKey], (this.x + this.padding + xOffset), startPos - fontSize + yOffset)
+                }
+                messageLength += textWidth(wordArray[i]) + textWidth(" ")
+                xOffset = messageLength % maxWidth
+                // image(this.goldPooper, this.x + this.padding + xOffset, startPos - fontSize + yOffset)
+
+            }
+            // for (let i = 0; i < emoteTest.substrings.length; i++)
+            // {
+            //     if (emoteTest.substrings[i] == " ")
+            //     {
+            //         image(this.goldPooper, this.x + this.padding + stringOffset, startPos - fontSize)
+            //         stringOffset += this.goldPooper.width + textWidth(" ");
+            //         currWidth += 32 // leading and trailing space
+            //     }
+            //     else
+            //     {
+            //         let substring = emoteTest.substrings[i]
+            //         text(substring, this.x + this.padding + stringOffset, startPos - fontSize, maxWidth)
+            //         stringOffset += textWidth(emoteTest.substrings[i] + " ")
+            //         currWidth += textWidth(emoteTest.substrings[i])
+            //     }
+            // }
+        }
+        else
+        {
+            text(content, this.x + this.padding, startPos - fontSize, maxWidth)
+        }
+
+        // text(content, this.x + this.padding, startPos - fontSize, maxWidth)
         // pop();
     }
-    padMessage(name)
+    padMessage(name, fontSize)
     {
+        name += ": "
         let padString = ""
+        let padWidth = ""
+        let nameWidth = ""
+        push();
+        textSize(fontSize)
         if (textWidth(padString) < textWidth(name)) 
         {
-            while (textWidth(padString) < textWidth(name))
+            padWidth = textWidth(padString)
+            nameWidth = textWidth(name)
+            while (padWidth < nameWidth + 3)
             {
                 padString += " "
+                padWidth = textWidth(padString)
+                nameWidth = textWidth(name)
             }
-            padString += " "
+            // padString += " "
         }
+        pop();
         return padString
     }
-
+    emoteReplace(content)
+    {
+        let substrings = content.split(" ")
+        let emotes = []
+        let keys = Object.keys(this.emotes)
+        // if (substrings.includes('goldPooper'))
+        // {
+        //     emotes.push('goldPooper')
+        // }
+        for (let index = 0; index < substrings.length; index++)
+        {
+            const element = substrings[index];
+            if (keys.includes(element))
+            {
+                emotes.push(element)
+                substrings[index] = "   "
+            }
+        }
+        return { "substrings": substrings, "emotes": emotes }
+    }
+    containsEmote(message)
+    {
+        let s = message.split(" ")
+        let keys = Object.keys(this.emotes)
+        return s.some(x => keys.some(y => y == x))
+    }
+    numberOfEmotes(message)
+    {
+        let s = message.trim().split(" ")
+        let keys = Object.keys(this.emotes)
+        return s.filter(x => keys.includes(x)).length
+    }
+    removeEmotesFromMessage(message)
+    {
+        let s = message.split(" ")
+        let keys = Object.keys(this.emotes)
+        s.forEach((x, index) => 
+        {
+            if (keys.includes(x))
+            {
+                s[index] = "   "
+            }
+        })
+        return s.join(" ");
+    }
 }
-class Message{
-    constructor(type,message,fontSize){
+class Message
+{
+    constructor(type, message, fontSize)
+    {
         this.type = type
         this.message = message
         this.fontSize = fontSize

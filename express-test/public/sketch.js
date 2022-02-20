@@ -283,7 +283,6 @@ function mouseClicked()
       // Build makes goal unpathable
       if (gameMap.navChecker.findPath(startL, goal).length < 1 || gameMap.navChecker.findPath(startR, goal).length < 1)
       {
-        console.log("POOPER")
         tile.isPathable = true;
         ui.chatBox.blockedPath();
       }
@@ -295,7 +294,7 @@ function mouseClicked()
           switch (towerToBuild)
           {
             case 0:
-              tower = new Tower(mouseX, mouseY, "p1", tile.r, tile.c, ui.buttons[towerToBuild].cost, towerID)
+              tower = new Tower(tile.position.x, tile.position.y, "p1", tile.r, tile.c, ui.buttons[towerToBuild].cost, towerID)
               break;
             case 1:
               tower = new Tower2(mouseX, mouseY, "p1", tile.r, tile.c, ui.buttons[towerToBuild].cost, towerID)
@@ -566,11 +565,9 @@ function draw()
       circle(selectedTower.position.x, selectedTower.position.y, selectedTower.range * 2);
       pop();
     }
-
     fill(0);
     noStroke();
     text(frameRate(), 10, 10);
-
 
 
     push();
