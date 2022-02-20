@@ -608,7 +608,7 @@ function draw()
         ellipseMode(CENTER);
         noFill();
         stroke(0, 255, 0, 128);
-        circle(currTile.position.x - gameMap.tileWidth / 2, currTile.position.y - gameMap.tileWidth / 2, tower.range * 2);
+        circle(currTile.position.x + gameMap.tileWidth / 2, currTile.position.y + gameMap.tileWidth / 2, tower.range * 2);
         pop();
         image(tower.sprite, currTile.position.x - gameMap.tileWidth / 2, currTile.position.y - gameMap.tileWidth / 2)
       }
