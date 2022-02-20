@@ -94,7 +94,8 @@ function preload()
   resources.heart = loadImage(`assets/heart.png`);
   resources.popup = loadImage(`assets/popup_frame.png`);
   resources.backplate = loadImage(`assets/ui_backplate.png`);
-
+  resources.chatOverlay = loadImage(`assets/chat_overlay.png`)
+  resources.font = loadFont('assets/pixaltation.ttf');
 }
 
 function setup()
@@ -105,7 +106,7 @@ function setup()
   ui = new UserInterface();
   ui.roundText.setText("Build Phase");
   p2mousePosition = createVector(-50, 50);
-
+  textFont(resources.font)
 
   //prep all assets
   resources.towerButtons = generateSprites(towerSprites, 100, 100);

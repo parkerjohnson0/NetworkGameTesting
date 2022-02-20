@@ -67,8 +67,8 @@ sendMessage()
         push();
         fill(255);
         textAlign(CENTER);
-        textSize(18);
-        text(`Wave \n${currRound}`, playWidth+75,480);
+        textSize(14);
+        text(`WAVE \n${currRound}`, playWidth+75,480);
         pop();
 
         // Gold Count

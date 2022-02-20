@@ -7,7 +7,8 @@ class ChatBox
     // ]
     messages = []
     messageOffset = 5//space between messages
-    padding = 15 //space between edge of box and the text
+    padding = 25 //space between edge of box and the text
+    top_padding = 50
     // text_size = 14 
     constructor(x, y, width, height)
     {
@@ -17,9 +18,9 @@ class ChatBox
         this.height = height;
         this.input = createInput("", "text")
         this.input.elt["maxLength"] = 70
-        this.input.position(this.x + this.padding, -40, "relative")
+        this.input.position(this.x + this.padding, -55, "relative")
         this.input.parent("#game_container")
-        this.input.size(270, 25)
+        this.input.size(250, 25)
         this.emotes = 
             { goldPooper: loadImage(`emotes/goldPooper16.png`) , 
              RIP: loadImage(`emotes/skull16.png`) }
@@ -52,7 +53,7 @@ class ChatBox
     {
         fill(140, 140, 140, 255)
         rect(this.x, this.y, this.width, this.height)
-        let startPos = this.y + this.height - this.padding - 30
+        let startPos = this.y + this.height - this.padding - 20
         let maxWidth = this.width - this.padding * 2 //max width of a line is the width of the textbox times the padding from both sides
         for (let index = this.messages.length - 1; index >= 0; index--)
         {
@@ -111,7 +112,7 @@ class ChatBox
             let test = textWidth("    ")
             startPos -= element.fontSize * numberOfExtraLines
             // pop();
-            if (startPos - this.y - this.padding > 0) //only show messages if it is not going to be drawn outside of the box
+            if (startPos - this.y - this.top_padding > 0) //only show messages if it is not going to be drawn outside of the box
             {
                 //find amount of lines comment will take up. change start pos of comment to be higher on the screen 
 
@@ -174,7 +175,7 @@ class ChatBox
         // pop();
         // push();
 
-
+        image(resources.chatOverlay, this.x, this.y)
     }
     removeChatMessages(index)
     {
