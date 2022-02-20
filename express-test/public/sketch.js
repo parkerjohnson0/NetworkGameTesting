@@ -138,7 +138,7 @@ function setup()
   fill(0);
 
   //Generate Map
-  let rows = 30;
+  let rows = 29;
   let cols = 30;
   gameMap = new Map(rows, cols);
   setupSocket();
