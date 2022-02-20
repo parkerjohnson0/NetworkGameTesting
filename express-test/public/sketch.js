@@ -66,7 +66,7 @@ let chatBox;
 let randSeed;
 
 let gfx;
-
+let targetFrameTime = 1000 / 60
 
 
 function preload()
@@ -101,7 +101,7 @@ function setup()
 {
   frameRate(60)
   gfx = createGraphics(playWidth, playHeight);
-  gfx.background(0,0,0)
+  gfx.background(0, 0, 0)
   ui = new UserInterface();
   ui.roundText.setText("Build Phase");
   p2mousePosition = createVector(-50, 50);
@@ -131,7 +131,7 @@ function setup()
   ui.playerControls.push(new Button(resources.destroy, 0, -2, playWidth + 1, 405));
 
   let canv = createCanvas(playWidth + 400, playHeight);
-  canv.elt.addEventListener("contextmenu", (e)=> e.preventDefault());
+  canv.elt.addEventListener("contextmenu", (e) => e.preventDefault());
   background(0);
   stroke(0, 255, 0);
   noFill();
@@ -192,39 +192,39 @@ function keyPressed()
   selectedTower = null;
   if (mouseX < playWidth + 100 && mouseY < playHeight)
   {
-    
-  switch (keyCode)
-  {
-    // 1 key
-    case 49:
-      towerToBuild = 0;
-      break;
-    // 2 key
-    case 50:
-      towerToBuild = 1;
-      break;
-    // 3 key
-    case 51:
-      towerToBuild = 2;
-      break;
-    // 4 key
-    case 52:
-      towerToBuild = 3;
-      break;
-    // ESC key
-    case 27:
-      towerToBuild = -5;
-      break;
-    // U key
-    case 85:
-      towerToBuild = -1;
-      break;
-    // D key
-    case 68:
-      towerToBuild = -2;
-      break;
-    default:
-      break;
+
+    switch (keyCode)
+    {
+      // 1 key
+      case 49:
+        towerToBuild = 0;
+        break;
+      // 2 key
+      case 50:
+        towerToBuild = 1;
+        break;
+      // 3 key
+      case 51:
+        towerToBuild = 2;
+        break;
+      // 4 key
+      case 52:
+        towerToBuild = 3;
+        break;
+      // ESC key
+      case 27:
+        towerToBuild = -5;
+        break;
+      // U key
+      case 85:
+        towerToBuild = -1;
+        break;
+      // D key
+      case 68:
+        towerToBuild = -2;
+        break;
+      default:
+        break;
     }
   }
 }
@@ -449,190 +449,194 @@ function startBuild()
 
 function draw()
 {
-  background(0);
-  image(gfx, 0, 0);
-  noCursor();
-  updatePlayers();
-  // Tick over build clock for 1P Testing
-  if (IsStarted)
+  let delta = deltaTime;
+  while (delta > targetFrameTime)
   {
+    background(0);
+    image(gfx, 0, 0);
+    noCursor();
+    updatePlayers();
+    // Tick over build clock for 1P Testing
+    if (IsStarted)
+    {
 
-    canBuild = false;
-    if (buildTimer && buildTimer.isTicking && towerToBuild >= -5)
-    {
-      buildTimer.tick();
-      canBuild = true;
-    }
-
-    // Start next Enemy Wave
-    if (buildTimer && buildTimer.isFinished && !buildTimerEndRequested)
-    {
-      // spawnEnemies(); // Single Player
-      // buildTimer.reset(); // Single Player
-      socket.emit("requestBuildTimerEnd");
-      buildTimerEndRequested = true;
-    }
-    if (enemiesCanSpawn)
-    {
-      spawnEnemies();
-      IsAttackPhase = true;
-      enemiesCanSpawn = false;
-      buildTimer.timerRequested = false;
-      buildTimer.reset()
-    }
-    // gameMap.draw();
-
-    // Collate enemies that have died and need removal
-    let enemiesToRemove = [];
-    for (let enemy of testEnemies)
-    {
-      enemy.draw();
-      if (enemy.currentTile == enemy.goal)
+      canBuild = false;
+      if (buildTimer && buildTimer.isTicking && towerToBuild >= -5)
       {
-        enemiesToRemove.push(enemy);
-        lives -= 1;
-      }
-      if (enemy.hp <= 0)
-      {
-        enemiesToRemove.push(enemy);
-        gold += 10;
-      }
-    }
-    // Hacky Bullshit
-    image(resources.caveSprites[1], gameMap.tileMap[11][0].position.x, gameMap.tileMap[11][0].position.y);
-    push();
-    imageMode(CENTER);
-    translate(gameMap.tileMap[11][gameMap.cols - 1].position.x + 10, gameMap.tileMap[11][gameMap.cols - 1].position.y + 10);
-    rotate(radians(180));
-    image(resources.caveSprites[1], 0, 0);
-    pop();
-
-    if (lives <= 0 && !gameIsOver)
-    {
-      //end Game stuff
-      socket.emit("gameOver", currRound);
-      gameIsOver = true;
-    }
-
-    // Check mouse v tower for buildability
-    for (let tower of towers)
-    {
-      if (buildTimer && buildTimer.isTicking)
-      {
-        tower.checkMouse();
+        buildTimer.tick();
+        canBuild = true;
       }
 
-      tower.draw();
-    }
+      // Start next Enemy Wave
+      if (buildTimer && buildTimer.isFinished && !buildTimerEndRequested)
+      {
+        // spawnEnemies(); // Single Player
+        // buildTimer.reset(); // Single Player
+        socket.emit("requestBuildTimerEnd");
+        buildTimerEndRequested = true;
+      }
+      if (enemiesCanSpawn)
+      {
+        spawnEnemies();
+        IsAttackPhase = true;
+        enemiesCanSpawn = false;
+        buildTimer.timerRequested = false;
+        buildTimer.reset()
+      }
+      // gameMap.draw();
 
-    // Stop tracking and remove dead enemies
-    testEnemies = testEnemies.filter(item => !enemiesToRemove.includes(item));
-    enemiesToRemove = [];
-    if (testEnemies.length == 0 && buildTimer && !buildTimer.isTicking && IsAttackPhase)
-    {
-      console.log("Requesting build timer start")
-      gold += 50 * (floor(currRound / 10) + 1);
-      currRound += 1;
-      // startBuild();
-      socket.emit("requestBuildTimerStart");
-      buildTimer.timerRequested = true;
-      buildTimer.reset()
-      // console.log("fuck everything")
-      IsAttackPhase = false;
-      buildTimerEndRequested = false;
-
-    }
-    //   if (testEnemies.length == 0 && buildTimer && !buildTimer.isTicking && !buildTimer.timerRequested)
-    //   {
-    //   console.log("Requesting build timer start")
-    //   gold += 50 * (floor(currRound/10)+1);
-    //   currRound += 1;
-    //   // startBuild();
-    //   socket.emit("requestBuildTimerStart");
-    //     buildTimer.timerRequested = true;
-    //     buildTimer.reset()
-    // }
-
-    // Remove Destroyed Towers
-    towers = towers.filter(tower => tower.rank >= 0);
-
-    //Display current tower's range
-    if (selectedTower)
-    {
+      // Collate enemies that have died and need removal
+      let enemiesToRemove = [];
+      for (let enemy of testEnemies)
+      {
+        enemy.draw();
+        if (enemy.currentTile == enemy.goal)
+        {
+          enemiesToRemove.push(enemy);
+          lives -= 1;
+        }
+        if (enemy.hp <= 0)
+        {
+          enemiesToRemove.push(enemy);
+          gold += 10;
+        }
+      }
+      // Hacky Bullshit
+      image(resources.caveSprites[1], gameMap.tileMap[11][0].position.x, gameMap.tileMap[11][0].position.y);
       push();
-      ellipseMode(CENTER);
-      noFill();
-      stroke(0, 255, 0, 128);
-      circle(selectedTower.position.x, selectedTower.position.y, selectedTower.range * 2);
+      imageMode(CENTER);
+      translate(gameMap.tileMap[11][gameMap.cols - 1].position.x + 10, gameMap.tileMap[11][gameMap.cols - 1].position.y + 10);
+      rotate(radians(180));
+      image(resources.caveSprites[1], 0, 0);
       pop();
-    }
-    fill(0);
-    noStroke();
-    text(frameRate(), 10, 10);
 
-
-    push();
-    translate(goal.position.x - 20, goal.position.y - 20);
-    //imageMode(CENTER);
-    image(resources.base, 0, 0);
-    pop();
-    ui.draw();
-
-    canBuild == true ? tint(0, 255, 0, 200) : tint(255, 0, 0, 200);
-    // Display Range
-    if (towerToBuild >= 0)
-    {
-      let tower;
-      switch (towerToBuild)
+      if (lives <= 0 && !gameIsOver)
       {
-        case 0:
-          tower = new Tower(0, 0, "", 0, 0, 0);
-          break;
-        case 1:
-          tower = new Tower2(0, 0, "", 0, 0, 0);
-          break;
-        case 2:
-          tower = new Tower3(0, 0, "", 0, 0, 0);
-          break;
-        case 3:
-          tower = new Tower4(0, 0, "", 0, 0);
-          break;
-        default:
-          break;
+        //end Game stuff
+        socket.emit("gameOver", currRound);
+        gameIsOver = true;
       }
 
-      // Tower visuals -- Can be built or not
-      if ((mouseX > 0 && mouseX < playWidth && mouseY > 0 && mouseY < playHeight) && (canBuild) && towerToBuild >= 0)
+      // Check mouse v tower for buildability
+      for (let tower of towers)
       {
-        let currTile = gameMap.getTile(mouseX, mouseY)
+        if (buildTimer && buildTimer.isTicking)
+        {
+          tower.checkMouse();
+        }
+
+        tower.draw();
+      }
+
+      // Stop tracking and remove dead enemies
+      testEnemies = testEnemies.filter(item => !enemiesToRemove.includes(item));
+      enemiesToRemove = [];
+      if (testEnemies.length == 0 && buildTimer && !buildTimer.isTicking && IsAttackPhase)
+      {
+        console.log("Requesting build timer start")
+        gold += 50 * (floor(currRound / 10) + 1);
+        currRound += 1;
+        // startBuild();
+        socket.emit("requestBuildTimerStart");
+        buildTimer.timerRequested = true;
+        buildTimer.reset()
+        // console.log("fuck everything")
+        IsAttackPhase = false;
+        buildTimerEndRequested = false;
+
+      }
+      //   if (testEnemies.length == 0 && buildTimer && !buildTimer.isTicking && !buildTimer.timerRequested)
+      //   {
+      //   console.log("Requesting build timer start")
+      //   gold += 50 * (floor(currRound/10)+1);
+      //   currRound += 1;
+      //   // startBuild();
+      //   socket.emit("requestBuildTimerStart");
+      //     buildTimer.timerRequested = true;
+      //     buildTimer.reset()
+      // }
+
+      // Remove Destroyed Towers
+      towers = towers.filter(tower => tower.rank >= 0);
+
+      //Display current tower's range
+      if (selectedTower)
+      {
         push();
         ellipseMode(CENTER);
         noFill();
         stroke(0, 255, 0, 128);
-        circle(currTile.position.x + gameMap.tileWidth / 2, currTile.position.y + gameMap.tileWidth / 2, tower.range * 2);
-        imageMode(CENTER);
-        image(tower.sprite, currTile.position.x + gameMap.tileWidth / 2, currTile.position.y + gameMap.tileWidth / 2);
+        circle(selectedTower.position.x, selectedTower.position.y, selectedTower.range * 2);
         pop();
       }
+      fill(0);
+      noStroke();
+      text(frameRate(), 10, 10);
 
+
+      push();
+      translate(goal.position.x - 20, goal.position.y - 20);
+      //imageMode(CENTER);
+      image(resources.base, 0, 0);
+      pop();
+      ui.draw();
+
+      canBuild == true ? tint(0, 255, 0, 200) : tint(255, 0, 0, 200);
+      // Display Range
+      if (towerToBuild >= 0)
+      {
+        let tower;
+        switch (towerToBuild)
+        {
+          case 0:
+            tower = new Tower(0, 0, "", 0, 0, 0);
+            break;
+          case 1:
+            tower = new Tower2(0, 0, "", 0, 0, 0);
+            break;
+          case 2:
+            tower = new Tower3(0, 0, "", 0, 0, 0);
+            break;
+          case 3:
+            tower = new Tower4(0, 0, "", 0, 0);
+            break;
+          default:
+            break;
+        }
+
+        // Tower visuals -- Can be built or not
+        if ((mouseX > 0 && mouseX < playWidth && mouseY > 0 && mouseY < playHeight) && (canBuild) && towerToBuild >= 0)
+        {
+          let currTile = gameMap.getTile(mouseX, mouseY)
+          push();
+          ellipseMode(CENTER);
+          noFill();
+          stroke(0, 255, 0, 128);
+          circle(currTile.position.x + gameMap.tileWidth / 2, currTile.position.y + gameMap.tileWidth / 2, tower.range * 2);
+          imageMode(CENTER);
+          image(tower.sprite, currTile.position.x + gameMap.tileWidth / 2, currTile.position.y + gameMap.tileWidth / 2);
+          pop();
+        }
+
+      }
+      noTint();
+      // Display Upgrade or Destroy
+      towerToBuild == -1 ? image(resources.hammer, mouseX + resources.hammer.width / 4, mouseY - resources.hammer.height / 2) : null;
+      towerToBuild == -2 ? image(resources.cross, mouseX + resources.cross.width / 4, mouseY - resources.cross.height / 2) : null;
+      // Draw player 2 Mouse
+      push();
+      tint(0, 0, 68, 128);
+
+      image(resources.cursor, p2mousePosition.x, p2mousePosition.y);
+      noTint();
+      pop();
     }
-    noTint();
-    // Display Upgrade or Destroy
-    towerToBuild == -1 ? image(resources.hammer, mouseX + resources.hammer.width / 4, mouseY - resources.hammer.height / 2) : null;
-    towerToBuild == -2 ? image(resources.cross, mouseX + resources.cross.width / 4, mouseY - resources.cross.height / 2) : null;
-    // Draw player 2 Mouse
-    push();
-    tint(0, 0, 68, 128);
 
-    image(resources.cursor, p2mousePosition.x, p2mousePosition.y);
-    noTint();
-    pop();
+    image(resources.cursor, mouseX, mouseY);
+
+    onMouseHover();
   }
-
-  image(resources.cursor, mouseX, mouseY);
-
-  onMouseHover();
-
+  delta -= targetFrameTime
 }
 
 
@@ -742,14 +746,16 @@ function setupSocket()
     gameMap.tileMap[tower.row][tower.col].isPathable = false;
     towers.push(tower);
   })
-  socket.on("upgradeTower", (data)=>{
+  socket.on("upgradeTower", (data) =>
+  {
     // console.log(data)
     let tower = towers.find(x => x.id === data && x.owner === 'p2');
     tower.upgrade();
     // console.log(tower)
     ui.generateFloatingText(`Rank ↑`, tower.position, color(0, 225, 0, 255));
   })
-  socket.on("destroyTower", (data)=>{
+  socket.on("destroyTower", (data) =>
+  {
     let tower = towers.find(x => x.id === data && x.owner == 'p2');
     tower.rank = -1;
     gameMap.tileMap[tower.row][tower.col].isPathable = true;
