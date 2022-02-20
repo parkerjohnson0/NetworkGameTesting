@@ -743,7 +743,7 @@ function setupSocket()
   })
   socket.on("upgradeTower", (data)=>{
     // console.log(data)
-    let tower = towers.find(x => x.id === data);
+    let tower = towers.find(x => x.id === data && x.owner === 'p2');
     tower.upgrade();
     // console.log(tower)
     ui.generateFloatingText(`Rank ↑`, tower.position, color(0, 225, 0, 255));
