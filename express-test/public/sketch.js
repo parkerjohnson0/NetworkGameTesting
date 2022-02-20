@@ -99,7 +99,7 @@ function preload()
 
 function setup()
 {
-  frameRate(60)
+  frameRate(30)
   gfx = createGraphics(playWidth, playHeight);
   gfx.background(0, 0, 0)
   ui = new UserInterface();
@@ -450,11 +450,12 @@ function startBuild()
 function draw()
 {
   let delta = deltaTime;
+  background(0);
+  image(gfx, 0, 0);
+  noCursor();
   while (delta > targetFrameTime)
   {
-    background(0);
-    image(gfx, 0, 0);
-    noCursor();
+
     updatePlayers();
     // Tick over build clock for 1P Testing
     if (IsStarted)
@@ -572,6 +573,7 @@ function draw()
       fill(0);
       noStroke();
       text(frameRate(), 10, 10);
+      text(targetFrameTime / delta, 10, 10);
 
 
       push();
