@@ -4,11 +4,16 @@ html,body{
     margin:0;
 
 }
+@font-face {
+    font-family: SuperLegendBoy;
+    src: url(assets/SuperLegendBoy.ttf);
+  }
 .root{
     display:flex;
     align-items:center;
     justify-content:center;
 }
+
 #game_container{
     /* display: flex; */
     align-items: center;
@@ -17,6 +22,7 @@ html,body{
     width: 1000px;
     height: 580px;
 }
+
 #name_box_container{
     display: flex;
     align-items: center;
@@ -46,6 +52,9 @@ html,body{
     0 0.07em black,
     -0.07em 0 black,
     0 -0.07em black;
+}
+#name_text{
+    font-family: SuperLegendBoy;
 }
 .chat_container{
     position: absolute;

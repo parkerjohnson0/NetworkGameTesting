@@ -37,7 +37,7 @@ class ChatBox
     }
     greetPlayer(name)
     {
-        this.messages.push(new Message("info", name + " has joined the game!", 16))
+        this.messages.push(new Message("info", name + " has joined the game!", 14))
     }
     buildTimerEnd()
     {
@@ -46,7 +46,7 @@ class ChatBox
 
     blockedPath()
     {
-        this.messages.push(new Message("admin", "Can not block path to base!", 16))
+        this.messages.push(new Message("admin", "Can not block path to base!", 14))
     }
 
     show()
@@ -141,7 +141,7 @@ class ChatBox
                     textSize(element.fontSize)
 
                     textStyle(BOLD)
-                    textWrap(WORD)
+                    textWrap(CHAR)
                     fill(255, 0, 0)
                     text(element.message, this.x + this.padding, startPos - element.fontSize, maxWidth)
                     pop();

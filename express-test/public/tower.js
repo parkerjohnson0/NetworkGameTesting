@@ -84,6 +84,7 @@ class Tower {
         if (!this.fireTimer.isTicking && target){
             this.fireTimer.start();
             this.bullets.push(new Bullet(this, target, resources.magic));
+            sounds.magicTower.play();
         }
         
         if (this.fireTimer.isFinished){

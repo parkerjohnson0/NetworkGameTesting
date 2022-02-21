@@ -66,11 +66,12 @@ let chatBox;
 let randSeed;
 
 let gfx;
-
+let sounds = []
 
 
 function preload()
 {
+
   towerSprites = loadImage(`assets/tower_spritesheet.png`);
   fireTower = loadImage(`assets/tower4_spritesheet.png`);
   tileSprites = loadImage(`assets/tile_spritesheet.png`);
@@ -96,6 +97,13 @@ function preload()
   resources.backplate = loadImage(`assets/ui_backplate.png`);
   resources.chatOverlay = loadImage(`assets/chat_overlay.png`)
   resources.font = loadFont('assets/SuperLegendBoy.ttf');
+  sounds.ice = loadSound(`audio/iceattack_short.mp3`)
+  sounds.gold = loadSound(`audio/gold.mp3`)
+  sounds.upgrade= loadSound(`audio/upgrade.mp3`)
+  sounds.magicTower= loadSound(`audio/magic_tower.mp3`)
+
+
+
 }
 
 function setup()
@@ -121,6 +129,10 @@ function setup()
   resources.ice = generateSprites(iceSprites, 24, 24, true);
   resources.fire = generateSprites(fireSprites, 9, 8, true);
   resources.fireTower = generateSprites(fireTower, 20, 25, true);
+  sounds.ice.setVolume(0.3)
+  sounds.gold.setVolume(0.3)
+  sounds.upgrade.setVolume(0.3)
+
 
 
   for (let i = 0; i < resources.towerButtons.length; i++)
@@ -353,6 +365,7 @@ function mouseClicked()
       {
         gold -= currTower.currUpgradeCost;
         currTower.upgrade();
+        sounds.upgrade.play();
         socket.emit("towerUpgrade", currTower.id);
         ui.generateFloatingText(`Rank ↑`, currTower.position, color(0, 225, 0, 255));
       }
@@ -497,6 +510,7 @@ function draw()
       {
         enemiesToRemove.push(enemy);
         gold += 10;
+        sounds.gold.play();
       }
     }
     // Hacky Bullshit
