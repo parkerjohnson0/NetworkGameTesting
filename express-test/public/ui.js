@@ -67,7 +67,7 @@ sendMessage()
         push();
         fill(255);
         textAlign(CENTER);
-        textSize(14);
+        textSize(10);
         text(`WAVE \n${currRound}`, playWidth+75,480);
         pop();
 

@@ -95,7 +95,7 @@ function preload()
   resources.popup = loadImage(`assets/popup_frame.png`);
   resources.backplate = loadImage(`assets/ui_backplate.png`);
   resources.chatOverlay = loadImage(`assets/chat_overlay.png`)
-  resources.font = loadFont('assets/pixaltation.ttf');
+  resources.font = loadFont('assets/SuperLegendBoy.ttf');
 }
 
 function setup()

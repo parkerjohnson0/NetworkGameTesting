@@ -22,18 +22,18 @@ class ChatBox
         this.input.parent("#game_container")
         this.input.size(250, 25)
         this.emotes = 
-            { goldPooper: loadImage(`emotes/goldPooper16.png`) , 
-             RIP: loadImage(`emotes/skull16.png`) }
+            { goldPooper: loadImage(`emotes/goldPooper24.png`) , 
+             RIP: loadImage(`emotes/rip24.png`) }
         
         
     }
     addLocalChatMessage(message)
     {
-        this.messages.push(new Message("localClient", message, 16))
+        this.messages.push(new Message("localClient", message, 14))
     }
     addRemoteChatMessage(message)
     {
-        this.messages.push(new Message("remoteClient", message, 16))
+        this.messages.push(new Message("remoteClient", message, 14))
     }
     greetPlayer(name)
     {
@@ -77,7 +77,7 @@ class ChatBox
                 // push();
 
                 name = element.message.split(":")[0]
-                message = ": " + element.message.split(":")[1].trim()
+                message = element.message.split(":")[1].trim()
                 // this.formatChatMessage(message, "#2020ff","#FFFFFF",startPos,maxWidth)
                 // textSize(element.fontSize)
                 message = this.padMessage(name, element.fontSize) + message
@@ -120,7 +120,7 @@ class ChatBox
                 if (element.type === "localClient")
                 {
                     push();
-                    textLeading(element.fontSize) //makes space between lines consistent for multiline comments
+                    textLeading(element.fontSize + 2) //makes space between lines consistent for multiline comments
 
                     this.formatChatMessage(message, name, "#ff2020", "#FFFFFF", startPos, maxWidth, element.fontSize)
                     pop();
@@ -128,7 +128,7 @@ class ChatBox
                 else if (element.type === "remoteClient")
                 {
                     push();
-                    textLeading(element.fontSize) //makes space between lines consistent for multiline comments
+                    textLeading(element.fontSize + 2) //makes space between lines consistent for multiline comments
 
                     this.formatChatMessage(message, name, "#2020ff", "#FFFFFF", startPos, maxWidth, element.fontSize)
                     pop();
@@ -194,7 +194,7 @@ class ChatBox
         fill(nameColor)
         text(name, this.x + this.padding, startPos - fontSize, maxWidth)
         // let currWidth = textWidth(name)
-        let colonString = ": "
+        let colonString = ":"
         fill(contentColor)
         text(colonString, this.x + this.padding + textWidth(name), startPos - fontSize, maxWidth)
         // currWidth += textWidth(colonString)
@@ -232,11 +232,11 @@ class ChatBox
                 {
                     yOffset = lines * fontSize
                 }
-                if (wordArray[i] == "   ")
+                if (wordArray[i] == "     ")
                 {
                     let emoteKey = emoteTest.emotes[emoteIndex++]
 
-                    image(this.emotes[emoteKey], (this.x + this.padding + xOffset), startPos - fontSize + yOffset)
+                    image(this.emotes[emoteKey], (this.x + this.padding + xOffset), startPos - fontSize * 2 + yOffset - 4)
                 }
                 messageLength += textWidth(wordArray[i]) + textWidth(" ")
                 xOffset = messageLength % maxWidth
@@ -270,7 +270,7 @@ class ChatBox
     }
     padMessage(name, fontSize)
     {
-        name += ": "
+        name += ":"
         let padString = ""
         let padWidth = ""
         let nameWidth = ""
@@ -306,7 +306,7 @@ class ChatBox
             if (keys.includes(element))
             {
                 emotes.push(element)
-                substrings[index] = "   "
+                substrings[index] = "     "
             }
         }
         return { "substrings": substrings, "emotes": emotes }
@@ -331,7 +331,7 @@ class ChatBox
         {
             if (keys.includes(x))
             {
-                s[index] = "   "
+                s[index] = "     "
             }
         })
         return s.join(" ");
