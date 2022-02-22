@@ -199,11 +199,26 @@ function generateSprites(spritesheet, spriteWidth, spriteHeight, singleArray)
   }
   return sprites;
 }
+function keyTyped()
+{
+  if (ui.chatBox.p5Input.focused && key === "Enter")
+  {
+    ui.sendMessage();
+  }
+  else if (ui.chatBox.p5Input.focused)
+  {
+    ui.chatBox.p5Input.handleKey(key)
+  }
+}
 
 function keyPressed()
 {
   selectedTower = null;
-  if (mouseX < playWidth + 100 && mouseY < playHeight)
+  // if (ui.chatBox.p5Input.focused && keyCode === 8) //backspace
+  // {
+  //   ui.chatBox.p5Input.removeText();
+  // }
+  if (mouseX < playWidth + 100 && mouseY < playHeight && !ui.chatBox.p5Input.focused)
   {
     
   switch (keyCode)
@@ -252,7 +267,14 @@ function mouseReleased()
 function mouseClicked()
 {
   selectedTower = null;
-
+  if (ui.chatBox.inputClicked())
+  {
+    ui.chatBox.p5Input.focus();
+  }
+  else
+  {
+    ui.chatBox.p5Input.unfocus();
+  }
   // Clicking Tower Buttons
   if ((mouseX > playWidth && mouseX < width && mouseY > 0 && mouseY < playHeight))
   {
@@ -645,6 +667,7 @@ function draw()
   }
 
   image(resources.cursor, mouseX, mouseY);
+  
 
   onMouseHover();
 

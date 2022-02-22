@@ -8,7 +8,7 @@ class UserInterface {
         this.towerPopup = new TowerPopup();
 
         this.chatBox = new ChatBox(playWidth+100,0,300,580);
-        this.chatBox.input.elt.addEventListener("keydown", this.inputListener)
+        // this.chatBox.input.elt.addEventListener("keydown", this.inputListener)
         console.log(document.cookie)
     }
 
@@ -31,22 +31,33 @@ class UserInterface {
                 ui.sendMessage()
                 break;
             default:
-                ui.chatBox.input.html(e,true)
+                ui.chatBox.p5Input.text += e;
                 break;
         }
     }
 
 sendMessage()
 {
-    let text = this.chatBox.input.elt.value.trim();
+    // let text = this.chatBox.input.elt.value.trim();
+    // if (text)
+    // {
+    //     console.log(text);
+    //     this.chatBox.input.elt.value = "" //reset input 
+    //     let string = `${playerName}: ${text}`
+    //     this.chatBox.addLocalChatMessage(string)
+    //     socket.emit("chatMessage", string)
+    // }
+    let text = this.chatBox.p5Input.text
     if (text)
     {
         console.log(text);
-        this.chatBox.input.elt.value = "" //reset input 
+        this.chatBox.p5Input.text = "" //reset input 
+        this.chatBox.p5Input.displayText = "" //reset input 
         let string = `${playerName}: ${text}`
         this.chatBox.addLocalChatMessage(string)
         socket.emit("chatMessage", string)
     }
+    
 
 }
 
@@ -103,6 +114,7 @@ sendMessage()
         for (let text of this.floatingText){
             push();
             textAlign(CENTER);
+            textFont('Helvetica')
             text.draw();
             pop();
             if (text.alpha <=0) {
@@ -112,7 +124,7 @@ sendMessage()
         this.floatingText = this.floatingText.filter(item => !textToRemove.includes(item));
 
 
-        this.chatBox.show();
+        this.chatBox.draw();
 
         // Tower Info Popup
         this.towerPopup.draw();

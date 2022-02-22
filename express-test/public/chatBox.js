@@ -1,26 +1,31 @@
+
 class ChatBox
 {
-    // messages = [new Message("chat", "test: hello this is a single line comment",14), new Message("chat","test: hello this is a 2 line comment hello this is a 2 line comment  hello this is a 2 line comment",14),
-    // new Message("chat","test: hello this is a 3 line comment hello this is a 3 line comment  hello this is a 3 line comment  hello this is a 3 line comment hello this is a 3 line comment",14),
-    //     new Message("chat", "test: hello this is a 3 line comment hello this is a 3 line comment  hello this is a 3 line comment hello this is a 3 line comment  hello this is a 3 line comment hello this is a 3 line comment  hello this is a 3 line comment hello this is a 3 line comment", 14),
-    //     new Message("chat", "test: hello this is a single line comment",14)
-    // ]
     messages = []
-    messageOffset = 5//space between messages
-    padding = 25 //space between edge of box and the text
-    top_padding = 50
-    // text_size = 14 
-    constructor(x, y, width, height)
+    messageOffset = 25 //space between messages
+    padding = 15 //space between edge of box and the text
+    text_size = 14 
+    constructor(x,y,width,height)
     {
         this.x = x;
         this.y = y;
         this.width = width;
         this.height = height;
         this.input = createInput("", "text")
+<<<<<<< Updated upstream
+        this.input.position(-200 + this.padding, 275 - this.padding, "relative")
+        this.input.size(200, 15)
+        this.button = createButton("Chat")
+        this.button.position(-200 + this.padding, 275 - this.padding, "relative")
+=======
         this.input.elt["maxLength"] = 70
         this.input.position(this.x + this.padding, -55, "relative")
         this.input.parent("#game_container")
+        this.input.elt.style.visibility = "hidden";
+        this.input.style("font-family","SuperLegendBoy");
         this.input.size(250, 25)
+        this.active = false;
+        this.p5Input = new p5Input(this.x + this.padding, 530 , 250 , 25);
         this.emotes = 
             { goldPooper: loadImage(`emotes/goldPooper24.png`) , 
              RIP: loadImage(`emotes/rip24.png`) }
@@ -34,87 +39,76 @@ class ChatBox
     addRemoteChatMessage(message)
     {
         this.messages.push(new Message("remoteClient", message, 14))
+>>>>>>> Stashed changes
     }
-    greetPlayer(name)
+    addChatMessage(message)
     {
-        this.messages.push(new Message("info", name + " has joined the game!", 14))
+        this.messages.push(message)
     }
-    buildTimerEnd()
-    {
-        this.messages.push(new Message("admin", "STARTING ATTACK PHASE", 16))
-    }
-
-    blockedPath()
-    {
-        this.messages.push(new Message("admin", "Can not block path to base!", 14))
-    }
-
+<<<<<<< Updated upstream
     show()
+=======
+    activateInput()
     {
+        // this.active = true;
+        // this.input.elt.style.visibility = "visible";
+        // this.input.elt.focus();
+    }
+    deactivateInput()
+    {
+        // this.active = false;
+        // this.input.elt.style.visibility = "hidden";
+        // this.input.elt.blur();
+        // this.p5Input.text = this.input.elt.value;
+
+    }
+    inputClicked()
+>>>>>>> Stashed changes
+    {
+        return mouseX > this.p5Input.x && mouseX < this.p5Input.x + this.p5Input.width &&
+        mouseY > this.p5Input.y && mouseY < this.p5Input.y + this.p5Input.height;
+    
+    }
+    focus()
+    {
+        if (this.active)
+        {
+            this.deactivateInput();
+        }
+        else
+        {
+            this.activateInput();
+        }
+    }
+    draw()
+    {
+
         fill(140, 140, 140, 255)
         rect(this.x, this.y, this.width, this.height)
+<<<<<<< Updated upstream
+        let startPos = this.y + this.height - this.padding - 30
+=======
+        // if (!this.active)
+        // {
+        //     this.p5Input.draw()
+        // }
+        this.p5Input.draw();
         let startPos = this.y + this.height - this.padding - 20
+>>>>>>> Stashed changes
         let maxWidth = this.width - this.padding * 2 //max width of a line is the width of the textbox times the padding from both sides
-        for (let index = this.messages.length - 1; index >= 0; index--)
-        {
-
+        for (let index = this.messages.length - 1; index >= 0; index--) {
             const element = this.messages[index];
-            let message
-            let name
-            if (element.type === "localClient")
+            if (startPos - this.y  - this.padding > 0)
             {
-                // push();
-                name = element.message.split(":")[0]
-                message = element.message.split(":")[1].trim()
-                // this.formatChatMessage(message, "#ff2020","#FFFFFF",startPos,maxWidth)
-                // textSize(element.fontSize)
-                message = this.padMessage(name, element.fontSize) + message
-
-
-            }
-            else if (element.type === "remoteClient")
-            {
-                // push();
-
-                name = element.message.split(":")[0]
-                message = element.message.split(":")[1].trim()
-                // this.formatChatMessage(message, "#2020ff","#FFFFFF",startPos,maxWidth)
-                // textSize(element.fontSize)
-                message = this.padMessage(name, element.fontSize) + message
-
-
-            }
-            else if (element.type === "admin")
-            {
-                message = element.message
-            }
-            else if (element.type === "info")
-            {
-                message = element.message
-            }
-
-            push(); // text size affects textWidth so do that first
-            textSize(element.fontSize)
-            let numberOfExtraLines
-            let numOfEmotes
-            if (numOfEmotes = this.numberOfEmotes(message))
-            {
-                let remove = this.removeEmotesFromMessage(message)
-                let messageWidth = textWidth(remove) + 16 * numOfEmotes
-                numberOfExtraLines = Math.floor(messageWidth / maxWidth)
-            }
-            else
-            {
-                numberOfExtraLines = Math.floor(textWidth(message) / maxWidth)
-            }
-            pop();
-            // console.log(numberOfExtraLines)
-            let test = textWidth("    ")
-            startPos -= element.fontSize * numberOfExtraLines
-            // pop();
-            if (startPos - this.y - this.top_padding > 0) //only show messages if it is not going to be drawn outside of the box
-            {
+                fill(255)
                 //find amount of lines comment will take up. change start pos of comment to be higher on the screen 
+<<<<<<< Updated upstream
+                let numberOfExtraLines = Math.floor(textWidth(element) / maxWidth)
+                startPos -= this.text_size * numberOfExtraLines
+                textSize(this.text_size)
+                text(element, this.x + this.padding, startPos - this.padding, maxWidth)
+                startPos -= this.messageOffset
+=======
 
                 // textLeading(element.fontSize) //makes space between lines consistent for multiline comments
                 if (element.type === "localClient")
@@ -154,7 +148,7 @@ class ChatBox
                     textLeading(element.fontSize) //makes space between lines consistent for multiline comments
                     textSize(element.fontSize)
                     textStyle(ITALIC)
-                    textWrap(WORD)
+                    textWrap(CHAR)
                     fill(255)
                     text(element.message, this.x + this.padding, startPos - element.fontSize, maxWidth)
                     pop();
@@ -165,6 +159,7 @@ class ChatBox
                 // startPos -= this.messageOffset + element.fontSize//update start position for next loop
                 startPos -= element.fontSize + this.messageOffset
 
+>>>>>>> Stashed changes
             }
             else
             {
@@ -172,177 +167,10 @@ class ChatBox
                 this.removeChatMessages(index)
             }
         }
-        // pop();
-        // push();
-
-        image(resources.chatOverlay, this.x, this.y)
     }
     removeChatMessages(index)
     {
-        this.messages.splice(0, index)
+        this.messages.splice(0,index)
     }
-    formatChatMessage(content, name, nameColor, contentColor, startPos, maxWidth, fontSize)
-    {
-        //message format "username: content"
-        // let name = message.split(":")[0]
-        // let content = ": " + message.split(":")[1]
-        // push();
-        textSize(fontSize)
-        textStyle(BOLD)
-        textWrap(CHAR)
 
-        fill(nameColor)
-        text(name, this.x + this.padding, startPos - fontSize, maxWidth)
-        // let currWidth = textWidth(name)
-        let colonString = ":"
-        fill(contentColor)
-        text(colonString, this.x + this.padding + textWidth(name), startPos - fontSize, maxWidth)
-        // currWidth += textWidth(colonString)
-        textStyle(NORMAL)
-        // message = this.padMessage(name) + message
-        if (this.containsEmote(content)) //replace with containsEmote call
-        {
-            let emoteTest = this.emoteReplace(content);
-            // let stringOffset = 16; //emote size
-            let leadingWhiteSpace = emoteTest.substrings.filter(x => x == "").join(" ") + " "
-            // // emoteTest.substrings = emoteTest.substrings.filter(x => x != "") //filter out leading whitespace for name and colon
-            // text(leadingWhiteSpace, this.x + this.padding + textWidth(colonString), startPos - fontSize, maxWidth)
-            // let currWidth = textWidth(leadingWhiteSpace) + textWidth(colonString)
-            // let stringOffset = textWidth(leadingWhiteSpace) + textWidth(colonString + " ")
-            let emoteLessMessage = emoteTest.substrings.filter(x => x != "").join(" ")
-            let commaSeparated = emoteTest.substrings.filter(x => x != "").join(",") //used to build the emote mask
-
-            text(leadingWhiteSpace + emoteLessMessage, this.x + this.padding, startPos - fontSize, maxWidth)
-            let message = emoteLessMessage;
-            let wordArray = commaSeparated.split(",")
-
-            let xOffset = textWidth(leadingWhiteSpace) % maxWidth 
-            let messageLength = textWidth(leadingWhiteSpace)
-            let emoteIndex = 0
-            for (let i = 0; i < wordArray.length; i++)
-            {
-
-
-                // let messageLength = textWidth(message)
-                let yOffset = 0
-                // let xOffset = (messageLength + textWidth(leadingWhiteSpace)) % maxWidth 
-                let lines
-
-                if ((lines = Math.floor(messageLength/ maxWidth)) > 0)
-                {
-                    yOffset = lines * fontSize
-                }
-                if (wordArray[i] == "     ")
-                {
-                    let emoteKey = emoteTest.emotes[emoteIndex++]
-
-                    image(this.emotes[emoteKey], (this.x + this.padding + xOffset), startPos - fontSize * 2 + yOffset - 4)
-                }
-                messageLength += textWidth(wordArray[i]) + textWidth(" ")
-                xOffset = messageLength % maxWidth
-                // image(this.goldPooper, this.x + this.padding + xOffset, startPos - fontSize + yOffset)
-
-            }
-            // for (let i = 0; i < emoteTest.substrings.length; i++)
-            // {
-            //     if (emoteTest.substrings[i] == " ")
-            //     {
-            //         image(this.goldPooper, this.x + this.padding + stringOffset, startPos - fontSize)
-            //         stringOffset += this.goldPooper.width + textWidth(" ");
-            //         currWidth += 32 // leading and trailing space
-            //     }
-            //     else
-            //     {
-            //         let substring = emoteTest.substrings[i]
-            //         text(substring, this.x + this.padding + stringOffset, startPos - fontSize, maxWidth)
-            //         stringOffset += textWidth(emoteTest.substrings[i] + " ")
-            //         currWidth += textWidth(emoteTest.substrings[i])
-            //     }
-            // }
-        }
-        else
-        {
-            text(content, this.x + this.padding, startPos - fontSize, maxWidth)
-        }
-
-        // text(content, this.x + this.padding, startPos - fontSize, maxWidth)
-        // pop();
-    }
-    padMessage(name, fontSize)
-    {
-        name += ":"
-        let padString = ""
-        let padWidth = ""
-        let nameWidth = ""
-        push();
-        textSize(fontSize)
-        if (textWidth(padString) < textWidth(name)) 
-        {
-            padWidth = textWidth(padString)
-            nameWidth = textWidth(name)
-            while (padWidth < nameWidth + 3)
-            {
-                padString += " "
-                padWidth = textWidth(padString)
-                nameWidth = textWidth(name)
-            }
-            // padString += " "
-        }
-        pop();
-        return padString
-    }
-    emoteReplace(content)
-    {
-        let substrings = content.split(" ")
-        let emotes = []
-        let keys = Object.keys(this.emotes)
-        // if (substrings.includes('goldPooper'))
-        // {
-        //     emotes.push('goldPooper')
-        // }
-        for (let index = 0; index < substrings.length; index++)
-        {
-            const element = substrings[index];
-            if (keys.includes(element))
-            {
-                emotes.push(element)
-                substrings[index] = "     "
-            }
-        }
-        return { "substrings": substrings, "emotes": emotes }
-    }
-    containsEmote(message)
-    {
-        let s = message.split(" ")
-        let keys = Object.keys(this.emotes)
-        return s.some(x => keys.some(y => y == x))
-    }
-    numberOfEmotes(message)
-    {
-        let s = message.trim().split(" ")
-        let keys = Object.keys(this.emotes)
-        return s.filter(x => keys.includes(x)).length
-    }
-    removeEmotesFromMessage(message)
-    {
-        let s = message.split(" ")
-        let keys = Object.keys(this.emotes)
-        s.forEach((x, index) => 
-        {
-            if (keys.includes(x))
-            {
-                s[index] = "     "
-            }
-        })
-        return s.join(" ");
-    }
-}
-class Message
-{
-    constructor(type, message, fontSize)
-    {
-        this.type = type
-        this.message = message
-        this.fontSize = fontSize
-    }
 }
