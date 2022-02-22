@@ -16,7 +16,8 @@ class p5Input
             }
         })
         this.focused = false;
-        this.timer = new Timer(60);
+        this.timer = new Timer(1);
+	this.blinking = false;
     }
     mousePressed()
     {
@@ -24,7 +25,7 @@ class p5Input
     }
     draw()
     {
-        this.timer.tick();
+
         if (textWidth(this.displayText) > this.width)
         {
             this.displayText = this.displayText.substring(1);
@@ -33,6 +34,7 @@ class p5Input
         rectMode(CORNER)
         if (this.focused)
         {
+		this.timer.start();
             strokeWeight(2);
             stroke(51);
         }
@@ -41,15 +43,20 @@ class p5Input
         fill('black');
         noStroke();
         text(this.displayText, this.x + 5, this.y + 20)
-
-
-            fill('black');
+	if (this.focused && !this.blinking){
+		fill('black');
             stroke(51);
             strokeWeight(2);
-            line(this.x + textWidth(this.displayText) + 3, this.y + this.height * .33, this.x + textWidth(this.displayText) + 3, this.y + this.height * .75)
+		line(this.x + textWidth(this.displayText) + 3, this.y + this.height * .33, this.x + textWidth(this.displayText) + 3,this.y + this.height * .75)
 
-
-
+	}
+	if (this.timer.isFinished){
+		this.blinking = !this.blinking;
+		this.timer.reset();
+	}
+	if (this.timer.isTicking){
+		this.timer.tick();
+	}
         // console.log(this.text);
         pop();
     }

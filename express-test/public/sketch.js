@@ -205,7 +205,7 @@ function keyTyped()
   {
     ui.sendMessage();
   }
-  else if (ui.chatBox.p5Input.focused)
+  else if (ui.chatBox.p5Input.focused && key !== "Delete")
   {
     ui.chatBox.p5Input.handleKey(key)
   }
