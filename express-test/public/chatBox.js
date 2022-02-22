@@ -20,7 +20,11 @@ class ChatBox
         this.input.elt["maxLength"] = 70
         this.input.position(this.x + this.padding, -55, "relative")
         this.input.parent("#game_container")
+        this.input.elt.style.visibility = "hidden";
+        this.input.style("font-family","SuperLegendBoy");
         this.input.size(250, 25)
+        this.active = false;
+        this.p5Input = new p5Input(this.x + this.padding, 530 , 250 , 25);
         this.emotes = 
             { goldPooper: loadImage(`emotes/goldPooper24.png`) , 
              RIP: loadImage(`emotes/rip24.png`) }
@@ -48,11 +52,44 @@ class ChatBox
     {
         this.messages.push(new Message("admin", "Can not block path to base!", 14))
     }
+    activateInput()
+    {
+        // this.active = true;
+        // this.input.elt.style.visibility = "visible";
+        // this.input.elt.focus();
+    }
+    deactivateInput()
+    {
+        // this.active = false;
+        // this.input.elt.style.visibility = "hidden";
+        // this.input.elt.blur();
+        // this.p5Input.text = this.input.elt.value;
 
-    show()
+    }
+    inputClicked()
+    {
+        return mouseX > this.p5Input.x && mouseX < this.p5Input.x + this.p5Input.width &&
+        mouseY > this.p5Input.y && mouseY < this.p5Input.y + this.p5Input.height;
+    
+    }
+    focus()
+    {
+        if (this.active)
+        {
+            this.deactivateInput();
+        }
+        else
+        {
+            this.activateInput();
+        }
+    }
+
+
+    draw()
     {
         fill(140, 140, 140, 255)
         rect(this.x, this.y, this.width, this.height)
+        this.p5Input.draw();
         let startPos = this.y + this.height - this.padding - 20
         let maxWidth = this.width - this.padding * 2 //max width of a line is the width of the textbox times the padding from both sides
         for (let index = this.messages.length - 1; index >= 0; index--)
