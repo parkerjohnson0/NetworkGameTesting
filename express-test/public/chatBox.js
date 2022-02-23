@@ -134,7 +134,7 @@ class ChatBox
             textSize(element.fontSize)
             let numberOfExtraLines
             let numOfEmotes
-            if (element.type === "remoteClient" || element.type ==="localClient" && (numOfEmotes = this.numberOfEmotes(message)))
+            if ((element.type === "remoteClient" || element.type ==="localClient") && (numOfEmotes = this.numberOfEmotes(message)))
             {
                 let remove = this.removeEmotesFromMessage(message)
                 let messageWidth = textWidth(remove) + 16 * numOfEmotes
