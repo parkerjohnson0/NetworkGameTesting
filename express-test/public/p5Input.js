@@ -1,18 +1,24 @@
 class p5Input
 {
-    constructor(x, y, width, height)
+    constructor(x, y, width, height, maxChar)
     {
         this.x = x;
         this.y = y;
         this.width = width;
         this.height = height;
+        this.maxChar = maxChar;
         this.text = '';
         this.displayText = '';
         document.addEventListener('keydown', (event) =>
         {
             if (event.key === 'Backspace')
             {
+                if (textWidth(this.displayText) > this.width)
+                {
+                    
+                }
                 this.removeText();
+                
             }
         })
         this.focused = false;
@@ -26,9 +32,12 @@ class p5Input
     draw()
     {
 
-        if (textWidth(this.displayText) > this.width)
+        if (textWidth(this.displayText) > this.width - 5)
         {
+
+
             this.displayText = this.displayText.substring(1);
+                
         }
         push();
         rectMode(CORNER)
@@ -47,7 +56,7 @@ class p5Input
 		fill('black');
             stroke(51);
             strokeWeight(2);
-		line(this.x + textWidth(this.displayText) + 3, this.y + this.height * .33, this.x + textWidth(this.displayText) + 3,this.y + this.height * .75)
+		line(this.x + textWidth(this.displayText) + 5, this.y + 10, this.x + textWidth(this.displayText) + 5,this.y + 20)
 
 	}
 	if (this.timer.isFinished){
@@ -70,12 +79,18 @@ class p5Input
     }
     removeText()
     {
+        let index
+        if ((index = this.text.indexOf(this.displayText)) > 0) //means that text contains the entirety of the displayed + extra. scroll displayed text left to right
+        {
+            this.displayText = this.text[index - 1] + this.displayText;
+        }
         this.text = this.text.slice(0, -1);
         this.displayText = this.displayText.slice(0, -1);
 
     }
     handleKey(key)
     {
+        if (this.text.length > this.maxChar) return;
         this.text += key;
         this.displayText += key;
     }

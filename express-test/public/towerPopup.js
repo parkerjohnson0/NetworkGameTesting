@@ -36,7 +36,7 @@ class TowerPopup{
             //rect(this.position.x,this.position.y,200,130);
             image(resources.popup, this.position.x,this.position.y);
             fill(0);
-            textSize(12);
+            textSize(8);
             text(`Type: ${this.name} (Rank ${this.rank})`,this.position.x+20,this.position.y+27);
             text(`Damage: ${this.damage}`,this.position.x+20,this.position.y+47);
             text(`RoF: ${this.rof} / sec`,this.position.x+20,this.position.y+67);

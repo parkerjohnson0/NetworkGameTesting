@@ -60,7 +60,7 @@ let socket
 let socketID = 0 //save ID so that client player can be retrieved from playerslist after a disconnect. band aid for bad design decision right now
 let gameInstanceID = 0
 // let canv
-let playerName = "player";
+let playerName = "";
 
 let chatBox;
 let randSeed;
@@ -201,14 +201,27 @@ function generateSprites(spritesheet, spriteWidth, spriteHeight, singleArray)
 }
 function keyTyped()
 {
-  if (ui.chatBox.p5Input.focused && key === "Enter")
+  if (ui.chatBox.input.focused && key === "Enter")
   {
     ui.sendMessage();
   }
-  else if (ui.chatBox.p5Input.focused && key !== "Delete")
+  else if (ui.chatBox.input.focused && key !== "Delete")
   {
-    ui.chatBox.p5Input.handleKey(key)
+    ui.chatBox.input.handleKey(key)
   }
+  else if (ui.nameBox.input.focused && key === "Enter")
+  {
+    playerName = ui.nameBox.input.text;
+    document.cookie = "name=" + playerName
+    socket.emit("newPlayerJoined", playerName)
+    socket.emit("requestBuildTimerStart")
+    ui.nameBox.disable();
+  }
+  else if (ui.nameBox.input.focused && key !== "Delete")
+  {
+    ui.nameBox.input.handleKey(key)
+  }
+
 }
 
 function keyPressed()
@@ -218,7 +231,7 @@ function keyPressed()
   // {
   //   ui.chatBox.p5Input.removeText();
   // }
-  if (mouseX < playWidth + 100 && mouseY < playHeight && !ui.chatBox.p5Input.focused)
+  if (mouseX < playWidth + 100 && mouseY < playHeight && !ui.chatBox.input.focused && !ui.nameBox.isEnabled)
   {
     
   switch (keyCode)
@@ -267,16 +280,25 @@ function mouseReleased()
 function mouseClicked()
 {
   selectedTower = null;
-  if (ui.chatBox.inputClicked())
+  if (ui.chatBox.inputClicked() && !ui.nameBox.isEnabled)
   {
-    ui.chatBox.p5Input.focus();
+    ui.chatBox.input.focus();
   }
   else
   {
-    ui.chatBox.p5Input.unfocus();
+    ui.chatBox.input.unfocus();
   }
+  if (ui.nameBox.inputClicked())
+  {
+    ui.nameBox.input.focus();
+  }
+  else
+  {
+    ui.nameBox.input.unfocus();
+  }
+  
   // Clicking Tower Buttons
-  if ((mouseX > playWidth && mouseX < width && mouseY > 0 && mouseY < playHeight))
+  if ((mouseX > playWidth && mouseX < width && mouseY > 0 && mouseY < playHeight) && !ui.nameBox.isEnabled)
   {
     ui.towerPopup.hide();
     for (let button of ui.buttons)
@@ -567,7 +589,7 @@ function draw()
     enemiesToRemove = [];
     if (testEnemies.length == 0 && buildTimer && !buildTimer.isTicking && IsAttackPhase)
     {
-      console.log("Requesting build timer start")
+      // console.log("Requesting build timer start")
       gold += 50 * (floor(currRound / 10) + 1);
       currRound += 1;
       // startBuild();
@@ -661,6 +683,10 @@ function draw()
     push();
     tint(0, 0, 68, 128);
 
+    if (ui.nameBox.isEnabled)
+    {
+      ui.nameBox.draw();
+    }
     image(resources.cursor, p2mousePosition.x, p2mousePosition.y);
     noTint();
     pop();
@@ -898,7 +924,7 @@ function checkCookieForLogin()
   document.cookie = document.cookie + ";expires=Thu, 01 Jan 1970 00:00:01 GMT";
 
   let cookie = document.cookie;
-  let playerName = getPlayerName(cookie)
+  playerName = getPlayerName(cookie)
   if (!playerName)
   {
     promptForName()
@@ -927,9 +953,10 @@ function getPlayerName(cookie)
 }
 function promptForName()
 {
-  let nameBox = select("#name_box_container")
-  nameBox.elt.style.visibility = "visible"
-  nameBox.elt.addEventListener("keydown", nameBoxListener)
+  // let nameBox = select("#name_box_container")
+  // nameBox.elt.style.visibility = "visible"
+  // nameBox.elt.addEventListener("keydown", nameBoxListener)
+  ui.nameBox.enable();
 }
 function nameBoxListener(e)
 {

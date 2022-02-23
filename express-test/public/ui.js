@@ -6,7 +6,7 @@ class UserInterface {
         this.playerControls=[];
         this.floatingText=[];
         this.towerPopup = new TowerPopup();
-
+        this.nameBox = new NameBox(playWidth / 2, playHeight / 2, 400,50);
         this.chatBox = new ChatBox(playWidth+100,0,300,580);
         // this.chatBox.input.elt.addEventListener("keydown", this.inputListener)
         console.log(document.cookie)
@@ -31,7 +31,7 @@ class UserInterface {
                 ui.sendMessage()
                 break;
             default:
-                ui.chatBox.p5Input.text += e;
+                ui.chatBox.input.text += e;
                 break;
         }
     }
@@ -47,12 +47,12 @@ sendMessage()
     //     this.chatBox.addLocalChatMessage(string)
     //     socket.emit("chatMessage", string)
     // }
-    let text = this.chatBox.p5Input.text
+    let text = this.chatBox.input.text
     if (text)
     {
         console.log(text);
-        this.chatBox.p5Input.text = "" //reset input 
-        this.chatBox.p5Input.displayText = "" //reset input 
+        this.chatBox.input.text = "" //reset input 
+        this.chatBox.input.displayText = "" //reset input 
         let string = `${playerName}: ${text}`
         this.chatBox.addLocalChatMessage(string)
         socket.emit("chatMessage", string)

@@ -16,15 +16,15 @@ class ChatBox
         this.y = y;
         this.width = width;
         this.height = height;
-        this.input = createInput("", "text")
-        this.input.elt["maxLength"] = 70
-        this.input.position(this.x + this.padding, -55, "relative")
-        this.input.parent("#game_container")
-        this.input.elt.style.visibility = "hidden";
-        this.input.style("font-family","SuperLegendBoy");
-        this.input.size(250, 25)
+        // this.input = createInput("", "text")
+        // this.input.elt["maxLength"] = 70
+        // this.input.position(this.x + this.padding, -55, "relative")
+        // this.input.parent("#game_container")
+        // this.input.elt.style.visibility = "hidden";
+        // this.input.style("font-family","SuperLegendBoy");
+        // this.input.size(250, 25)
         this.active = false;
-        this.p5Input = new p5Input(this.x + this.padding, 530 , 250 , 25);
+        this.input = new p5Input(this.x + this.padding, 530 , 250 , 25, 70);
         this.emotes = 
             { goldPooper: loadImage(`emotes/goldPooper24.png`) , 
              RIP: loadImage(`emotes/rip24.png`) }
@@ -68,8 +68,8 @@ class ChatBox
     }
     inputClicked()
     {
-        return mouseX > this.p5Input.x && mouseX < this.p5Input.x + this.p5Input.width &&
-        mouseY > this.p5Input.y && mouseY < this.p5Input.y + this.p5Input.height;
+        return mouseX > this.input.x && mouseX < this.input.x + this.input.width &&
+        mouseY > this.input.y && mouseY < this.input.y + this.input.height;
     
     }
     focus()
@@ -89,7 +89,7 @@ class ChatBox
     {
         fill(140, 140, 140, 255)
         rect(this.x, this.y, this.width, this.height)
-        this.p5Input.draw();
+        this.input.draw();
         let startPos = this.y + this.height - this.padding - 20
         let maxWidth = this.width - this.padding * 2 //max width of a line is the width of the textbox times the padding from both sides
         for (let index = this.messages.length - 1; index >= 0; index--)
@@ -134,7 +134,7 @@ class ChatBox
             textSize(element.fontSize)
             let numberOfExtraLines
             let numOfEmotes
-            if (numOfEmotes = this.numberOfEmotes(message))
+            if (element.type === "remoteClient" || element.type ==="localClient" && (numOfEmotes = this.numberOfEmotes(message)))
             {
                 let remove = this.removeEmotesFromMessage(message)
                 let messageWidth = textWidth(remove) + 16 * numOfEmotes
@@ -191,7 +191,7 @@ class ChatBox
                     textLeading(element.fontSize) //makes space between lines consistent for multiline comments
                     textSize(element.fontSize)
                     textStyle(ITALIC)
-                    textWrap(WORD)
+                    textWrap(CHAR)
                     fill(255)
                     text(element.message, this.x + this.padding, startPos - element.fontSize, maxWidth)
                     pop();
