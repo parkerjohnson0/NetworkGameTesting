@@ -122,8 +122,9 @@ io.on("connection", (conn) =>
             clearInterval(updateTimer)
             removeClient(instance, client)
             removeInstanceIfEmpty(instance)
-            console.log("client disconnected:", client.socketID)
-            conn.to(room).emit("playerDisconnected", conn.id)
+            console.log("client disconnected:", client.socketID, "| Game Instance: ", instance.uuid);
+            // conn.to(room).emit("playerDisconnected", conn.id)
+            conn.to(room).emit("playerDisconnected", client.username)
         })
         // conn.on("requestUpdate", () =>
         // {
@@ -145,6 +146,9 @@ io.on("connection", (conn) =>
             client.buildTimerRequested = true
             if (buildTimerCanStart(instance))
             {
+                if (!instance.gameInProgess){
+                    instance.gameInProgess = !instance.gameInProgess;
+                }
                 io.in(room).emit("buildTimerStart")
                 instance.gameState = GameStates.BuildPhase
                 console.log("build timer start")
@@ -262,7 +266,7 @@ function AddClientToGame(conn)
     let clientAdded = false
     gameInstances.forEach(element =>
     {
-        if (element.clients.length < 2)
+        if (element.clients.length < 2 && !element.gameInProgess)
         {
             element.addClient(conn.id)
             clientAdded = true
@@ -341,7 +345,8 @@ class GameInstance
         this.uuid = crypto.randomUUID()
         this.chatMessages = []
         this.gameState = GameStates.PreGame
-
+        this.gameInProgess = false;
+        console.log('adding instance:' + this.uuid);
     }
     addClient(id,username)
     {

@@ -43,6 +43,10 @@ class ChatBox
     {
         this.messages.push(new Message("info", name + " has joined the game!", 14))
     }
+    playerLeft(name)
+    {
+        this.messages.push(new Message("info", name + " has left the game!", 14))
+    }
     buildTimerEnd()
     {
         this.messages.push(new Message("admin", "STARTING ATTACK PHASE", 16))

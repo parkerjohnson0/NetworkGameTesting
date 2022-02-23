@@ -18,7 +18,7 @@ class NameBox
         rect(this.x, this.y, this.width, this.height, 10);
         this.input.draw();
         fill(255)
-        text("NAME", this.x - 175, this.y + 5)
+        text("NAME", this.x - 170, this.y + 5)
         pop();
     }
     enable()

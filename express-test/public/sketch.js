@@ -764,17 +764,18 @@ function setupSocket()
   //         }
   //     }
   // })
-  // socket.on("playerDisconnected", (playerId) =>
-  // {
-  //     let deletePlayer = playersList.find(x => x.id == playerId)
-  //     let index = playersList.indexOf(deletePlayer)
-  //     playersList.splice(index, 1)
-  //     let deleteMouse = mouseList.find(x => x.id == playerId)
-  //     index = mouseList.indexOf(deleteMouse)
-  //     mouseList.splice(index,1)
-  //     console.log("player with id :" + playerId + " has been removed.")
+  socket.on("playerDisconnected", (playerName) =>
+  {
+    ui.chatBox.playerLeft(playerName);
+      // let deletePlayer = playersList.find(x => x.id == playerId)
+      // let index = playersList.indexOf(deletePlayer)
+      // playersList.splice(index, 1)
+      // let deleteMouse = mouseList.find(x => x.id == playerId)
+      // index = mouseList.indexOf(deleteMouse)
+      // mouseList.splice(index,1)
+      // console.log("player with id :" + playerId + " has been removed.")
 
-  // })
+  })
   // let intervalID
   socket.on("buildTimerStart", () =>
   {
