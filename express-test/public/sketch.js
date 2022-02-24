@@ -980,6 +980,10 @@ function nameBoxListener(e)
       break;
   }
 }
+function disconnect()
+{
+  socket.disconnect();
+}
 class Player
 {
   constructor(x, y)
@@ -998,3 +1002,14 @@ class ChatMessage
     this.text = text;
   }
 }
+let timeoutID
+document.addEventListener("visibilitychange", ()=>{
+  if (document.hidden)
+  {
+    timeoutID = setTimeout(disconnect, 20000);
+  }
+  else
+  {
+    clearTimeout(timeoutID);
+  }
+})
