@@ -97,10 +97,10 @@ function preload()
   resources.backplate = loadImage(`assets/ui_backplate.png`);
   resources.chatOverlay = loadImage(`assets/chat_overlay.png`)
   resources.font = loadFont('assets/SuperLegendBoy.ttf');
-  sounds.ice = loadSound(`audio/iceattack_short.mp3`)
+  sounds.iceTower = loadSound(`audio/iceattack_short.mp3`)
   sounds.gold = loadSound(`audio/gold.mp3`)
-  sounds.upgrade= loadSound(`audio/upgrade.mp3`)
-  sounds.magicTower= loadSound(`audio/magic_tower.mp3`)
+  sounds.upgrade = loadSound(`audio/upgrade.mp3`)
+  sounds.magicTower = loadSound(`audio/magic_tower.mp3`)
 
 
 
@@ -110,7 +110,7 @@ function setup()
 {
   frameRate(60)
   gfx = createGraphics(playWidth, playHeight);
-  gfx.background(0,0,0)
+  gfx.background(0, 0, 0)
   ui = new UserInterface();
   ui.roundText.setText("Build Phase");
   p2mousePosition = createVector(-50, 50);
@@ -129,9 +129,11 @@ function setup()
   resources.ice = generateSprites(iceSprites, 24, 24, true);
   resources.fire = generateSprites(fireSprites, 9, 8, true);
   resources.fireTower = generateSprites(fireTower, 20, 25, true);
-  sounds.ice.setVolume(0.3)
-  sounds.gold.setVolume(0.3)
-  sounds.upgrade.setVolume(0.3)
+  sounds.iceTower.setVolume(0.2)
+  sounds.gold.setVolume(0.2)
+  sounds.upgrade.setVolume(0.2)
+  sounds.magicTower.setVolume(0.2)
+
 
 
 
@@ -144,7 +146,7 @@ function setup()
   ui.playerControls.push(new Button(resources.destroy, 0, -2, playWidth + 1, 405));
 
   let canv = createCanvas(playWidth + 400, playHeight);
-  canv.elt.addEventListener("contextmenu", (e)=> e.preventDefault());
+  canv.elt.addEventListener("contextmenu", (e) => e.preventDefault());
   background(0);
   stroke(0, 255, 0);
   noFill();
@@ -233,39 +235,39 @@ function keyPressed()
   // }
   if (mouseX < playWidth + 100 && mouseY < playHeight && !ui.chatBox.input.focused && !ui.nameBox.isEnabled)
   {
-    
-  switch (keyCode)
-  {
-    // 1 key
-    case 49:
-      towerToBuild = 0;
-      break;
-    // 2 key
-    case 50:
-      towerToBuild = 1;
-      break;
-    // 3 key
-    case 51:
-      towerToBuild = 2;
-      break;
-    // 4 key
-    case 52:
-      towerToBuild = 3;
-      break;
-    // ESC key
-    case 27:
-      towerToBuild = -5;
-      break;
-    // U key
-    case 85:
-      towerToBuild = -1;
-      break;
-    // D key
-    case 68:
-      towerToBuild = -2;
-      break;
-    default:
-      break;
+
+    switch (keyCode)
+    {
+      // 1 key
+      case 49:
+        towerToBuild = 0;
+        break;
+      // 2 key
+      case 50:
+        towerToBuild = 1;
+        break;
+      // 3 key
+      case 51:
+        towerToBuild = 2;
+        break;
+      // 4 key
+      case 52:
+        towerToBuild = 3;
+        break;
+      // ESC key
+      case 27:
+        towerToBuild = -5;
+        break;
+      // U key
+      case 85:
+        towerToBuild = -1;
+        break;
+      // D key
+      case 68:
+        towerToBuild = -2;
+        break;
+      default:
+        break;
     }
   }
 }
@@ -296,7 +298,7 @@ function mouseClicked()
   {
     ui.nameBox.input.unfocus();
   }
-  
+
   // Clicking Tower Buttons
   if ((mouseX > playWidth && mouseX < width && mouseY > 0 && mouseY < playHeight) && !ui.nameBox.isEnabled)
   {
@@ -409,7 +411,7 @@ function mouseClicked()
       {
         gold -= currTower.currUpgradeCost;
         currTower.upgrade();
-        sounds.upgrade.play();
+        playSound(sounds.upgrade)
         socket.emit("towerUpgrade", currTower.id);
         ui.generateFloatingText(`Rank ↑`, currTower.position, color(0, 225, 0, 255));
       }
@@ -427,14 +429,14 @@ function mouseClicked()
             currTower = tower;
           }
         }
-        if (currTower)
-        {
-          ui.generateFloatingText(`+${floor(currTower.totalSpent / 2)} gold`, currTower.position, color(255, 255, 0, 255));
-          gold += floor(currTower.totalSpent / 2);
-          gameMap.tileMap[tower.row][tower.col].isPathable = true;
-          currTower.rank = -1;
-          socket.emit("towerDestroy", currTower.id)
-        }
+      }
+      if (currTower)
+      {
+        ui.generateFloatingText(`+${floor(currTower.totalSpent / 2)} gold`, currTower.position, color(255, 255, 0, 255));
+        gold += floor(currTower.totalSpent / 2);
+        gameMap.tileMap[currTower.row][currTower.col].isPathable = true;
+        currTower.rank = -1;
+        socket.emit("towerDestroy", currTower.id)
       }
     }
 
@@ -554,7 +556,7 @@ function draw()
       {
         enemiesToRemove.push(enemy);
         gold += 10;
-        sounds.gold.play();
+        playSound(sounds.gold);
       }
     }
     // Hacky Bullshit
@@ -693,12 +695,20 @@ function draw()
   }
 
   image(resources.cursor, mouseX, mouseY);
-  
+
 
   onMouseHover();
 
 }
 
+function playSound(sound)
+{
+  // if (sound.isPlaying())
+  // {
+  //   sound.stop();
+  // }
+  sound.play();
+}
 
 function setupSocket()
 {
@@ -767,13 +777,13 @@ function setupSocket()
   socket.on("playerDisconnected", (playerName) =>
   {
     ui.chatBox.playerLeft(playerName);
-      // let deletePlayer = playersList.find(x => x.id == playerId)
-      // let index = playersList.indexOf(deletePlayer)
-      // playersList.splice(index, 1)
-      // let deleteMouse = mouseList.find(x => x.id == playerId)
-      // index = mouseList.indexOf(deleteMouse)
-      // mouseList.splice(index,1)
-      // console.log("player with id :" + playerId + " has been removed.")
+    // let deletePlayer = playersList.find(x => x.id == playerId)
+    // let index = playersList.indexOf(deletePlayer)
+    // playersList.splice(index, 1)
+    // let deleteMouse = mouseList.find(x => x.id == playerId)
+    // index = mouseList.indexOf(deleteMouse)
+    // mouseList.splice(index,1)
+    // console.log("player with id :" + playerId + " has been removed.")
 
   })
   // let intervalID
@@ -807,14 +817,16 @@ function setupSocket()
     gameMap.tileMap[tower.row][tower.col].isPathable = false;
     towers.push(tower);
   })
-  socket.on("upgradeTower", (data)=>{
+  socket.on("upgradeTower", (data) =>
+  {
     // console.log(data)
     let tower = towers.find(x => x.id === data && x.owner === 'p2');
     tower.upgrade();
     // console.log(tower)
     ui.generateFloatingText(`Rank ↑`, tower.position, color(0, 225, 0, 255));
   })
-  socket.on("destroyTower", (data)=>{
+  socket.on("destroyTower", (data) =>
+  {
     let tower = towers.find(x => x.id === data && x.owner == 'p2');
     tower.rank = -1;
     gameMap.tileMap[tower.row][tower.col].isPathable = true;
@@ -1003,7 +1015,8 @@ class ChatMessage
   }
 }
 let timeoutID
-document.addEventListener("visibilitychange", ()=>{
+document.addEventListener("visibilitychange", () =>
+{
   if (document.hidden)
   {
     timeoutID = setTimeout(disconnect, 20000);

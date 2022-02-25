@@ -33,19 +33,19 @@ class ChatBox
     }
     addLocalChatMessage(message)
     {
-        this.messages.push(new Message("localClient", message, 14))
+        this.messages.push(new Message("localClient", message, 12))
     }
     addRemoteChatMessage(message)
     {
-        this.messages.push(new Message("remoteClient", message, 14))
+        this.messages.push(new Message("remoteClient", message, 12))
     }
     greetPlayer(name)
     {
-        this.messages.push(new Message("info", name + " has joined the game!", 14))
+        this.messages.push(new Message("info", name + " has joined the game!", 12))
     }
     playerLeft(name)
     {
-        this.messages.push(new Message("info", name + " has left the game!", 14))
+        this.messages.push(new Message("info", name + " has left the game!", 12 ))
     }
     buildTimerEnd()
     {
@@ -54,7 +54,7 @@ class ChatBox
 
     blockedPath()
     {
-        this.messages.push(new Message("admin", "Can not block path to base!", 14))
+        this.messages.push(new Message("admin", "Can not block path to base!", 12))
     }
     activateInput()
     {
