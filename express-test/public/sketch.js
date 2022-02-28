@@ -789,9 +789,7 @@ function setupSocket()
   // let intervalID
   socket.on("buildTimerStart", () =>
   {
-
     startBuild();
-
   })
   socket.on("newTower", (data) =>
   {

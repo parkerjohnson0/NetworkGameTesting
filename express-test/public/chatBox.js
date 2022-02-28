@@ -273,11 +273,11 @@ class ChatBox
                 {
                     yOffset = lines * fontSize
                 }
-                if (wordArray[i] == "     ")
+                if (wordArray[i] == "   " || wordArray[i] == "  " )
                 {
                     let emoteKey = emoteTest.emotes[emoteIndex++]
 
-                    image(this.emotes[emoteKey], (this.x + this.padding + xOffset), startPos - fontSize * 2 + yOffset - 4)
+                    image(this.emotes[emoteKey], (this.x + this.padding + xOffset - 5), startPos - fontSize * 2 + yOffset - 5)
                 }
                 messageLength += textWidth(wordArray[i]) + textWidth(" ")
                 xOffset = messageLength % maxWidth
@@ -346,11 +346,20 @@ class ChatBox
             const element = substrings[index];
             if (keys.includes(element))
             {
+                if (this.emoteIsFirstWord(index,substrings)){
+                    substrings[index] = "  " //only add a space for after
+                }
+                else{
+                    substrings[index] = "   " //add space before and after emote
+                }
                 emotes.push(element)
-                substrings[index] = "     "
             }
         }
         return { "substrings": substrings, "emotes": emotes }
+    }
+    emoteIsFirstWord(index,substrings){
+        let word = substrings[index];
+        return substrings.filter(x => x != "")[0] === word; // filter out pad. check if first word is emote 
     }
     containsEmote(message)
     {
@@ -372,7 +381,7 @@ class ChatBox
         {
             if (keys.includes(x))
             {
-                s[index] = "     "
+                s[index] = "   "
             }
         })
         return s.join(" ");
