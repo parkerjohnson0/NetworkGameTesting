@@ -699,13 +699,13 @@ function draw()
     noTint();
     pop();
   }
+
+  image(resources.cursor, mouseX, mouseY);
+
   if (LoadingScreen.showing)
   {
     LoadingScreen.draw();
   }
-  image(resources.cursor, mouseX, mouseY);
-
-
   onMouseHover();
 
 }
