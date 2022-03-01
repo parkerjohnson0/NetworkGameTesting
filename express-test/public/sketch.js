@@ -23,13 +23,14 @@ let startL;
 let startR;
 let buildTimer;
 let currRound = 1;
-
+// let loadingAnimation = true;
 let p2mousePosition;
 let towerID = 0;
 
 let playWidth = 600;
 let playHeight = 580;
 
+let loadingGif;
 let resources = {};
 resources.towers = [];
 let towerSprites;
@@ -101,9 +102,9 @@ function preload()
   sounds.gold = loadSound(`audio/gold.mp3`)
   sounds.upgrade = loadSound(`audio/upgrade.mp3`)
   sounds.magicTower = loadSound(`audio/magic_tower.mp3`)
-  loadingGif = loadImage(`assets/test.gif`)
-
-
+  // loadingGif = loadImage(`assets/test.gif`)
+  LoadingScreen.lightningGif = loadImage(`assets/test.gif`)
+  LoadingScreen.staticGif = loadImage(`assets/test2.gif`);
 }
 
 function setup()
@@ -157,7 +158,7 @@ function setup()
   let cols = 30;
   gameMap = new Map(rows, cols);
   setupSocket();
-
+  LoadingScreen.start();
   // gameMap.generate(); // Single Player
 
   //Mark Enemy Spawn and Enemy Goal locations as unbuildable
@@ -203,6 +204,10 @@ function generateSprites(spritesheet, spriteWidth, spriteHeight, singleArray)
 }
 function keyTyped()
 {
+  if (LoadingScreen.showing && key === "Enter")
+  {
+    LoadingScreen.stop();
+  }
   if (ui.chatBox.input.focused && key === "Enter")
   {
     ui.sendMessage();
@@ -511,7 +516,6 @@ function draw()
 {
   background(0);
   image(gfx, 0, 0);
-  image(loadingGif,0,0)
   noCursor();
   updatePlayers();
   // Tick over build clock for 1P Testing
@@ -694,7 +698,10 @@ function draw()
     noTint();
     pop();
   }
-
+  if (LoadingScreen.showing)
+  {
+    LoadingScreen.draw();
+  }
   image(resources.cursor, mouseX, mouseY);
 
 
@@ -710,7 +717,11 @@ function playSound(sound)
   // }
   sound.play();
 }
-
+// function startLoadingAnimation()
+// {
+//   image(loadingGif, 0, 0, 1000, 580)
+//   // loadingAnimation = false;
+// }
 function setupSocket()
 {
   // socket = io('localhost:3001')
