@@ -157,7 +157,6 @@ function setup()
   let rows = 29;
   let cols = 30;
   gameMap = new Map(rows, cols);
-  setupSocket();
   LoadingScreen.start();
   // gameMap.generate(); // Single Player
 
@@ -207,6 +206,8 @@ function keyTyped()
   if (LoadingScreen.showing && key === "Enter")
   {
     LoadingScreen.stop();
+    setupSocket();
+
   }
   if (ui.chatBox.input.focused && key === "Enter")
   {
