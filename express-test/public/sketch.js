@@ -101,7 +101,7 @@ function preload()
   sounds.gold = loadSound(`audio/gold.mp3`)
   sounds.upgrade = loadSound(`audio/upgrade.mp3`)
   sounds.magicTower = loadSound(`audio/magic_tower.mp3`)
-
+  loadingGif = loadImage(`assets/test.gif`)
 
 
 }
@@ -511,6 +511,7 @@ function draw()
 {
   background(0);
   image(gfx, 0, 0);
+  image(loadingGif,0,0)
   noCursor();
   updatePlayers();
   // Tick over build clock for 1P Testing
