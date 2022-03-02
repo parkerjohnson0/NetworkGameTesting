@@ -20,7 +20,7 @@ class LoadingScreen
             {
                 image(this.staticGif, 0, 0, 1000, 580)
                 noStroke();
-                text("Press enter lol", 400, 290)
+                text("Press any key", 400, 290)
             }
             pop();
 

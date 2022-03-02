@@ -80,13 +80,13 @@ const INTERVAL = 1000 / 30
 //probably need to discard buffer on reconnection. research socket.io volatile
 io.on("connection", (conn) =>
 {
-    //add some cache mechanism maybe? dont know if would be that useful. 
+    //add some cache mechanism maybe? dont know if would be that useful.
     enqueue(conn) //place client in game instance
     let room = getRoom(conn)
     conn.join(room)
     let instance = gameInstances.find(x => x.clients.some(y => y.socketID == conn.id))
     let client = instance.clients.find(x => x.socketID == conn.id)
-    //this 
+    //this
     let updateTimer = setInterval(sendToClient,INTERVAL,conn)
     conn.on("clientConnection", () =>
     {
@@ -118,7 +118,7 @@ io.on("connection", (conn) =>
             io.in(room).emit("greetPlayer", name)
         })
         conn.on("disconnect", () =>
-        {   
+        {
             clearInterval(updateTimer)
             removeClient(instance, client)
             removeInstanceIfEmpty(instance)
@@ -140,7 +140,7 @@ io.on("connection", (conn) =>
         // })
         conn.on("requestBuildTimerStart", () =>
         {
-            // console.log("build timer requested by client", client.id, "in room", room) 
+            // console.log("build timer requested by client", client.id, "in room", room)
             console.log("REQUEST TO START")
 
             client.buildTimerRequested = true
@@ -178,7 +178,7 @@ io.on("connection", (conn) =>
                 return
             }
             conn.to(room).emit("newTower", data)
-            
+
         })
         conn.on("towerUpgrade", (data) =>
         {
@@ -189,12 +189,19 @@ io.on("connection", (conn) =>
         })
         conn.on("gameOver", (score) =>
         {
-            if (instance.gameState.name !== GameStates.GameOver.name)
+            if (instance.gameState.name !== GameStates.GameOver.name) // name property is just to get closer to a type safe enum
             {
-                let names = instance.clients.map(x => { return x.username })
-                instance.gameState = GameStates.GameOver
-                sendToMongo(score,names, instance.uuid)
-                
+                // let names = instance.clients.map(x => { return x.username })
+                let name = instance.clients.find(x => x.socketID === conn.id).username;
+                // instance.gameState = GameStates.GameOver
+                instance.gameResult.push({
+                    "score":score,
+                    "name": name,
+                })
+                // sendToMongo(score,names, instance.uuid)
+            }
+            if (instance.gameResult.length === instance.clients.length){
+                sendToMongo(instance.gameResult, instance.uuid)
             }
         })
     })
@@ -208,36 +215,36 @@ function removeInstanceIfEmpty(instance)
         gameInstances = gameInstances.filter((x) => x != instance)
     }
 }
-function sendToMongo(score,names,uuid)
+function sendToMongo(result,uuid)
 {
     // let url = "http://localhost:3000/api/Players"
     // let url = "http://skelegame.com/api/Players"
     // let url = "http://localhost:3001/api/Players"
-    
+
     // let url = "game.parkerjohnson-projects.com/api/Players"
-    let data = {score, names,uuid}
+    let data = {result,uuid}
     console.log(app.db.InsertDocument(data, "Leaderboard"))
     // httpPost(url, "json", data,
     //     function (result)
-    //     {   
+    //     {
     //         console.log(result)
     //     }),
     //     function (error)
     //     {
     //         console.log(error)
     //     }
-        
+
 
 }
 function buildTimerCanStart(instance)
 {
     let connectedClientsReady = !instance.clients.some(x => x.buildTimerRequested == false)
     return connectedClientsReady && instance.clients.length > 1
-    
+
 }
 function getRoom(client)
 {
-    
+
     sockets.push(client)
     console.log("new client connected: ", client.id)
     let roomNumber = gameInstances.findIndex(x => x.clients.some(y => y.socketID == client.id))
@@ -307,7 +314,7 @@ function sendToClient(conn)
             connectedPlayers.forEach(x =>
             {
 
-                    
+
                 clientData.push(x.playerData)
                 mouseData.push(x.mouseData)
             })
@@ -346,6 +353,7 @@ class GameInstance
         this.chatMessages = []
         this.gameState = GameStates.PreGame
         this.gameInProgess = false;
+        this.gameResult = [];
         console.log('adding instance:' + this.uuid);
     }
     addClient(id,username)
@@ -367,7 +375,7 @@ class GameStates
     constructor(name)
     {
         this.name = name
-    }   
+    }
 
 }
 class Client

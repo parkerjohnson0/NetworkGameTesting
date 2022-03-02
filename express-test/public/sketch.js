@@ -203,11 +203,10 @@ function generateSprites(spritesheet, spriteWidth, spriteHeight, singleArray)
 }
 function keyTyped()
 {
-  if (LoadingScreen.showing && key === "Enter")
+  if (LoadingScreen.showing)
   {
     LoadingScreen.stop();
     setupSocket();
-
   }
   if (ui.chatBox.input.focused && key === "Enter")
   {
@@ -292,6 +291,11 @@ function mouseReleased()
 }
 function mouseClicked()
 {
+  if (LoadingScreen.showing)
+  {
+    LoadingScreen.stop();
+    setupSocket();
+  }
   selectedTower = null;
   if (ui.chatBox.inputClicked() && !ui.nameBox.isEnabled)
   {
