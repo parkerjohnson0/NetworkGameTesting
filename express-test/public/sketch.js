@@ -527,6 +527,7 @@ function draw()
   background(0);
   image(gfx, 0, 0);
   noCursor();
+  console.log(calculateScore());
   updatePlayers();
   // Tick over build clock for 1P Testing
   if (IsStarted)
