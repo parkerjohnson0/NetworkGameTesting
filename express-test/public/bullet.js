@@ -22,7 +22,7 @@ class Bullet {
     }
 
     onHit(){
-            this.target.onHit(this.damage, this.type);
+            this.target.onHit(this.damage, this.type,this.parent);
             this.position = this.target.position.copy();
             this.hasCollided = true;
 

@@ -13,7 +13,7 @@ class Enemy{
         this.hp = 20 + 15 * currRound;
         this.isTargetable = false;
         this.canBeHitTile = this.path[0];
-
+        this.killedBy = "";
         this.sprite;
         this.animation = new spriteAnimation(6);
         this.animation.setFrames(resources.zombieSprites);
@@ -57,13 +57,14 @@ class Enemy{
 }  
     }
 
-    onHit(damage, type={type:"", range:0, damage:0}){
+    onHit(damage, type={type:"", range:0, damage:0},towerShotFrom){
+        this.killedBy = towerShotFrom.owner;
         this.hp -= damage;
         let damageType = type;
         if (damageType.type=="splash"){
             let allies = testEnemies.filter(enemy => dist(this.position.x,this.position.y,enemy.position.x, enemy.position.y) < damageType.range && enemy != this)
             for (let ally of allies){
-                ally.onHit(type.damage);
+                ally.onHit(type.damage,{type:"", range:0, damage:0},towerShotFrom);
             }
         }
         if (damageType.type=="slow"){
@@ -73,7 +74,7 @@ class Enemy{
                 if (ally.speed > .5){
                 ally.speed -= damageType.slowAmount;
                 }
-                ally.onHit(type.damage);
+                ally.onHit(type.damage,{type:"", range:0, damage:0},towerShotFrom);
             }
         }
     }

@@ -68,7 +68,7 @@ let randSeed;
 
 let gfx;
 let sounds = []
-
+let clientEnemiesKilled = 0;
 
 function preload()
 {
@@ -220,10 +220,15 @@ function keyTyped()
   else if (ui.nameBox.input.focused && key === "Enter")
   {
     playerName = ui.nameBox.input.text;
-    document.cookie = "name=" + playerName
-    socket.emit("newPlayerJoined", playerName)
-    socket.emit("requestBuildTimerStart")
-    ui.nameBox.disable();
+    if (playerName)
+    {
+        
+      document.cookie = "name=" + playerName
+      socket.emit("newPlayerJoined", playerName)
+      socket.emit("requestBuildTimerStart")
+      ui.nameBox.disable();
+    }
+      
   }
   else if (ui.nameBox.input.focused && key !== "Delete")
   {
@@ -562,6 +567,7 @@ function draw()
       {
         enemiesToRemove.push(enemy);
         gold += 10;
+        clientEnemiesKilled++;
         playSound(sounds.gold);
       }
     }
@@ -577,7 +583,7 @@ function draw()
     if (lives <= 0 && !gameIsOver)
     {
       //end Game stuff
-      socket.emit("gameOver", currRound);
+      socket.emit("gameOver", calculateScore());
       gameIsOver = true;
     }
 
@@ -789,7 +795,10 @@ function setupSocket()
   // })
   socket.on("playerDisconnected", (playerName) =>
   {
+    if (playerName)
+    {
     ui.chatBox.playerLeft(playerName);
+    }
     // let deletePlayer = playersList.find(x => x.id == playerId)
     // let index = playersList.indexOf(deletePlayer)
     // playersList.splice(index, 1)
@@ -1008,6 +1017,11 @@ function nameBoxListener(e)
 function disconnect()
 {
   socket.disconnect();
+}
+function calculateScore()
+{
+  let maxRankTowers = towers.filter(x => x.rank === 10 && x.owner === "p1").length;
+  return 10 * currRound + clientEnemiesKilled + gold + 2 * maxRankTowers;
 }
 class Player
 {
