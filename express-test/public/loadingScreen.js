@@ -2,7 +2,7 @@ class LoadingScreen
 {
     static lightningGif;
     static staticGif;
-    static timerLightning = new Timer(3);
+    static timerLightning = new Timer(2.4);
     static showing = false;
     static draw()
     {
