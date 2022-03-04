@@ -2,7 +2,7 @@ class LoadingScreen
 {
     static lightningGif;
     static staticGif;
-    static timerLightning = new Timer(5);
+    static timerLightning = new Timer(3);
     static showing = false;
     static draw()
     {
@@ -20,7 +20,6 @@ class LoadingScreen
             {
                 image(this.staticGif, 0, 0, 1000, 580)
                 noStroke();
-                text("Press any key", 400, 290)
             }
             pop();
 

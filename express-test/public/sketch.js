@@ -103,8 +103,8 @@ function preload()
   sounds.upgrade = loadSound(`audio/upgrade.mp3`)
   sounds.magicTower = loadSound(`audio/magic_tower.mp3`)
   // loadingGif = loadImage(`assets/test.gif`)
-  LoadingScreen.lightningGif = loadImage(`assets/test.gif`)
-  LoadingScreen.staticGif = loadImage(`assets/test2.gif`);
+  LoadingScreen.lightningGif = loadImage(`assets/titlescreen_anim1.gif`)
+  LoadingScreen.staticGif = loadImage(`assets/titlescreen_anim2.gif`);
 }
 
 function setup()
@@ -203,7 +203,7 @@ function generateSprites(spritesheet, spriteWidth, spriteHeight, singleArray)
 }
 function keyTyped()
 {
-  if (LoadingScreen.showing)
+  if (LoadingScreen.showing && LoadingScreen.timerLightning.isFinished)
   {
     LoadingScreen.stop();
     setupSocket();
@@ -291,7 +291,7 @@ function mouseReleased()
 }
 function mouseClicked()
 {
-  if (LoadingScreen.showing)
+  if (LoadingScreen.showing && LoadingScreen.timerLightning.isFinished)
   {
     LoadingScreen.stop();
     setupSocket();
@@ -527,7 +527,6 @@ function draw()
   background(0);
   image(gfx, 0, 0);
   noCursor();
-  console.log(calculateScore());
   updatePlayers();
   // Tick over build clock for 1P Testing
   if (IsStarted)
@@ -588,7 +587,7 @@ function draw()
     if (lives <= 0 && !gameIsOver)
     {
       //end Game stuff
-      socket.emit("gameOver", calculateScore());
+      socket.emit("gameOver", calculateScore(), currRound);
       gameIsOver = true;
     }
 

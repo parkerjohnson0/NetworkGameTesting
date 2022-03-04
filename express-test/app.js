@@ -187,8 +187,9 @@ io.on("connection", (conn) =>
         conn.on("towerDestroy", (data)=>{
             conn.to(room).emit("destroyTower", data)
         })
-        conn.on("gameOver", (score) =>
+        conn.on("gameOver", (score,round) =>
         {
+            console.log("round " + round)
             if (instance.gameState.name !== GameStates.GameOver.name) // name property is just to get closer to a type safe enum
             {
                 // let names = instance.clients.map(x => { return x.username })
@@ -201,7 +202,7 @@ io.on("connection", (conn) =>
                 // sendToMongo(score,names, instance.uuid)
             }
             if (instance.gameResult.length === instance.clients.length){
-                sendToMongo(instance.gameResult, instance.uuid)
+                sendToMongo(instance.gameResult, instance.uuid, round)
             }
         })
     })
@@ -215,14 +216,14 @@ function removeInstanceIfEmpty(instance)
         gameInstances = gameInstances.filter((x) => x != instance)
     }
 }
-function sendToMongo(result,uuid)
+function sendToMongo(result,uuid,wave)
 {
     // let url = "http://localhost:3000/api/Players"
     // let url = "http://skelegame.com/api/Players"
     // let url = "http://localhost:3001/api/Players"
 
     // let url = "game.parkerjohnson-projects.com/api/Players"
-    let data = {result,uuid}
+    let data = {result,uuid,wave}
     console.log(app.db.InsertDocument(data, "Leaderboard"))
     // httpPost(url, "json", data,
     //     function (result)

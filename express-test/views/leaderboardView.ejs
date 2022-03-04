@@ -29,23 +29,29 @@
         <table class="table">
             <tr>
                 <th>Players</th>
+                <th>Score</th>
                 <th>Wave</th>
             </tr>
             <% scores.forEach((score) =>{ %>
                 <tr>
-                    <% if (score.names[1]){ %>
-                        <td>
-                            <%= score.names[0] + " & " +  score.names[1] %>
-                        </td>
-                    <% } else{ %>
-                        <td>
-                            <%= score.names[0] %>
-                        </td>
-                    <% } %>
+                    <td rowspan="2">
 
-                    <td>
-                        <%= score.score %>
+                    <% score.result.forEach((player)=>{ %>
+                            <%= player.name %>
+                            <br>
+                   <% }) %>
                     </td>
+                    <td rowspan="2">
+
+                        <% score.result.forEach((player)=>{ %>
+                                <%= player.score %>
+                                <br>
+                    <% }) %>
+                    </td>
+                    <td rowspan="2">
+                        <%=score.wave %>
+                    </td>
+
                 </tr>
             <% }) %>
             
