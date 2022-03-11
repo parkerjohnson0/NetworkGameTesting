@@ -5,6 +5,7 @@
 
 let targetDelta = 1000 / 60
 let deltaRatio
+let delta
 let currFrame = 0
 let gameMap;
 let towers = [];
@@ -111,7 +112,7 @@ function preload()
 
 function setup()
 {
-  frameRate(15)
+  frameRate(60)
   gfx = createGraphics(playWidth, playHeight);
   gfx.background(0, 0, 0)
   ui = new UserInterface();
@@ -526,7 +527,9 @@ function startBuild()
 
 function draw()
 {
-  deltaRatio = deltaTime / targetDelta;
+  delta = deltaTime
+  deltaRatio = delta / targetDelta
+
   background(0);
   image(gfx, 0, 0);
   noCursor();
@@ -557,6 +560,19 @@ function draw()
       enemiesCanSpawn = false;
       buildTimer.timerRequested = false;
       buildTimer.reset()
+    }
+    while (delta >= targetDelta)
+    {
+  
+      for (let tower of towers)
+      {
+        tower.update();
+      }
+      for (let enemy of testEnemies)
+      {
+        enemy.update();
+      }
+      delta -= targetDelta;
     }
     // gameMap.draw();
 

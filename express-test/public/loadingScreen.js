@@ -25,6 +25,7 @@ class LoadingScreen
 
         }
     }
+
     static start()
     {
         this.showing = true;

@@ -53,29 +53,30 @@ class Enemy
         }
         else
         {
-            this.dir = createVector(Math.floor(this.target.position.x) + Math.floor(this.tileOffset) - Math.floor(this.position.x), Math.floor(this.target.position.y) + Math.floor(this.tileOffset) - Math.floor(this.position.y));
-            this.dir = createVector(Math.sign(this.dir.x) * deltaRatio, Math.sign(this.dir.y) * deltaRatio); 
-            this.currMove += (this.speed * deltaRatio);
+            this.dir = createVector(this.target.position.x + this.tileOffset - this.position.x, this.target.position.y + this.tileOffset - this.position.y);
+            this.dir = createVector(Math.sign(this.dir.x) * (delta / 20), Math.sign(this.dir.y) * (delta / 20)); 
+            this.currMove += (this.speed * (delta / 20));
             //this.dir.mult(this.speed);
-            // if (this.currMove >= 1)
-            // {
+            if (this.currMove >= 1)
+            {
                 let vector = createVector(this.position.x + this.dir.x,this.position.y + this.dir.y);
                 // this.position.add(this.dir);
                 this.position = vector;
                 this.currMove = 0;
-            // }
+            }
 
-            // if (this.speed < this.maxSpeed)
-            // {
-            //     this.speed += (0.005 * deltaRatio);
-            // }
+            if (this.speed < this.maxSpeed)
+            {
+                this.speed += (0.005 * (delta / 20));
+            }
         }
     }
     vectorsEqual(tile)
     {
         let vector = createVector(Math.floor(this.position.x), Math.floor(this.position.y));
-        return ((vector.x < tile.x + 5 && vector.x > tile.x - 5) && 
-            (vector.y < tile.y + 5 && vector.y > tile.y - 5));
+        return ((vector.x < tile.x + 10 && vector.x > tile.x - 10) &&
+            (vector.y < tile.y + 10 && vector.y > tile.y - 10));
+        // return tile.equals(vector);
     }
     onHit(damage, type = { type: "", range: 0, damage: 0 }, towerShotFrom)
     {
@@ -98,13 +99,16 @@ class Enemy
             {
                 if (ally.speed > .5 )
                 {
-                    ally.speed -= (damageType.slowAmount * deltaRatio);
+                    ally.speed -= (damageType.slowAmount);
                 }
                 ally.onHit(type.damage, { type: "", range: 0, damage: 0 }, towerShotFrom);
             }
         }
     }
-
+    update()
+    {
+        this.move();
+    }
     draw()
     {
         this.move();
