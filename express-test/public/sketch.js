@@ -516,7 +516,7 @@ function spawnEnemies()
 
 function startBuild()
 {
-  buildTimer = new Timer(3);
+  buildTimer = new Timer(10);
   buildTimer.start();
   ui.roundText.setText(`Build Phase`);
   ui.roundText.reset();
