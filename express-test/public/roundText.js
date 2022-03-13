@@ -43,8 +43,8 @@ class RoundText {
             fill(this.currColor);
             textSize(this.currTextSize);
             text(this.text,playWidth/2, playHeight/2);
-            this.currTextSize+=(0.5 * deltaRatio);
-            this.alpha -= (3 * deltaRatio);
+            this.currTextSize+=0.5;
+            this.alpha -= 3;
             this.currColor = color(255,255,255, this.alpha);
             pop();
         }

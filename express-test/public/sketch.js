@@ -3,8 +3,6 @@
 "use strict";
 
 
-let targetDelta = 1000 / 60
-let deltaRatio
 let currFrame = 0
 let gameMap;
 let towers = [];
@@ -111,7 +109,7 @@ function preload()
 
 function setup()
 {
-  frameRate(15)
+  frameRate(60)
   gfx = createGraphics(playWidth, playHeight);
   gfx.background(0, 0, 0)
   ui = new UserInterface();
@@ -223,13 +221,13 @@ function keyTyped()
     playerName = ui.nameBox.input.text;
     if (playerName)
     {
-
+        
       document.cookie = "name=" + playerName
       socket.emit("newPlayerJoined", playerName)
       socket.emit("requestBuildTimerStart")
       ui.nameBox.disable();
     }
-
+      
   }
   else if (ui.nameBox.input.focused && key !== "Delete")
   {
@@ -516,7 +514,7 @@ function spawnEnemies()
 
 function startBuild()
 {
-  buildTimer = new Timer(3);
+  buildTimer = new Timer(30);
   buildTimer.start();
   ui.roundText.setText(`Build Phase`);
   ui.roundText.reset();
@@ -526,7 +524,6 @@ function startBuild()
 
 function draw()
 {
-  deltaRatio = deltaTime / targetDelta;
   background(0);
   image(gfx, 0, 0);
   noCursor();
@@ -804,7 +801,7 @@ function setupSocket()
   {
     if (playerName)
     {
-      ui.chatBox.playerLeft(playerName);
+    ui.chatBox.playerLeft(playerName);
     }
     // let deletePlayer = playersList.find(x => x.id == playerId)
     // let index = playersList.indexOf(deletePlayer)
@@ -1060,4 +1057,3 @@ document.addEventListener("visibilitychange", () =>
     clearTimeout(timeoutID);
   }
 })
-
