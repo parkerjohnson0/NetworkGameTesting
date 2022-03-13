@@ -3,9 +3,9 @@
 "use strict";
 
 
-let targetDelta = 1000 / 60
+let timestep = 1000 / 60
 let deltaRatio
-let delta
+let delta = 0
 let currFrame = 0
 let gameMap;
 let towers = [];
@@ -112,7 +112,7 @@ function preload()
 
 function setup()
 {
-  frameRate(60)
+  frameRate(15)
   gfx = createGraphics(playWidth, playHeight);
   gfx.background(0, 0, 0)
   ui = new UserInterface();
@@ -517,7 +517,7 @@ function spawnEnemies()
 
 function startBuild()
 {
-  buildTimer = new Timer(10);
+  buildTimer = new Timer(5);
   buildTimer.start();
   ui.roundText.setText(`Build Phase`);
   ui.roundText.reset();
@@ -527,9 +527,21 @@ function startBuild()
 
 function draw()
 {
-  delta = deltaTime
-  deltaRatio = delta / targetDelta
+  delta += deltaTime
+  deltaRatio = delta / timestep
+  while (delta > timestep)
+  {
 
+    for (let tower of towers)
+    {
+      tower.update();
+    }
+    for (let enemy of testEnemies)
+    {
+      enemy.update();
+    }
+    delta -= timestep;
+  }
   background(0);
   image(gfx, 0, 0);
   noCursor();
@@ -561,19 +573,7 @@ function draw()
       buildTimer.timerRequested = false;
       buildTimer.reset()
     }
-    while (delta >= targetDelta)
-    {
-  
-      for (let tower of towers)
-      {
-        tower.update();
-      }
-      for (let enemy of testEnemies)
-      {
-        enemy.update();
-      }
-      delta -= targetDelta;
-    }
+
     // gameMap.draw();
 
     // Collate enemies that have died and need removal

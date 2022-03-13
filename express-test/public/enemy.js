@@ -54,8 +54,8 @@ class Enemy
         else
         {
             this.dir = createVector(this.target.position.x + this.tileOffset - this.position.x, this.target.position.y + this.tileOffset - this.position.y);
-            this.dir = createVector(Math.sign(this.dir.x) * (delta / 20), Math.sign(this.dir.y) * (delta / 20)); 
-            this.currMove += (this.speed * (delta / 20));
+            this.dir = createVector(Math.sign(this.dir.x) * (deltaRatio / 20), Math.sign(this.dir.y) * (deltaRatio / 20)); 
+            this.currMove += (this.speed * (deltaRatio / 20));
             //this.dir.mult(this.speed);
             if (this.currMove >= 1)
             {
@@ -67,7 +67,7 @@ class Enemy
 
             if (this.speed < this.maxSpeed)
             {
-                this.speed += (0.005 * (delta / 20));
+                this.speed += (0.005 * (deltaRatio / 20));
             }
         }
     }
