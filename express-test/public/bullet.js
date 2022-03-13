@@ -16,7 +16,7 @@ class Bullet {
             this.animation.setFrames(this.spritesheet.slice(1));
         }
 
-        this.dir = createVector(((this.targetPosition.x)-this.position.x) * deltaRatio, ((this.targetPosition.y)-this.position.y) * deltaRatio);
+        this.dir = createVector((this.targetPosition.x)-this.position.x, (this.targetPosition.y)-this.position.y);
         this.dir = this.dir.div(this.speed);
 
     }

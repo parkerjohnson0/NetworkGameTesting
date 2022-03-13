@@ -37,9 +37,6 @@ class Enemy
         let tilePosition = createVector((this.target.position.x + this.tileOffset), (this.target.position.y + this.tileOffset));
         if (this.vectorsEqual(tilePosition))
         {
-        // if (tilePosition.equals(this.position))
-        // {
-            this.position = tilePosition;
             this.currentTile = this.target;
             this.path.shift();
             //this.path = this.navAgent.findPath(this.currentTile, this.goal);
@@ -53,8 +50,8 @@ class Enemy
         }
         else
         {
-            this.dir = createVector(Math.floor(this.target.position.x) + Math.floor(this.tileOffset) - Math.floor(this.position.x), Math.floor(this.target.position.y) + Math.floor(this.tileOffset) - Math.floor(this.position.y));
-            this.dir = createVector(Math.sign(this.dir.x) * deltaRatio, Math.sign(this.dir.y) * deltaRatio); 
+            this.dir = createVector((this.target.position.x + this.tileOffset) - this.position.x, (this.target.position.y + this.tileOffset) - this.position.y);
+            this.dir = createVector(Math.sign(this.dir.x) * deltaRatio, Math.sign(this.dir.y) * deltaRatio);
             this.currMove += (this.speed * deltaRatio);
             //this.dir.mult(this.speed);
             // if (this.currMove >= 1)
@@ -74,13 +71,13 @@ class Enemy
     vectorsEqual(tile)
     {
         let vector = createVector(Math.floor(this.position.x), Math.floor(this.position.y));
-        return ((vector.x < tile.x + 5 && vector.x > tile.x - 5) && 
-            (vector.y < tile.y + 5 && vector.y > tile.y - 5));
+        return ((vector.x < tile.x + 10 && vector.x > tile.x - 10) && 
+            (vector.y < tile.y + 10 && vector.y > tile.y - 10));
     }
     onHit(damage, type = { type: "", range: 0, damage: 0 }, towerShotFrom)
     {
         this.killedBy = towerShotFrom.owner;
-        this.hp -= damage;
+        this.hp -= (damage * deltaRatio);
         let damageType = type;
         if (damageType.type == "splash")
         {
@@ -112,7 +109,7 @@ class Enemy
         this.sprite = this.animation.getCurrentFrame();
         push();
         imageMode(CENTER);
-        translate(Math.floor(this.position.x), Math.floor(this.position.y));
+        translate(this.position.x, this.position.y);
         if (this.dir.x > 0)
         {
             rotate(0);
