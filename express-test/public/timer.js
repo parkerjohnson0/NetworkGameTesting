@@ -24,7 +24,7 @@ class Timer {
 
     tick(){
         if (this.isTicking) {
-        this.time -= 1;
+        this.time -= 1 * (deltaTime / timestep);
     }
 
     if (this.time <=0){

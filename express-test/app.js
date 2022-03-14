@@ -190,7 +190,7 @@ io.on("connection", (conn) =>
         conn.on("gameOver", (score,round) =>
         {
             console.log("round " + round)
-            if (instance.gameState.name !== GameStates.GameOver.name) // name property is just to get closer to a type safe enum
+            if (instance.gameState.name !== GameStates.GameOver.name) // name property is just to approximate a type safe enum
             {
                 // let names = instance.clients.map(x => { return x.username })
                 let name = instance.clients.find(x => x.socketID === conn.id).username;
@@ -201,8 +201,10 @@ io.on("connection", (conn) =>
                 })
                 // sendToMongo(score,names, instance.uuid)
             }
-            if (instance.gameResult.length === instance.clients.length){
+            if (instance.gameResult.length === instance.clients.length)
+            {
                 sendToMongo(instance.gameResult, instance.uuid, round)
+                io.in(room).emit("gameResults",instance.gameResult, round)
             }
         })
     })

@@ -70,6 +70,7 @@ let gfx;
 let sounds = []
 let clientEnemiesKilled = 0;
 
+let timestep = 1000 / 60;
 function preload()
 {
 
@@ -114,7 +115,8 @@ function setup()
   gfx.background(0, 0, 0)
   ui = new UserInterface();
   ui.roundText.setText("Build Phase");
-  p2mousePosition = createVector(-50, 50);
+  // p2mousePosition = createVector(-50, 50);
+  p2mousePosition = new Mouse();
   textFont(resources.font)
 
   //prep all assets
@@ -589,6 +591,8 @@ function draw()
       //end Game stuff
       socket.emit("gameOver", calculateScore(), currRound);
       gameIsOver = true;
+      enemiesCanSpawn = false;
+      canBuild = false;
     }
 
     // Check mouse v tower for buildability
@@ -705,7 +709,12 @@ function draw()
     {
       ui.nameBox.draw();
     }
-    image(resources.cursor, p2mousePosition.x, p2mousePosition.y);
+    ui.gameOverBox.draw();
+    if (gameIsOver)
+    {
+      ui.gameOverBox.draw();
+    }
+    this.drawPlayer2Mouse();
     noTint();
     pop();
   }
@@ -719,7 +728,14 @@ function draw()
   onMouseHover();
 
 }
-
+function drawPlayer2Mouse()
+{
+  p2mousePosition.currX = (p2mousePosition.newX + p2mousePosition.oldX) / 2
+  p2mousePosition.currY = (p2mousePosition.newY + p2mousePosition.oldY) / 2
+  image(resources.cursor, p2mousePosition.currX, p2mousePosition.currY);
+  p2mousePosition.oldX = p2mousePosition.newX
+  p2mousePosition.oldY = p2mousePosition.newY
+}
 function playSound(sound)
 {
   // if (sound.isPlaying())
@@ -871,8 +887,8 @@ function setupSocket()
   })
   socket.on("serverMouseData", (data) =>
   {
-    p2mousePosition.x = data[0].mouseX
-    p2mousePosition.y = data[0].mouseY
+    p2mousePosition.newX = data[0].mouseX
+    p2mousePosition.newY = data[0].mouseY
     // for (let i = 0; i < mouseData.length; i++)
     // {
     //     let updateMouse = mouseList.find(x => x.id == mouseData[i].id)
@@ -886,6 +902,10 @@ function setupSocket()
     //         mouseList.push(mouseData[i])
     //     }
     // }
+  })
+  socket.on("gameResults", (results, round) =>
+  {
+    ui.gameOverBox.setResults(results);
   })
   // function tickTimer()
   // {

@@ -4,8 +4,8 @@ class Mouse{
         this.oldY = 0
         this.currX = 0
         this.currY = 0
-        this.newX = 0
-        this.newY = 0
+        this.newX = -100
+        this.newY = -100
         this.socketID = null
     }
 }

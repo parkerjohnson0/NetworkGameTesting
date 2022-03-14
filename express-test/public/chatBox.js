@@ -28,8 +28,6 @@ class ChatBox
         this.emotes = 
             { goldPooper: loadImage(`emotes/goldPooper24.png`) , 
              RIP: loadImage(`emotes/rip24.png`) }
-        
-        
     }
     addLocalChatMessage(message)
     {
