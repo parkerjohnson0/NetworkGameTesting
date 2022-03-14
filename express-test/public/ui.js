@@ -7,7 +7,7 @@ class UserInterface {
         this.floatingText=[];
         this.towerPopup = new TowerPopup();
         this.nameBox = new NameBox(playWidth / 2, playHeight / 2, 400,50);
-        this.chatBox = new ChatBox(playWidth + 100, 0, 300,500);
+        this.chatBox = new ChatBox(playWidth + 100, 0, 300,580);
         this.gameOverBox = new GameOverBox(playWidth / 2, playHeight / 2, 400);
         // this.chatBox.input.elt.addEventListener("keydown", this.inputListener)
         console.log(document.cookie)

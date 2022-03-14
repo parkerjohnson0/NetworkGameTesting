@@ -710,6 +710,11 @@ function draw()
       ui.nameBox.draw();
     }
     ui.gameOverBox.draw();
+    ui.gameOverBox.setResults([{ "score": 285, "name": "loop_daddy"}]);
+    // ui.gameOverBox.setResults([{ "score": 285, "name": "loop_daddy" },{ "score": 327, "name": "dooper" }]);
+
+
+
     if (gameIsOver)
     {
       ui.gameOverBox.draw();
