@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>SkeleGame.com - Game</title>
+		<link rel="stylesheet" type="text/css" href="css/style.css" />
+		<link rel="preconnect" href="https://fonts.googleapis.com">
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+		<link href="https://fonts.googleapis.com/css2?family=Permanent+Marker&display=swap" rel="stylesheet">
+	</head>
+	<body>
+	<div>
+		<ul id="navbar">
+			<li><a href="/">Home</a></li>
+			<li><a class="active" href="guide">How to Play</a></li>
+			<li><a href="game">Game</a></li>
+			<li><a href="scores">Highscores</a></li>
+		</ul>
+	</div>
+
+	<div id="content-area">
+		<div id="title">
+			<img src="./images/title.png" alt="Skeletons vs. Zombies TD" class="centered img">
+		</div>
+		<div id="main-content">
+		<h1>
+			Getting Started
+		</h1>
+		<h2>
+			Joining the Game
+		</h2>
+		<p>
+			To join a game, navigate to the "Game" page on the website. The game
+			will load automatically and place you into a lobby. If you are the
+			first player in the lobby you must wait for a second player to connect.
+			If you are the second player in a lobby the game will start automatically
+			once both players have entered a username.
+		</p>
+		<h2>
+			Choosing a Username
+		</h2>
+		<p>
+			Upon connecting to a lobby, you will be prompted to enter a username.
+			You may choose any username you like so long as it does not contain profanity
+			or exceed 8 characters. Once a username is chosen all high scores earned
+			will be tied to that username.
+		</p>
+		<img src="./images/username.png" alt="username.png" title="Username entry box" class="centered img">
+		<h2>
+			Using Game Chat
+		</h2>
+		<p>
+			While in the lobby and during game play you will have access to game chat.
+			This will be located to the right of the HUD and allow you to
+			communicate with your teammate. To send a message simply click to select
+			the text field, then type your message. Once your message is ready you can
+			send it by pressing the "Enter" key or click the "Send" button to the right
+			of the text field.
+		</p>
+		<img src="./images/gameChat.png" alt="gameChat.png" title="The gamechat interface" class="med centered img">
+		<h2>
+			UI and Game Elements
+		</h2>
+		<p>
+			The UI is split into three main areas:
+		</p>
+		<img src="./images/ui.png" alt="ui.png" title="The user interface" class="centered img">
+		<ol>
+			<li>
+				Play Field
+				<p>
+					The play field is where all the action take place. This is where
+					you will build, upgrade, and destroy your towers during the build
+					phase, and where the zombies will assault your fortifications
+					during the attack phase.
+				</p>
+			</li>
+
+			<li>
+				HUD
+				<p>
+					The HUD is where action and information items live. At the top of
+					the HUD you will find build icons for the various tower types
+					available to you. If a build icon is greyed out it means that you
+					don’t have enough gold to purchase a tower of that type, or that
+					tower type is not currently available to you.
+				</p>
+				<img src="./images/hud.png" alt="hud.png" title="HUD icons" class="centered img">
+				<p>
+					Below the build icons you will find the tower management buttons.
+					Selecting one of these will let you destroy or upgrade towers
+					respectively.
+				</p>
+				<img src="./images/buildIcons.png" alt="buildIcons.png" title="Build Icons" class="centered img">
+				<p>
+					Next you will find the phase timer. This displays the time remaining
+					in the current phase of gameplay as well as the current wave.
+				</p>
+				<img src="./images/timer.png" alt="timer.png" title="Game Timer" class="centered img">
+				<p>
+					Finally at the very bottom of the HUD is your gold counter. This displays
+					the amount of gold you have earned in battle that can be used for upgrading
+					and purchasing new towers.
+				</p>
+				<img src="./images/gold.png" alt="gold.png" title="Gold Counter" class="centered img">
+			</li>
+			<li>
+				Game Chat
+				<p>
+					The game chat is to the far right of the screen, and simply displays messages
+					sent and received between players.
+				</p>
+			</li>
+		</ol>
+		<h2>
+			Towers
+		</h2>
+		<p>
+			There are 4 different towers in the game. Each type of tower attacks in
+			a unique way. These towers can also be upgraded to improve their speed,
+			 range, and power.
+		</p>
+		<ul>
+			<li> Magic Tower </li>
+			<img src="./images/MagicT.png" alt="MagicT.png" title="Magic Tower" class="small img" >
+			<li> Gas Tower </li>
+			<img src="./images/GasT.png" alt="GasT.png" title="Gas Tower" class="small img">
+			<li> Ice Tower </li>
+			<img src="./images/IceT.png" alt="IceT.png" title="Ice Tower" class="small img">
+			<li> Fire Tower </li>
+			<img src="./images/FireT.png" alt="FireT.png" title="Fire Tower" class="small img">
+		<h2>
+			The Enemy
+		</h2>
+		<p>
+			Rival necromancers have sent their minions to attack your seat of power
+			and destroy you! Fend off their attacks by summoning necromantic towers
+			anf defeat the encroaching zombies. These ghoulish fiends gladly march 
+			straight at your defenses and make a beeline for your stronghold!
+		</p>
+		<img src="./images/zomb.png" alt="zomb.png" title="The Enemy!" class="centered img">
+		<h1>
+			Build Phase
+		</h1>
+		<h2>
+			Placing Towers
+		</h2>
+		<p>
+			To place a tower, you must first select the build icon for the type of
+			tower you would like to build from the HUD to the right of the play area.
+			Build icons that are greyed out can not be selected due to lack of funds.
+			After selecting a build icon, you are free to place that tower anywhere in
+			the play area that isn’t already occupied by another object. You can build
+			as many towers as you like until you run out of gold.
+		</p>
+		<h2>
+			Destroying Towers
+		</h2>
+		<p>
+			If you’ve placed a tower in the wrong spot or would simply like to recoup
+			some gold for different towers you can do so by destroying towers. To do
+			this you must first select the "Destroy Tower" icon. After this, any active
+			towers you click on in the play area will be destroyed and the gold returned
+			to your total.
+		</p>
+		<h2>
+			Upgrading Towers
+		</h2>
+		<p>
+			As the game progresses the enemies will get stronger and greater in numbers.
+			You will need to upgrade your towers to keep up! Each tower can be upgraded
+			a total of ten times. Each upgrade will increase tower stats such as range,
+			fire rate, and damage per shot. This will be critical in keeping up with the
+			growing threat!
+		</p>
+		<h1>
+			Attack Phase
+		</h1>
+		<p>
+			After the build phase timer depletes the attack phase will begin automatically.
+			During this phase enemies will enter the screen from the left and right sides
+			and attempt to make it to your base in the center of the screen. Any towers within
+			range of the enemies will automatically track and shoot them until they move out
+			of range. If enemies make it to your base you will lose hit points. If you lose
+			too many hit points you will lose the game. While there isn’t anything to control
+			during the attack phase it's crucial that you pay attention to the action to see
+			where your weaknesses might lie. This is a good time to make use of the game chat
+			to strategize with your team mate and plan out your actions for the next build phase.
+		</p>
+		<img src="./images/AttackPhase.png" alt="AttackPhase.png" title="Attack Phase" class="centered img">
+		<h1>
+			Post-Game and Highscores
+		</h1>
+		<p>
+			Once all of your hit points are depleted the game will automatically end and your final
+			score for the game will be displayed. The score is determined by the wave you made it to,
+			in addition to a number of of factors such as final gold count. If you manage to make a 
+			high score it will be displayed on the high scores page of the website along with you and 
+			your teammate’s usernames.
+		</p>
+		<img src="./images/highscore.png" alt="highscore.png" title="Game Over" class="centered img">
+		</div>
+	</div>
+	</body>
+	<footer>
+	Website by Nicholas Brown
+	</footer>
+	</html>

@@ -84,7 +84,7 @@ class Tower2 {
         pop();
 
         this.fireTimer.tick();
-        if (!this.fireTimer.isTicking && target){
+        if (!this.fireTimer.isTicking && target && !gameIsOver){
             this.fireTimer.start();
             this.bullets.push(new Bullet(this, target, resources.poison));
         }

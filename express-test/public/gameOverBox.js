@@ -10,8 +10,7 @@ class GameOverBox
         // this.results = [
         //     { "score": 285, "name": "loop_daddy" },
         //     { "score": 327, "name": "dooper" }];
-        this.results = [
-            { "score": 285, "name": "loop_daddy" }];
+        this.results = [{}];
         this.round = null;
         this.padding = 10;
     }

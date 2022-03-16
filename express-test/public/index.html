@@ -1,88 +1,92 @@
 <!DOCTYPE html>
-<html lang="">
-
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Skeletons vs Zombies TD</title>
-  <script>
-    window.addEventListener('unload', function() {
-document.documentElement.innerHTML = '';});
-</script>
-<script src="https://cdn.socket.io/4.4.1/socket.io.min.js" integrity="sha384-fKnu0iswBIqkjxrhQCTZ7qlLHOFEgNkRmK2vaO/LbTZSXdJfAu6ewRBdwHPhBo/H" crossorigin="anonymous"></script>
-<script src="https://cdn.jsdelivr.net/npm/p5@1.4.0/lib/p5.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.0.0/addons/p5.sound.js"></script>
-<script src="https://unpkg.com/p5.gif/dist/p5gif.min.js"></script>
-
-  <style>
-    body {
-      padding: 0;
-      margin: 0;
-    }
-  </style>
-  <!-- <script src="p5.js"></script>
-  <script src="addons/p5.sound.min.js"></script> -->
-  <script src="sketch.js"></script>
-  <script src="ui.js"></script>
-  <script src="chatBox.js"></script>
-  <script src="button.js"></script>
-  <script src="towerPopup.js"></script>
-  <script src="enemy.js"></script>
-  <script src="map.js"></script>
-  <script src="tile.js"></script>
-  <script src="timer.js"></script>
-  <script src="tower.js"></script>
-  <script src="tower2.js"></script>
-  <script src="tower3.js"></script>
-  <script src="tower4.js"></script>
-  <script src="bullet.js"></script>
-  <script src="floatingText.js"></script>
-  <script src="roundText.js"></script>
-  <script src="spriteAnimation.js"></script>
-  <script src="navagent.js"></script>
-  <script src="p5Input.js"></script>
-  <script src="nameBox.js"></script>
-  <script src="loadingScreen.js"></script>
-  <script src="mouse.js"></script>
-  <script src="gameOverBox.js"></script>
-
-  <!-- <script src="https://cdn.jsdelivr.net/npm/p5@1.4.0/lib/p5.js"></script> -->
-  <link rel="stylesheet" href="index.css">
-  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-  <link rel="icon" href="favicon.png">
-</head>
-
-<body>
-  <header class="navbar navbar-expand navbar-light flex-column flex-md-row bd-navbar bg-light">
-    <div class="navbar-nav-scroll">
-        <ul class="navbar-nav bd-navbar-nav flex-row">
-            <li class="nav-item">
-                <a class="nav-link" href="/">Game</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="leaderboard">Leaderboard</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="about">About</a>
-            </li>
-        </ul>
-    </div>
-</header>
-<div class="root">
-  <div id="game_container">
-      <div id="name_box_container">
-          <div id="name_box">
-              <div id="name_label">
-                  Enter name:
-              </div>
-              <div >
-                  <input id="name_text" type="text" maxlength="12"/>
-              </div>
-          </div>
-      </div>
-  <main>
-  </main>
-
-</body>
-
-</html>
+<html>
+	<head>
+		<title>SkeleGame.com - Game</title>
+		<link rel="stylesheet" type="text/css" href="css/style.css" />
+		<link rel="preconnect" href="https://fonts.googleapis.com">
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+		<link href="https://fonts.googleapis.com/css2?family=Permanent+Marker&display=swap" rel="stylesheet">
+	</head>
+	<body>
+	<div>
+		<ul id="navbar">
+			<li><a class="active" href="index">Home</a></li>
+			<li><a href="guide">How to Play</a></li>
+			<li><a href="game">Game</a></li>
+			<li><a href="scores">Highscores</a></li>
+		</ul>
+	</div>
+	
+	<div id="content-area">
+		<div id="title">
+			<img src="./images/title.png" alt="Skeletons vs. Zombies TD" class="centered img">
+		</div>
+		<div id="main-content">
+			<h1>
+			About the Project
+			</h1>
+			<p>
+				This is a tower defense style game with a few unique twists and an undead/fantasy theme.
+				The game was written as a capstone project for the CIS499 course at Lander University. The game 
+				features real-time co-operative multiplayer where two players work together to defend
+				their base from attacking zombies by placing and upgrading various defensive "towers" on the map.
+				The game requires a certain amount of strategy and teamwork between players. It features a 
+				live chat system to facilitate this teamwork. The game, like most tower defense games, has
+				the players attempt to survive as long as possible against un-ending waves of ever increasingly
+				stronger enemies. Players who manage to survive long enough will have their names and stats recorded
+				on a leaderboard on this webiste's highscores page.
+			</p>
+			<h1>
+				Members of the Group
+			</h1>
+			<h2>
+				Andy Buchanan <img src="./images/andy.png" alt="andy.png" title="Andy" class="small img">
+			</h2>
+			<p>
+				Andy is a computer science major (programming concentration) with a minor in design.
+				He was responsible for programming the main game logic as well as designing and creating
+				the visual art assets for the game. Andy also assisted in programming the multiplayer 
+				netcode for the game.
+			</p>
+			<h2>
+			Parker Johnson (PJ) <img src="./images/user.png" alt="user.png" tilte="user" class="small img">
+			</h2>
+			<p>
+				PJ is a computer science major (programming concentration) with a minor in cybersecurity. He
+				was responsible for programming the in-game chat system, as well as the multiplayer netcode.
+				PJ also developed the leaderboard system.
+			</p>
+			<h2>
+				Cole Brown <img src="./images/cole.png" alt="cole.png" title="Cole" class="small img">
+			</h2>
+			<p>
+				Cole is a computer science major (networking concentration) with a minor in cyber security.
+				He was responsible for creating this as well as creating the sound assets for the game. 
+				Cole also assisted in various planning and documentation aspects of the project.
+			</p>
+			<h1>
+				Technology
+			</h1>
+			<p>
+				The game is written in primarily in JavaScript using the P5 library, and the node.js 
+				runtime. MongoDB is leveraged for the leaderboard functionality and simple HTML/CSS is
+				used for the website. The game uses a client/server architecture with a primary
+				matchmaking server connecting players to the game before spawning an instance of a game server
+				for the match to take place in. (see diagram below) This allows a single matchmaking server to be available for 
+				creating player connections and the multiple game servers to be istatiated and destroyed as
+				needed.
+				<img src="./images/diagram.png" alt="Build Icons" class="centered med img">
+			</p>
+			<h1>
+				Development Screenshots
+			</h1>
+			
+			<img src="./images/dev1.png" alt="dev1.png" class="inline img">
+			<img src="./images/dev2.png" alt="dev2.png" class="inline img">
+		</div>
+	</div>
+	</body>
+	<footer>
+	Website by Nicholas Brown
+	</footer>
+	</html>

@@ -9,7 +9,7 @@ let path = require('path')
 router.get('/',  async (req, res) =>
 {
     let route = path.resolve(__dirname, '../public/')
-    res.sendFile("about.html", {root: route})
+    res.sendFile("guide.html", {root: route})
 
 })
 

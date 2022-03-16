@@ -87,7 +87,7 @@ class Tower3 {
         pop();
 
         this.fireTimer.tick();
-        if (!this.fireTimer.isTicking && target){
+        if (!this.fireTimer.isTicking && target && !gameIsOver){
             this.fireTimer.start();
             this.bullets.push(new Bullet(this, target, resources.ice, this.angle+radians(270)));
             playSound(sounds.iceTower);

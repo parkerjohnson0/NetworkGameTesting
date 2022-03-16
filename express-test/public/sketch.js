@@ -52,7 +52,7 @@ let ui;
 let costs = [30, 50, 40, 45];
 
 let gold = 250;
-let lives = 30;
+let lives = 1;
 let towerToBuild = -5;
 
 let selectedTower;
@@ -107,7 +107,30 @@ function preload()
   LoadingScreen.lightningGif = loadImage(`assets/titlescreen_anim1.gif`)
   LoadingScreen.staticGif = loadImage(`assets/titlescreen_anim2.gif`);
 }
-
+function restart()
+{
+  towerID = 0;
+  canBuild = true;
+  IsStarted = false;
+  enemiesCanSpawn = false;
+  IsAttackPhase = false;
+  buildTimerEndRequested = false;
+  buildTimer = null;
+  clientEnemiesKilled = 0;
+  gameIsOver = false;
+  towers = [];
+  testEnemies = [];
+  ui.chatBox.messages = [];
+  gold = 250;
+  lives = 1;
+  currRound = 1;
+  towerToBuild = -5;
+  disconnect(); //disconnect socket
+  socketID = 0 //save ID so that client player can be retrieved from playerslist after a disconnect. band aid for bad design decision right now
+  gameInstanceID = 0
+  enemyBonusStats = { hp: 0, speed: 0 };
+  setupSocket();
+}
 function setup()
 {
   frameRate(60)
@@ -205,6 +228,10 @@ function generateSprites(spritesheet, spriteWidth, spriteHeight, singleArray)
 }
 function keyTyped()
 {
+  if (gameIsOver)
+  {
+    restart();
+  }
   if (LoadingScreen.showing && LoadingScreen.timerLightning.isFinished)
   {
     LoadingScreen.stop();
@@ -240,6 +267,10 @@ function keyTyped()
 
 function keyPressed()
 {
+  if (gameIsOver)
+  {
+    restart();
+  }
   selectedTower = null;
   // if (ui.chatBox.p5Input.focused && keyCode === 8) //backspace
   // {
@@ -516,7 +547,7 @@ function spawnEnemies()
 
 function startBuild()
 {
-  buildTimer = new Timer(30);
+  buildTimer = new Timer(5);
   buildTimer.start();
   ui.roundText.setText(`Build Phase`);
   ui.roundText.reset();
@@ -549,7 +580,7 @@ function draw()
       socket.emit("requestBuildTimerEnd");
       buildTimerEndRequested = true;
     }
-    if (enemiesCanSpawn)
+    if (enemiesCanSpawn && !gameIsOver)
     {
       spawnEnemies();
       IsAttackPhase = true;
@@ -709,8 +740,8 @@ function draw()
     {
       ui.nameBox.draw();
     }
-    ui.gameOverBox.draw();
-    ui.gameOverBox.setResults([{ "score": 285, "name": "loop_daddy"}]);
+    // ui.gameOverBox.draw();
+    // ui.gameOverBox.setResults([{ "score": 285, "name": "loop_daddy"}]);
     // ui.gameOverBox.setResults([{ "score": 285, "name": "loop_daddy" },{ "score": 327, "name": "dooper" }]);
 
 

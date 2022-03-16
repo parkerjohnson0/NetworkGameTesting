@@ -23,6 +23,8 @@ class Enemy{
 
     move(){
         // targettable at the start
+        if (gameIsOver) return;
+        
         if (this.isTargetable == false){
         let targetablePosition = createVector((this.canBeHitTile.position.x+this.tileOffset),(this.canBeHitTile.position.y+this.tileOffset));
         if (this.position.equals(targetablePosition)){

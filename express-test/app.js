@@ -12,8 +12,10 @@ let MongoDB = require('./database/MongoDB.js')
 let express = require('express')
 //how different would it be without body-parser
 let bodyParser = require('body-parser')
-let leaderboardRoute = require('./routes/leaderboardRoute.js')
-let aboutRoute = require('./routes/aboutRoute.js')
+let scoresRoute = require('./routes/scoresRoute.js')
+let guideRoute = require('./routes/guideRoute.js')
+let gameRoute = require('./routes/gameRoute.js')
+
 
 // let home = require('./routes/home.js')
 
@@ -30,8 +32,9 @@ app.use(cors({
 //MAY NEED OTHER BODYPARSER TYPES AT SOME POINT
 app.use(bodyParser.json())
 
-app.use('/leaderboard', leaderboardRoute)
-app.use('/about', aboutRoute)
+app.use('/scores', scoresRoute)
+app.use('/guide', guideRoute)
+app.use('/game', gameRoute)
 app.set('view engine', 'ejs')
 app.use(express.static('./public')) //this serves the homepage
 
@@ -53,8 +56,10 @@ let server = app.listen(port, () =>
     console.log(`listening on port ${port}`)
 })
 
-app.get('/leaderboard', leaderboardRoute)
-app.get('/about', aboutRoute)
+app.get('/scores', scoresRoute)
+app.get('/guide', guideRoute)
+app.get('/game', gameRoute)
+
 
 
 let io = require('socket.io')(server)
@@ -114,7 +119,7 @@ io.on("connection", (conn) =>
         conn.on("newPlayerJoined", (name) =>
         {
             client.username = name
-            console.log(`new player '${name}' joined`)
+            // console.log(`new player '${name}' joined`)
             io.in(room).emit("greetPlayer", name)
         })
         conn.on("disconnect", () =>
@@ -122,7 +127,7 @@ io.on("connection", (conn) =>
             clearInterval(updateTimer)
             removeClient(instance, client)
             removeInstanceIfEmpty(instance)
-            console.log("client disconnected:", client.socketID, "| Game Instance: ", instance.uuid);
+            // console.log("client disconnected:", client.socketID, "| Game Instance: ", instance.uuid);
             // conn.to(room).emit("playerDisconnected", conn.id)
             conn.to(room).emit("playerDisconnected", client.username)
         })
@@ -141,7 +146,7 @@ io.on("connection", (conn) =>
         conn.on("requestBuildTimerStart", () =>
         {
             // console.log("build timer requested by client", client.id, "in room", room)
-            console.log("REQUEST TO START")
+            // console.log("REQUEST TO START")
 
             client.buildTimerRequested = true
             if (buildTimerCanStart(instance))
@@ -151,18 +156,18 @@ io.on("connection", (conn) =>
                 }
                 io.in(room).emit("buildTimerStart")
                 instance.gameState = GameStates.BuildPhase
-                console.log("build timer start")
+                // console.log("build timer start")
             }
         })
         conn.on("requestBuildTimerEnd", () =>
         {
-            console.log("REQUEST TO END")
+            // console.log("REQUEST TO END")
             client.buildTimerRequested = false
             if (!instance.clients.some(x => x.buildTimerRequested == true))
             {
                 io.in(room).emit("buildTimerEnd")
                 instance.gameState = GameStates.AttackPhase
-                console.log("build timer End")
+                // console.log("build timer End")
             }
         })
         conn.on("clientMouseData", (message) =>
@@ -189,7 +194,7 @@ io.on("connection", (conn) =>
         })
         conn.on("gameOver", (score,round) =>
         {
-            console.log("round " + round)
+            // console.log("round " + round)
             if (instance.gameState.name !== GameStates.GameOver.name) // name property is just to approximate a type safe enum
             {
                 // let names = instance.clients.map(x => { return x.username })
@@ -214,7 +219,7 @@ function removeInstanceIfEmpty(instance)
 {
     if (instance.clients.length == 0)
     {
-        console.log("removing instance",instance.uuid)
+        // console.log("removing instance",instance.uuid)
         gameInstances = gameInstances.filter((x) => x != instance)
     }
 }
@@ -226,7 +231,8 @@ function sendToMongo(result,uuid,wave)
 
     // let url = "game.parkerjohnson-projects.com/api/Players"
     let data = {result,uuid,wave}
-    console.log(app.db.InsertDocument(data, "Leaderboard"))
+    // console.log(app.db.InsertDocument(data, "Leaderboard"))
+    app.db.InsertDocument(data, "Leaderboard")
     // httpPost(url, "json", data,
     //     function (result)
     //     {
@@ -250,7 +256,8 @@ function getRoom(client)
 
     sockets.push(client)
     console.log("new client connected: ", client.id)
-    let roomNumber = gameInstances.findIndex(x => x.clients.some(y => y.socketID == client.id))
+    // let roomNumber = gameInstances.findIndex(x => x.clients.some(y => y.socketID == client.id))
+    let roomNumber = gameInstances.find(x => x.clients.some(y => y.socketID == client.id)).uuid
     return "room" + roomNumber
 }
 function removeClient(instance,client)
@@ -264,6 +271,7 @@ function enqueue(conn)
     if (!clientAdded)
     {
         gameInstances.push(new GameInstance())
+        // console.log(gameInstances)
         AddClientToGame(conn)
     }
 }
@@ -272,6 +280,7 @@ function AddClientToGame(conn)
     if (gameInstances.length == 0)
     {
         gameInstances.push(new GameInstance())
+        // console.log(gameInstances)
     }
     let clientAdded = false
     gameInstances.forEach(element =>
@@ -279,6 +288,7 @@ function AddClientToGame(conn)
         if (element.clients.length < 2 && !element.gameInProgess)
         {
             element.addClient(conn.id)
+            // console.log("client added to instance: " + element.uuid)
             clientAdded = true
             return true
         }
@@ -357,7 +367,7 @@ class GameInstance
         this.gameState = GameStates.PreGame
         this.gameInProgess = false;
         this.gameResult = [];
-        console.log('adding instance:' + this.uuid);
+        // console.log('adding instance:' + this.uuid);
     }
     addClient(id,username)
     {
