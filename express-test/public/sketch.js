@@ -52,7 +52,7 @@ let ui;
 let costs = [30, 50, 40, 45];
 
 let gold = 250;
-let lives = 1;
+let lives = 30;
 let towerToBuild = -5;
 
 let selectedTower;
@@ -122,7 +122,7 @@ function restart()
   testEnemies = [];
   ui.chatBox.messages = [];
   gold = 250;
-  lives = 1;
+  lives = 30;
   currRound = 1;
   towerToBuild = -5;
   disconnect(); //disconnect socket
