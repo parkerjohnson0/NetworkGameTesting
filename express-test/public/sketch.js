@@ -681,7 +681,7 @@ function draw()
     }
     fill(0);
     noStroke();
-    text(frameRate(), 10, 10);
+    // text(frameRate(), 10, 10);
 
 
     push();
