@@ -155,10 +155,10 @@ function setup()
   resources.ice = generateSprites(iceSprites, 24, 24, true);
   resources.fire = generateSprites(fireSprites, 9, 8, true);
   resources.fireTower = generateSprites(fireTower, 20, 25, true);
-  sounds.iceTower.setVolume(0.2)
-  sounds.gold.setVolume(0.2)
-  sounds.upgrade.setVolume(0.2)
-  sounds.magicTower.setVolume(0.2)
+  sounds.iceTower.setVolume(0.1)
+  sounds.gold.setVolume(0.1)
+  sounds.upgrade.setVolume(0.1)
+  sounds.magicTower.setVolume(0.1)
 
 
 
@@ -172,6 +172,7 @@ function setup()
   ui.playerControls.push(new Button(resources.destroy, 0, -2, playWidth + 1, 405));
 
   let canv = createCanvas(playWidth + 400, playHeight);
+  canv.parent("game-placeholder")
   canv.elt.addEventListener("contextmenu", (e) => e.preventDefault());
   background(0);
   stroke(0, 255, 0);
@@ -547,7 +548,7 @@ function spawnEnemies()
 
 function startBuild()
 {
-  buildTimer = new Timer(5);
+  buildTimer = new Timer(30);
   buildTimer.start();
   ui.roundText.setText(`Build Phase`);
   ui.roundText.reset();
@@ -603,7 +604,7 @@ function draw()
       if (enemy.hp <= 0)
       {
         enemiesToRemove.push(enemy);
-        gold += 10;
+        gold += 5;
         clientEnemiesKilled++;
         playSound(sounds.gold);
       }

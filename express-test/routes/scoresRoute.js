@@ -12,10 +12,10 @@ router.get('/',  async (req, res) =>
     // console.log("sending route", route)
     // res.sendFile("leaderboard.html", { root: route })
     let scores = await req.app.db.FindAll("Leaderboard")
+    scores.s
     let route = path.resolve(__dirname, '../public/')
-    console.log("sending route", route)
     // res.sendFile("scores.html",{root: route})
-    res.render("scoresView.ejs", { scores })
+    res.render("scoresView.ejs", { scores:scores })
 
     
     // let success = await req.app.db.FindAll("Leaderboard")

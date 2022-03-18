@@ -62,13 +62,13 @@ footer{
 	
 }
 #game-placeholder{
-	background-color: pink;
+	/* background-color: pink; */
 	width: 1000px;
 	height: 580px;
 	margin: auto;
-	text-align: center;
+	/* text-align: center;
 	font-size: 100px;
-	color: white;
+	color: white; */
 	
 }
 .active{
