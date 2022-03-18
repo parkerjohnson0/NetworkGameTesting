@@ -12,7 +12,10 @@ router.get('/',  async (req, res) =>
     // console.log("sending route", route)
     // res.sendFile("leaderboard.html", { root: route })
     let scores = await req.app.db.FindAll("Leaderboard")
-    scores.s
+    scores.sort((a, b) =>
+    {
+        return  b.wave - a.wave;
+    })
     let route = path.resolve(__dirname, '../public/')
     // res.sendFile("scores.html",{root: route})
     res.render("scoresView.ejs", { scores:scores })
