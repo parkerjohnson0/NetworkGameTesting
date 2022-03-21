@@ -944,6 +944,10 @@ function setupSocket()
   {
     ui.gameOverBox.setResults(results);
   })
+  socket.on("waitingForPlayer",()=>
+  {
+    ui.chatBox.waitingForPlayer();
+  });
   // function tickTimer()
   // {
   //     console.log(buildTimerLength)
@@ -966,11 +970,11 @@ function userExists(cookie)
 
 function updatePlayers()
 {
-  if (currFrame++ % 2 == 0)
-  {
+  // if (currFrame++ % 2 == 0)
+  // {
     updateConnectedPlayers()
     sendClientState()
-  }
+  // }
 }
 function sendClientState()
 {
