@@ -263,7 +263,7 @@ function keyTyped()
   {
     ui.nameBox.input.handleKey(key)
   }
-
+  return false;
 }
 
 function keyPressed()
