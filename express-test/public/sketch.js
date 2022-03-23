@@ -603,10 +603,13 @@ function draw()
       }
       if (enemy.hp <= 0)
       {
+        if (enemy.killedBy == "p1"){
+          gold += 5;
+          clientEnemiesKilled++;
+          playSound(sounds.gold);
+        }
         enemiesToRemove.push(enemy);
-        gold += 5;
-        clientEnemiesKilled++;
-        playSound(sounds.gold);
+
       }
     }
     // Hacky Bullshit
