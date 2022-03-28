@@ -969,6 +969,9 @@ function setupSocket()
     restart();
     console.log("requeue")
   })
+  socket.on("adminMessage",(string)=>{
+    ui.chatBox.addAdminMessage(string);
+  })
 }
 
 function userExists(cookie)

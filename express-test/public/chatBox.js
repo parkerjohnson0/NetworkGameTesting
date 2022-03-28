@@ -49,7 +49,10 @@ class ChatBox
     {
         this.messages.push(new Message("admin", "STARTING ATTACK PHASE", 16))
     }
-
+    addAdminMessage(string)
+    {
+        this.messages.push(new Message("admin", string, 12))
+    }
     blockedPath()
     {
         this.messages.push(new Message("admin", "Can not block path to base!", 12))

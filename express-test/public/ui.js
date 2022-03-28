@@ -2,7 +2,6 @@ class UserInterface {
     constructor(){
         this.buttons=[];
         this.roundText = new RoundText();
-
         this.playerControls=[];
         this.floatingText=[];
         this.towerPopup = new TowerPopup();
@@ -12,7 +11,9 @@ class UserInterface {
         // this.chatBox.input.elt.addEventListener("keydown", this.inputListener)
         console.log(document.cookie)
         this.commands = {
-            soloGame : "!start"
+            soloGame : "!start",
+            unmute : "!unmute",
+            mute : "!mute"
         }
     }
 
@@ -68,6 +69,19 @@ sendMessage()
             {
                 socket.emit("soloGameStart");
             }
+            else if (text == this.commands.unmute)
+            {
+                sounds.forEach((sound)=>{
+                    sound.setVolume(0)
+                })
+            }
+            else if (text == this.commands.mute)
+            {
+                sounds.forEach((sound)=>{
+                    sound.setVolume(0.1)
+                })
+            }
+            
         }
     }
 }

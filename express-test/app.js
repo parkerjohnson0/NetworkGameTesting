@@ -15,6 +15,7 @@ let bodyParser = require('body-parser')
 let scoresRoute = require('./routes/scoresRoute.js')
 let guideRoute = require('./routes/guideRoute.js')
 let gameRoute = require('./routes/gameRoute.js')
+const { compileFunction } = require('vm')
 
 
 // let home = require('./routes/home.js')
@@ -171,6 +172,7 @@ io.on("connection", (conn) =>
         {
             if (instance.gameInProgess)
             {
+                conn.emit("adminMessage","Game is already started")
                 return;
             }
 
