@@ -1,5 +1,6 @@
 class Timer {
-    constructor(seconds) {
+    constructor(seconds, useDelta=false) {
+        this.useDelta = useDelta; // pass true to the constructor to make UI animations play properly at any framerate 
         this.seconds = seconds;
         this.time = seconds * 60;
         this.isTicking = false;
@@ -24,7 +25,12 @@ class Timer {
 
     tick(){
         if (this.isTicking) {
-        this.time -= 1 * (deltaTime / timestep);
+            if (this.useDelta){
+                this.time -= 1 * (deltaTime / timestep);
+            }
+            else{
+                this.time -= 1;
+            }
     }
 
     if (this.time <=0){

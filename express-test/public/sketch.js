@@ -549,7 +549,7 @@ function spawnEnemies()
 
 function startBuild()
 {
-  buildTimer = new Timer(30);
+  buildTimer = new Timer(30, true);
   buildTimer.start();
   ui.roundText.setText(`Build Phase`);
   ui.roundText.reset();

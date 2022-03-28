@@ -22,7 +22,7 @@ class p5Input
             }
         })
         this.focused = false;
-        this.timer = new Timer(1);
+        this.timer = new Timer(1, true);
 	this.blinking = false;
     }
     mousePressed()

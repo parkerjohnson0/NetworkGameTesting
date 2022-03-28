@@ -1,7 +1,7 @@
 class RoundText {
 
     constructor(){
-        this.timer = new Timer(4);
+        this.timer = new Timer(4, true);
         this.text = '';
         this.baseTextSize = 32;
         this.currTextSize = this.baseTextSize;

@@ -83,6 +83,7 @@ class Tower {
         this.fireTimer.tick();
         if (!this.fireTimer.isTicking && target && !gameIsOver){
             this.fireTimer.start();
+            // this.bullets.push(new Bullet(this, target, resources.magic));
             this.bullets.push(new Bullet(this, target, resources.magic));
             playSound(sounds.magicTower);
         }
