@@ -54,6 +54,10 @@ class ChatBox
     {
         this.messages.push(new Message("admin", "Can not block path to base!", 12))
     }
+    waitingForPlayer()
+    {
+        this.messages.push(new Message("info", "Waiting for player 2 to join", 12))
+    }
     activateInput()
     {
         // this.active = true;

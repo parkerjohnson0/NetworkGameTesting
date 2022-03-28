@@ -118,6 +118,7 @@ function restart()
   buildTimer = null;
   clientEnemiesKilled = 0;
   gameIsOver = false;
+  p2mousePosition = new Mouse();
   towers = [];
   testEnemies = [];
   ui.chatBox.messages = [];
@@ -759,12 +760,12 @@ function draw()
     pop();
   }
 
-  image(resources.cursor, mouseX, mouseY);
 
   if (LoadingScreen.showing)
   {
     LoadingScreen.draw();
   }
+  image(resources.cursor, mouseX, mouseY);
   onMouseHover();
 
 }
@@ -963,6 +964,11 @@ function setupSocket()
   //         socket.emit("requestBuildTimerEnd")
   //     }
   // }
+  socket.on("requeue", () =>
+  {
+    restart();
+    console.log("requeue")
+  })
 }
 
 function userExists(cookie)

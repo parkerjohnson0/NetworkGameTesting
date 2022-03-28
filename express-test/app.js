@@ -26,7 +26,7 @@ app.db = new MongoDB(process.env.CONNECTION_STRING, process.env.DB)
 app.db.Connect();
 app.use(cors({
     origin: ["http://localhost:3001",
-        "http://www.skelegame.com",'http://www.skelegame.com/socket.io/'
+        "http://www.skelegame.com", 'http://www.skelegame.com/socket.io/'
     ]
 }))
 //MAY NEED OTHER BODYPARSER TYPES AT SOME POINT
@@ -92,10 +92,10 @@ io.on("connection", (conn) =>
     let instance = gameInstances.find(x => x.clients.some(y => y.socketID == conn.id))
     let client = instance.clients.find(x => x.socketID == conn.id)
     //this
-    let updateTimer = setInterval(sendToClient,INTERVAL,conn)
+    let updateTimer = setInterval(sendToClient, INTERVAL, conn, client)
     conn.on("clientConnection", () =>
     {
-        conn.emit("gameInstanceID",instance.uuid)
+        conn.emit("gameInstanceID", instance.uuid)
         // enqueue(client)
         // sockets.push(client)
         // console.log("new client connected: ", client.id)
@@ -151,13 +151,36 @@ io.on("connection", (conn) =>
             client.buildTimerRequested = true
             if (buildTimerCanStart(instance))
             {
-                if (!instance.gameInProgess){
+                // client.joinedGame = true;
+                if (!instance.gameInProgess)
+                {
                     instance.gameInProgess = !instance.gameInProgess;
                 }
                 io.in(room).emit("buildTimerStart")
                 instance.gameState = GameStates.BuildPhase
                 // console.log("build timer start")
             }
+            else if (instance.gameState == GameStates.PreGame) //when joined but waiting on other player to join or enter name
+            {
+                io.in(room).emit("waitingForPlayer");
+                // client.joinedGame = true;
+            }
+            client.joinedGame = true;
+        })
+        conn.on("soloGameStart", () =>
+        {
+            if (instance.gameInProgess)
+            {
+                return;
+            }
+
+            conn.to(room).emit("requeue");
+            if (!instance.gameInProgess)
+            {
+                instance.gameInProgess = !instance.gameInProgess;
+            }
+            io.in(room).emit("buildTimerStart")
+            instance.gameState = GameStates.BuildPhase
         })
         conn.on("requestBuildTimerEnd", () =>
         {
@@ -189,10 +212,11 @@ io.on("connection", (conn) =>
         {
             conn.to(room).emit("upgradeTower", data)
         })
-        conn.on("towerDestroy", (data)=>{
+        conn.on("towerDestroy", (data) =>
+        {
             conn.to(room).emit("destroyTower", data)
         })
-        conn.on("gameOver", (score,round) =>
+        conn.on("gameOver", (score, round) =>
         {
             // console.log("round " + round)
             if (instance.gameState.name !== GameStates.GameOver.name) // name property is just to approximate a type safe enum
@@ -201,7 +225,7 @@ io.on("connection", (conn) =>
                 let name = instance.clients.find(x => x.socketID === conn.id).username;
                 // instance.gameState = GameStates.GameOver
                 instance.gameResult.push({
-                    "score":score,
+                    "score": score,
                     "name": name,
                 })
                 // sendToMongo(score,names, instance.uuid)
@@ -209,12 +233,13 @@ io.on("connection", (conn) =>
             if (instance.gameResult.length === instance.clients.length)
             {
                 sendToMongo(instance.gameResult, instance.uuid, round)
-                io.in(room).emit("gameResults",instance.gameResult, round)
+                io.in(room).emit("gameResults", instance.gameResult, round)
             }
         })
     })
 
 })
+
 function removeInstanceIfEmpty(instance)
 {
     if (instance.clients.length == 0)
@@ -223,14 +248,14 @@ function removeInstanceIfEmpty(instance)
         gameInstances = gameInstances.filter((x) => x != instance)
     }
 }
-function sendToMongo(result,uuid,wave)
+function sendToMongo(result, uuid, wave)
 {
     // let url = "http://localhost:3000/api/Players"
     // let url = "http://skelegame.com/api/Players"
     // let url = "http://localhost:3001/api/Players"
 
     // let url = "game.parkerjohnson-projects.com/api/Players"
-    let data = {result,uuid,wave}
+    let data = { result, uuid, wave }
     // console.log(app.db.InsertDocument(data, "Leaderboard"))
     app.db.InsertDocument(data, "Leaderboard")
     // httpPost(url, "json", data,
@@ -260,7 +285,7 @@ function getRoom(client)
     let roomNumber = gameInstances.find(x => x.clients.some(y => y.socketID == client.id)).uuid
     return "room" + roomNumber
 }
-function removeClient(instance,client)
+function removeClient(instance, client)
 {
     instance.clients = instance.clients.filter(x => x.socketID != client.socketID)
 }
@@ -301,7 +326,7 @@ function AddClientToGame(conn)
 // {
 
 // }
-function sendToClient(conn)
+function sendToClient(conn, client)
 {
     //for each socket. get matching client. then get client data from
     //matching game instance
@@ -327,9 +352,12 @@ function sendToClient(conn)
             connectedPlayers.forEach(x =>
             {
 
+                if (x.joinedGame) //only send data if connected player has joined the game
+                {
+                    clientData.push(x.playerData)
+                    mouseData.push(x.mouseData)
+                }
 
-                clientData.push(x.playerData)
-                mouseData.push(x.mouseData)
             })
             let room = conn.rooms
             if (clientData && mouseData && clientData.length > 0 && mouseData.length > 0)
@@ -369,9 +397,9 @@ class GameInstance
         this.gameResult = [];
         // console.log('adding instance:' + this.uuid);
     }
-    addClient(id,username)
+    addClient(id, username)
     {
-        this.clients.push(new Client(id, this.uuid,username))
+        this.clients.push(new Client(id, this.uuid, username))
     }
     updateClient(client)
     {
@@ -393,13 +421,14 @@ class GameStates
 }
 class Client
 {
-    constructor(socketID, gameID,username)
+    constructor(socketID, gameID, username)
     {
         this.gameID = gameID
         this.socketID = socketID
         this.playerData = {},
-        this.mouseData = {},
-        this.username = username,
-        this.buildTimerRequested = false
+            this.mouseData = {},
+            this.username = username,
+            this.buildTimerRequested = false,
+            this.joinedGame = false
     }
 }

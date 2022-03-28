@@ -11,6 +11,9 @@ class UserInterface {
         this.gameOverBox = new GameOverBox(playWidth / 2, playHeight / 2, 400);
         // this.chatBox.input.elt.addEventListener("keydown", this.inputListener)
         console.log(document.cookie)
+        this.commands = {
+            soloGame : "!start"
+        }
     }
 
     generateFloatingText(text, position, color){
@@ -23,7 +26,6 @@ class UserInterface {
         socket.emit("gameOver", score)
         ui.sendMessage()
     }
-
     inputListener(e)
     {
         switch (e.key)
@@ -56,12 +58,30 @@ sendMessage()
         this.chatBox.input.displayText = "" //reset input 
         let string = `${playerName}: ${text}`
         this.chatBox.addLocalChatMessage(string)
-        socket.emit("chatMessage", string)
+        if (!this.containsCommand(text)) //send only the text, without prepended name
+        {
+            socket.emit("chatMessage", string)
+        }
+        else
+        {
+            if (text == this.commands.soloGame)
+            {
+                socket.emit("soloGameStart");
+            }
+        }
     }
-    
-
 }
-
+    containsCommand(string)
+    {
+        for (let key in this.commands)
+        {
+            if (this.commands[key] == string)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
     draw(){
         image(resources.backplate,playWidth,playHeight-180);
 
@@ -136,7 +156,7 @@ sendMessage()
     {
         let nameBox= select("#name_box_container")
         nameBox.elt.style.visibility = "visible"
-        nameBox.elt.addEventListener("keydown",this.nameBoxListener)
+        nameBox.elt.addEventListener("Sdown",this.nameBoxListener)
     }
     nameBoxListener(e)
     {
