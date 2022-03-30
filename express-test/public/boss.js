@@ -1,4 +1,4 @@
-class Enemy{
+class Boss{
     constructor(x, y, currentTile) {
         this.position = createVector(x,y);
         this.maxSpeed = 0.7 + enemyBonusStats.speed;
@@ -10,16 +10,16 @@ class Enemy{
         this.path = this.navAgent.findPath(this.currentTile, this.goal);
         this.target = this.path[0];
         this.tileOffset = this.currentTile.w/2;
-        this.hp = 20 + 15 * currRound;
+        this.hp = 40 + 40 * currRound;
         this.isTargetable = false;
         this.canBeHitTile = this.path[0];
         this.killedBy = "";
         this.sprite;
         this.animation = new spriteAnimation(6);
-        this.animation.setFrames(resources.zombieSprites);
-        this.animation.currentFrame = floor(random(0, resources.zombieSprites.length));
+        this.animation.setFrames(resources.eyeball);
+        this.animation.currentFrame = floor(random(0, resources.eyeball.length));
         this.dir;
-        this.eType = "Enemy";
+        this.eType = "Boss";
     }
 
     move(){

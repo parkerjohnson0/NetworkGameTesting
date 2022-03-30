@@ -36,6 +36,7 @@ resources.towers = [];
 let towerSprites;
 let tileSprites;
 let zombieSprites;
+let eyeballSprite;
 let caveSprites;
 let clockSprites;
 
@@ -73,7 +74,7 @@ let clientEnemiesKilled = 0;
 let timestep = 1000 / 60;
 function preload()
 {
-
+  eyeballSprite = loadImage(`assets/eyeball_spritesheet.png`);
   towerSprites = loadImage(`assets/tower_spritesheet.png`);
   fireTower = loadImage(`assets/tower4_spritesheet.png`);
   tileSprites = loadImage(`assets/tile_spritesheet.png`);
@@ -144,6 +145,7 @@ function setup()
   textFont(resources.font)
 
   //prep all assets
+  resources.eyeball = generateSprites(eyeballSprite,30,30,true);
   resources.towerButtons = generateSprites(towerSprites, 100, 100);
   resources.clock = generateSprites(clockSprites, 50, 50, true);
   resources.tiles = generateSprites(tileSprites, 20, 20, true);
@@ -527,16 +529,30 @@ function onMouseHover()
 
 function spawnEnemies()
 {
-  ui.roundText.setText(`Wave ${currRound}`);
+  if (currRound % 5 == 0){
+    ui.roundText.setText(`Boss Wave`);
+  }
+  else{
+    ui.roundText.setText(`Wave ${currRound}`);
+  }
   ui.roundText.reset();
   ui.roundText.start();
-  for (let i = 0; i < enemyCount; i++)
+  
+  if (currRound % 5 == 0){
+    let tile = startL;
+    testEnemies.push(new Boss(tile.position.x + tile.w / 2 - (20), (tile.position.y + tile.w / 2), tile));
+    tile = startR;
+    testEnemies.push(new Boss(tile.position.x + tile.w / 2 + (20), (tile.position.y + tile.w / 2), tile));
+  
+  }
+
+  for (let i = 1; i < enemyCount+1; i++)
   {
     let tile = startL;
     //test param
     testEnemies.push(new Enemy(tile.position.x + tile.w / 2 - ((i + 1) * 20), (tile.position.y + tile.w / 2), tile));
   }
-  for (let i = 0; i < enemyCount; i++)
+  for (let i = 1; i < enemyCount+1; i++)
   {
     let tile = startR;
     //test param
@@ -600,12 +616,22 @@ function draw()
       if (enemy.currentTile == enemy.goal)
       {
         enemiesToRemove.push(enemy);
+        if (enemy.eType == "Boss"){
+          lives -= 5;
+        }
+        else {
         lives -= 1;
+        }
       }
       if (enemy.hp <= 0)
       {
         if (enemy.killedBy == "p1"){
+          if (enemy.eType == "Boss"){
+          gold += 50;
+          }
+          else {
           gold += 5;
+          }
           clientEnemiesKilled++;
           playSound(sounds.gold);
         }

@@ -182,6 +182,7 @@ io.on("connection", (conn) =>
                 instance.gameInProgess = !instance.gameInProgess;
             }
             io.in(room).emit("buildTimerStart")
+            instance.soloGame = true;
             instance.gameState = GameStates.BuildPhase
         })
         conn.on("requestBuildTimerEnd", () =>
@@ -275,7 +276,7 @@ function sendToMongo(result, uuid, wave)
 function buildTimerCanStart(instance)
 {
     let connectedClientsReady = !instance.clients.some(x => x.buildTimerRequested == false)
-    return connectedClientsReady && instance.clients.length > 1
+    return connectedClientsReady && (instance.clients.length > 1 || instance.soloGame)
 
 }
 function getRoom(client)
@@ -397,6 +398,7 @@ class GameInstance
         this.gameState = GameStates.PreGame
         this.gameInProgess = false;
         this.gameResult = [];
+        this.soloGame = false;
         // console.log('adding instance:' + this.uuid);
     }
     addClient(id, username)
