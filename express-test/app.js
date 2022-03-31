@@ -1,7 +1,6 @@
 require('dotenv').config()
 let crypto = require('crypto')
 require('./server/SocketIO.js')
-
 let cors = require('cors')
 // let corsOptions = {
 //     origin: ['https://localhost:5500', 'http:game.parkerjohnson-projects.com'],
@@ -32,7 +31,6 @@ app.use(cors({
 }))
 //MAY NEED OTHER BODYPARSER TYPES AT SOME POINT
 app.use(bodyParser.json())
-
 app.use('/scores', scoresRoute)
 app.use('/guide', guideRoute)
 app.use('/game', gameRoute)

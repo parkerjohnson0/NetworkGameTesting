@@ -5,6 +5,9 @@
 		<link rel="stylesheet" type="text/css" href="css/style.css" />
 		<link rel="preconnect" href="https://fonts.googleapis.com">
 		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.min.js" integrity="sha384-QJHtvGhmr9XOIpI6YVutG+2QOK9T+ZnN4kzFN1RtK3zEFEIsxhlmWl5/YESvpZ13" crossorigin="anonymous"></script>
+		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
 		<link href="https://fonts.googleapis.com/css2?family=Permanent+Marker&display=swap" rel="stylesheet">
 	</head>
 	<body>
@@ -22,13 +25,17 @@
 			<img src="./images/title.png" alt="Skeletons vs. Zombies TD" class="centered img">
 		</div>
 		<div id="main-content">
-			<table class="hs-table centered">
-					<tr>
+			<table class="hs-table centered table">
+				<thead class="thead-light">
+					<tr style="text-align:center;vertical-align:middle; color:white">
 						<th>Rank</th>
 						<th>Players</th>
 						<th>Score</th>
 						<th>Wave</th>
 					</tr>
+				</thead>
+					<tbody>
+
 					<% for (let i=0; i < scores.length; i++) { %>
 						<% let score = scores[i]; %>
 						<% let names = [] %>
@@ -39,8 +46,8 @@
 								<%numbers.push(res.score)%>
 							<%}) %>
 						<tr style="height:75px">
-							<td style="text-align:center;"> <%= i + 1 %></td>
-							<td style="text-align:center;"> 
+							<td style="text-align:center;vertical-align:middle; color:white"> <%= i + 1 %></td>
+							<td style="text-align:center;vertical-align:middle;color:white"> 
 								<%= names[0]%>
 								<br>
 								
@@ -50,18 +57,19 @@
 									<%= padding %>
 								<%}%>
 							</td>
-							<td style="text-align:center;">
+							<td style="text-align:center;vertical-align:middle;color:white">
 								<%= numbers[0] %>
 								<br>
 								<% if (numbers[1]){ %>
 									<%=numbers[1]%>
 								<%} %>
 							</td>
-							<td style="text-align:center;"><%= score.wave %></td>
+							<td style="text-align:center;vertical-align:middle;color:white"><%= score.wave %></td>
 						</tr>
 
 					<%} %>
-<!-- 
+					</tbody>
+				<!-- 
 					<tr>
 						<td style="text-align:center;"> 2 </td>
 						<td>FoxTheBomb & ByrdMan</td>
