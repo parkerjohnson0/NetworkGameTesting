@@ -166,7 +166,7 @@ function setup()
   sounds.gold.setVolume(0.1);
   sounds.upgrade.setVolume(0.1);
   sounds.magicTower.setVolume(0.1);
-  sounds.fireTower.setVolume(0.08);
+  sounds.fireTower.setVolume(0.1);
   sounds.gasTower.setVolume(0.08);
   sounds.destroy.setVolume(0.1);
   sounds.damage.setVolume(0.1);
