@@ -90,6 +90,7 @@ class Tower4 {
         if (!this.fireTimer.isTicking && target && !gameIsOver){
             this.fireTimer.start();
             this.bullets.push(new Bullet(this, target, resources.fire, this.angle+radians(270)));
+            playSound(sounds.fireTower);
         }
         
         if (this.fireTimer.isFinished){

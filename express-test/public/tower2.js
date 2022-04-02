@@ -87,6 +87,7 @@ class Tower2 {
         if (!this.fireTimer.isTicking && target && !gameIsOver){
             this.fireTimer.start();
             this.bullets.push(new Bullet(this, target, resources.poison));
+            playSound(sounds.gasTower)
         }
         
         if (this.fireTimer.isFinished){

@@ -100,10 +100,14 @@ function preload()
   resources.backplate = loadImage(`assets/ui_backplate.png`);
   resources.chatOverlay = loadImage(`assets/chat_overlay.png`)
   resources.font = loadFont('assets/SuperLegendBoy.ttf');
-  sounds.iceTower = loadSound(`audio/iceattack_short.mp3`)
-  sounds.gold = loadSound(`audio/gold.mp3`)
-  sounds.upgrade = loadSound(`audio/upgrade.mp3`)
-  sounds.magicTower = loadSound(`audio/magic_tower.mp3`)
+  sounds.iceTower = loadSound(`audio/ice3.wav`)
+  sounds.magicTower = loadSound(`audio/magic.wav`)
+  sounds.fireTower = loadSound(`audio/fire.wav`)
+  sounds.gasTower = loadSound(`audio/gas2.wav`)
+  sounds.gold = loadSound(`audio/coin.wav`)
+  sounds.upgrade = loadSound(`audio/upgrade.wav`)
+  sounds.destroy = loadSound(`audio/destroy3.wav`)
+  sounds.damage = loadSound(`audio/damage.wav`)
   // loadingGif = loadImage(`assets/test.gif`)
   LoadingScreen.lightningGif = loadImage(`assets/titlescreen_anim1.gif`)
   LoadingScreen.staticGif = loadImage(`assets/titlescreen_anim2.gif`);
@@ -158,11 +162,14 @@ function setup()
   resources.ice = generateSprites(iceSprites, 24, 24, true);
   resources.fire = generateSprites(fireSprites, 9, 8, true);
   resources.fireTower = generateSprites(fireTower, 20, 25, true);
-  sounds.iceTower.setVolume(0.1)
-  sounds.gold.setVolume(0.1)
-  sounds.upgrade.setVolume(0.1)
-  sounds.magicTower.setVolume(0.1)
-
+  sounds.iceTower.setVolume(0.08);
+  sounds.gold.setVolume(0.1);
+  sounds.upgrade.setVolume(0.1);
+  sounds.magicTower.setVolume(0.1);
+  sounds.fireTower.setVolume(0.08);
+  sounds.gasTower.setVolume(0.08);
+  sounds.destroy.setVolume(0.1);
+  sounds.damage.setVolume(0.1);
 
 
 
@@ -489,6 +496,7 @@ function mouseClicked()
         gameMap.tileMap[currTower.row][currTower.col].isPathable = true;
         currTower.rank = -1;
         socket.emit("towerDestroy", currTower.id)
+        playSound(sounds.destroy);
       }
     }
 
@@ -622,6 +630,7 @@ function draw()
         else {
         lives -= 1;
         }
+        playSound(sounds.damage);
       }
       if (enemy.hp <= 0)
       {
@@ -633,7 +642,6 @@ function draw()
           gold += 5;
           }
           clientEnemiesKilled++;
-          playSound(sounds.gold);
         }
         enemiesToRemove.push(enemy);
 
@@ -675,6 +683,7 @@ function draw()
     {
       // console.log("Requesting build timer start")
       gold += 50 * (floor(currRound / 10) + 1);
+      playSound(sounds.gold);
       currRound += 1;
       // startBuild();
       socket.emit("requestBuildTimerStart");
@@ -805,10 +814,10 @@ function drawPlayer2Mouse()
 }
 function playSound(sound)
 {
-  // if (sound.isPlaying())
-  // {
-  //   sound.stop();
-  // }
+  if (sound.isPlaying())
+  {
+    sound.stop();
+  }
   sound.play();
 }
 // function startLoadingAnimation()

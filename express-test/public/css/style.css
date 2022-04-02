@@ -2,12 +2,14 @@ a:link { color:#404040; text-decoration: none; }
 /*a:link { color:#bf0000; text-decoration: none; } */
 a:visited { color:#404040; text-decoration: none; }
 a:hover { color:white; text-decoration: none; }
+a.navbarLinks:hover { color:white; text-decoration: none; }
 a:active { color:red; text-decoration: none; }
 table, th, td {
   border: 3px solid rgb(255, 0, 0);
   border-collapse: collapse;
   font-size: 26px;
 }
+
 h1{ 
 	color: red;
 }
@@ -21,7 +23,11 @@ footer{
 	text-align: center;
 	font-family: calibri, arial, sans-serif;
 }
-
+tr{
+	text-align: center;
+	vertical-align: middle;
+	color: white;
+}
 #navbar{
 	list-style-type:none;
 	text-align:center;
@@ -70,6 +76,9 @@ footer{
 	font-size: 100px;
 	color: white; */
 	
+}
+#controls-table{
+	width: 35%;
 }
 .active{
 	background-color: red;
