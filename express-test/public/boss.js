@@ -2,7 +2,8 @@ class Boss{
     constructor(x, y, currentTile) {
         this.position = createVector(x,y);
         this.maxSpeed = 0.7 + enemyBonusStats.speed;
-        this.speed = this.maxSpeed;
+        this.speed = this.maxSpeed > 0.99 ? 0.99 : this.maxSpeed;
+        // this.speed = this.maxSpeed;
         this.currMove = 0;
         this.currentTile = currentTile;
         this.goal = goal;

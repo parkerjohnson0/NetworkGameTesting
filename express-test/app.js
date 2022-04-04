@@ -165,15 +165,17 @@ io.on("connection", (conn) =>
             }
             client.joinedGame = true;
         })
-        conn.on("soloGameStart", () =>
+        conn.on("soloGameStart",callback), () =>
         {
             if (instance.gameInProgess)
             {
                 conn.emit("adminMessage","Game is already started")
+                callback({"response" : false})
                 return;
             }
 
             conn.to(room).emit("requeue");
+            callback({"response" : true})
             if (!instance.gameInProgess)
             {
                 instance.gameInProgess = !instance.gameInProgess;
