@@ -2,7 +2,7 @@ class Enemy{
     constructor(x, y, currentTile) {
         this.position = createVector(x,y);
         this.maxSpeed = 0.7 + enemyBonusStats.speed;
-        this.speed = this.maxSpeed;
+        this.speed = this.maxSpeed > 0.99 ? 0.99 : this.maxSpeed;
         this.currMove = 0;
         this.currentTile = currentTile;
         this.goal = goal;
@@ -10,7 +10,7 @@ class Enemy{
         this.path = this.navAgent.findPath(this.currentTile, this.goal);
         this.target = this.path[0];
         this.tileOffset = this.currentTile.w/2;
-        this.hp = 20 + 15 * currRound;
+        this.hp = 20 + 35 * currRound;
         this.isTargetable = false;
         this.canBeHitTile = this.path[0];
         this.killedBy = "";
@@ -20,6 +20,7 @@ class Enemy{
         this.animation.currentFrame = floor(random(0, resources.zombieSprites.length));
         this.dir;
         this.eType = "Enemy";
+
     }
 
     move(){

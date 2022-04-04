@@ -10,7 +10,7 @@ class Boss{
         this.path = this.navAgent.findPath(this.currentTile, this.goal);
         this.target = this.path[0];
         this.tileOffset = this.currentTile.w/2;
-        this.hp = 40 + 40 * currRound;
+        this.hp = 40 + 100 * currRound;
         this.isTargetable = false;
         this.canBeHitTile = this.path[0];
         this.killedBy = "";
