@@ -165,7 +165,7 @@ io.on("connection", (conn) =>
             }
             client.joinedGame = true;
         })
-        conn.on("soloGameStart",callback), () =>
+        conn.on("soloGameStart",(callback) =>
         {
             if (instance.gameInProgess)
             {

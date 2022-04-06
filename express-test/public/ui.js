@@ -67,19 +67,23 @@ sendMessage()
         {
             if (text == this.commands.soloGame)
             {
-                socket.emit("soloGameStart");
+                socket.emit("soloGameStart", (response)=>{
+                    if (response.response){
+                        gold *= 2;
+                    }
+                });
             }
             else if (text == this.commands.unmute)
             {
-                sounds.forEach((sound)=>{
-                    sound.setVolume(0)
-                })
+                // sounds.forEach((sound)=>{
+                //     sound.setVolume(0)
+                // })
             }
             else if (text == this.commands.mute)
             {
-                sounds.forEach((sound)=>{
-                    sound.setVolume(0.1)
-                })
+                // sounds.forEach((sound)=>{
+                //     sound.setVolume(0.1)
+                // })
             }
             
         }
