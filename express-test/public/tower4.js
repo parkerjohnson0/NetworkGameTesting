@@ -12,8 +12,8 @@ class Tower4 {
 
         this.bullets = [];
         this.bulletsToRemove = [];
-        this.damage = 1;
-        this.refire = 1;
+        this.damage = 3;
+        this.refire = 0.85;
         this.speed = 10;
         this.fireTimer = new Timer(this.refire);
 

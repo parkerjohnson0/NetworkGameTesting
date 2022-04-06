@@ -13,7 +13,7 @@ class Tower {
                 range: 0};
         this.bullets = [];
         this.bulletsToRemove = [];
-        this.damage = 10;
+        this.damage = 15;
         this.refire = 1.5;
         this.speed = 10;
         this.fireTimer = new Timer(this.refire);

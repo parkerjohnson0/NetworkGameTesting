@@ -12,7 +12,7 @@ class Tower3 {
 
         this.bullets = [];
         this.bulletsToRemove = [];
-        this.damage = 3;
+        this.damage = 5;
         this.refire = 3;
         this.speed = 10;
         this.fireTimer = new Timer(this.refire);
@@ -23,7 +23,7 @@ class Tower3 {
         this.maxRank = 10;
         this.totalSpent = cost;
         this.type = {type: "slow",
-        range: 40,
+        range: 50,
         slowAmount: 0.25,
         damage: this.damage*0.25};
         this.sprite = resources.towers[2];
@@ -42,7 +42,7 @@ class Tower3 {
         this.refire *= 0.95;
         this.range += 3;
         this.type.slowAmount -= 0.05;
-        this.type.range+=1;
+        this.type.range+=2;
         this.fireTimer.seconds = this.refire;
         this.totalSpent+=this.currUpgradeCost;
         this.currUpgradeCost = floor(this.currUpgradeCost*this.upgradeMultiplier);
