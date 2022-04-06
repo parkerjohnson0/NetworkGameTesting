@@ -100,14 +100,14 @@ function preload()
   resources.backplate = loadImage(`assets/ui_backplate.png`);
   resources.chatOverlay = loadImage(`assets/chat_overlay.png`)
   resources.font = loadFont('assets/SuperLegendBoy.ttf');
-  sounds.iceTower = loadSound(`audio/ice3.wav`)
-  sounds.magicTower = loadSound(`audio/magic.wav`)
-  sounds.fireTower = loadSound(`audio/fire.wav`)
-  sounds.gasTower = loadSound(`audio/gas2.wav`)
-  sounds.gold = loadSound(`audio/coin.wav`)
-  sounds.upgrade = loadSound(`audio/upgrade.wav`)
-  sounds.destroy = loadSound(`audio/destroy3.wav`)
-  sounds.damage = loadSound(`audio/damage.wav`)
+  sounds.iceTower = new Howl({src:`audio/ice3.wav`, volume:0.08})
+  sounds.magicTower = new Howl({src:`audio/magic.wav`, volume:0.1})
+  sounds.fireTower = new Howl({src:`audio/fire.wav`, volume:0.1})
+  sounds.gasTower = new Howl({src:`audio/gas2.wav`, volume:0.08})
+  sounds.gold = new Howl({src:`audio/coin.wav`, volume:0.1})
+  sounds.upgrade = new Howl({src:`audio/upgrade.wav`, volume:0.1})
+  sounds.destroy = new Howl({src:`audio/destroy3.wav`, volume:0.1})
+  sounds.damage = new Howl({src:`audio/damage.wav`, volume:0.1})
   // loadingGif = loadImage(`assets/test.gif`)
   LoadingScreen.lightningGif = loadImage(`assets/titlescreen_anim1.gif`)
   LoadingScreen.staticGif = loadImage(`assets/titlescreen_anim2.gif`);
@@ -162,14 +162,14 @@ function setup()
   resources.ice = generateSprites(iceSprites, 24, 24, true);
   resources.fire = generateSprites(fireSprites, 9, 8, true);
   resources.fireTower = generateSprites(fireTower, 20, 25, true);
-  sounds.iceTower.setVolume(0.08);
-  sounds.gold.setVolume(0.1);
-  sounds.upgrade.setVolume(0.1);
-  sounds.magicTower.setVolume(0.1);
-  sounds.fireTower.setVolume(0.1);
-  sounds.gasTower.setVolume(0.08);
-  sounds.destroy.setVolume(0.1);
-  sounds.damage.setVolume(0.1);
+  // sounds.iceTower.setVolume(0.08);
+  // sounds.gold.setVolume(0.1);
+  // sounds.upgrade.setVolume(0.1);
+  // sounds.magicTower.setVolume(0.1);
+  // sounds.fireTower.setVolume(0.1);
+  // sounds.gasTower.setVolume(0.08);
+  // sounds.destroy.setVolume(0.1);
+  // sounds.damage.setVolume(0.1);
 
 
 
@@ -814,7 +814,7 @@ function drawPlayer2Mouse()
 }
 function playSound(sound)
 {
-  if (sound.isPlaying())
+  if (sound.playing())
   {
     sound.stop();
   }

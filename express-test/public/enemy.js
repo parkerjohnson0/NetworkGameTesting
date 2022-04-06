@@ -11,7 +11,7 @@ class Enemy{
         this.path = this.navAgent.findPath(this.currentTile, this.goal);
         this.target = this.path[0];
         this.tileOffset = this.currentTile.w/2;
-        this.hp = 20 + 35 * currRound;
+        this.hp = 20 + 25 * currRound;
         this.isTargetable = false;
         this.canBeHitTile = this.path[0];
         this.killedBy = "";
