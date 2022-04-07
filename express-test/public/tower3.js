@@ -41,7 +41,7 @@ class Tower3 {
         this.damage+=5;
         this.refire *= 0.95;
         this.range += 3;
-        this.type.slowAmount -= 0.05;
+        this.type.slowAmount += 0.05;
         this.type.range+=2;
         this.fireTimer.seconds = this.refire;
         this.totalSpent+=this.currUpgradeCost;
