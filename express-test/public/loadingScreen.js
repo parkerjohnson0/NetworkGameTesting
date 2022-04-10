@@ -4,13 +4,18 @@ class LoadingScreen
     static staticGif;
     static timerLightning = new Timer(2.4, true);
     static showing = false;
+    static thunderStruck = false;
     static draw()
     {
 
         if (this.showing)
         {
             push();
-
+            if (!this.thunderStruck && this.timerLightning.time < 30)
+            {
+                playSound(sounds.thunder);
+                this.thunderStruck = true;
+            }
             if (!this.timerLightning.isFinished)
             {
                 image(this.lightningGif, 0, 0, 1000, 580)

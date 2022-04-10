@@ -107,7 +107,9 @@ function preload()
   sounds.gold = new Howl({src:`audio/coin.wav`, volume:0.1})
   sounds.upgrade = new Howl({src:`audio/upgrade.wav`, volume:0.1})
   sounds.destroy = new Howl({src:`audio/destroy3.wav`, volume:0.1})
-  sounds.damage = new Howl({src:`audio/damage.wav`, volume:0.1})
+  sounds.damage = new Howl({ src: `audio/damage.wav`, volume: 0.1 })
+  sounds.thunder = new Howl({ src: `audio/thunder.wav`, volume: 0.1 })
+  
   // loadingGif = loadImage(`assets/test.gif`)
   LoadingScreen.lightningGif = loadImage(`assets/titlescreen_anim1.gif`)
   LoadingScreen.staticGif = loadImage(`assets/titlescreen_anim2.gif`);
@@ -182,7 +184,7 @@ function setup()
   ui.playerControls.push(new Button(resources.destroy, 0, -2, playWidth + 1, 405));
 
   let canv = createCanvas(playWidth + 400, playHeight);
-  canv.parent("game-placeholder")
+  // canv.parent("game-placeholder")
   canv.elt.addEventListener("contextmenu", (e) => e.preventDefault());
   background(0);
   stroke(0, 255, 0);
@@ -1165,3 +1167,4 @@ document.addEventListener("visibilitychange", () =>
     clearTimeout(timeoutID);
   }
 })
+
