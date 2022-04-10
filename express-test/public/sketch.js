@@ -108,7 +108,10 @@ function preload()
   sounds.upgrade = new Howl({src:`audio/upgrade.wav`, volume:0.1})
   sounds.destroy = new Howl({src:`audio/destroy3.wav`, volume:0.1})
   sounds.damage = new Howl({ src: `audio/damage.wav`, volume: 0.1 })
-  sounds.thunder = new Howl({ src: `audio/thunder.wav`, volume: 0.1 })
+  sounds.thunder = new Howl({
+    src: `audio/thunder.wav`,
+    volume: 0.07,
+  })
   
   // loadingGif = loadImage(`assets/test.gif`)
   LoadingScreen.lightningGif = loadImage(`assets/titlescreen_anim1.gif`)

@@ -7,14 +7,17 @@ class LoadingScreen
     static thunderStruck = false;
     static draw()
     {
-
         if (this.showing)
         {
             push();
             if (!this.thunderStruck && this.timerLightning.time < 30)
             {
-                playSound(sounds.thunder);
+                if (Howler.ctx.state != "suspended")
+                {
+                    playSound(sounds.thunder);
+                }
                 this.thunderStruck = true;
+
             }
             if (!this.timerLightning.isFinished)
             {
